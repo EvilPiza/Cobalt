@@ -8,6 +8,10 @@
     "gui.SplashRendererMixin",
     "render.GameRendererMixin"
   ],
+  "mixins": [
+    "mojang.YggdrasilServicesKeyInfoMixin",
+    "network.ConnectionMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
