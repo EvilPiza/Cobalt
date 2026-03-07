@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "cobalt",
+  "version": "${version}",
+  "name": "Cobalt",
+  "description": "A Hypixel Skyblock QoL mod for Fabric 1.21.10",
+  "authors": ["quiteboring"],
+  "contact": {
+    "homepage": "https://cobalt.quiteboring.dev/",
+    "sources": "https://github.com/CobaltScripts/Cobalt"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/cobalt/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "org.cobalt.Cobalt"
+      }
+    ]
+  },
+  "mixins": [
+    "cobalt.mixins.json"
+  ],
+  "depends": {
+    "java": ">=21",
+    "fabricloader": ">=${fabricLoaderVersion}",
+    "minecraft": "~${minecraftVersion}",
+    "fabric-language-kotlin": ">=${fabricKotlinVersion}"
+  }
+}
