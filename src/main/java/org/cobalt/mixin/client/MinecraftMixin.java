@@ -9,9 +9,16 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
-  @ModifyArg(method = "updateTitle", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Window;setTitle(Ljava/lang/String;)V"), index = 0)
+  @ModifyArg(
+    method = "updateTitle",
+    at = @At(
+      value = "INVOKE",
+      target = "Lcom/mojang/blaze3d/platform/Window;setTitle(Ljava/lang/String;)V"
+    ),
+    index = 0
+  )
   private String modifyTitle(String oldTitle) {
-    return Cobalt.MOD_NAME + Cobalt.MOD_VERSION;
+    return Cobalt.MOD_NAME + " " + Cobalt.MOD_VERSION;
   }
 
 }
