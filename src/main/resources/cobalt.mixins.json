@@ -7,7 +7,9 @@
     "client.MinecraftMixin",
     "gui.SplashRendererMixin",
     "opengl.GlStateManagerMixin",
-    "render.GameRendererMixin"
+    "render.FrustumInvoker",
+    "render.GameRendererMixin",
+    "render.LevelRendererMixin"
   ],
   "mixins": [
     "mojang.YggdrasilServicesKeyInfoMixin",
