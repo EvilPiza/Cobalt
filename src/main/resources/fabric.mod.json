@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Cobalt",
   "description": "A Hypixel Skyblock QoL mod for Fabric 1.21.10",
-  "authors": ["quiteboring"],
+  "authors": ["quiteboring", "Twiston", "oblongboot"],
   "contact": {
     "homepage": "https://cobalt.quiteboring.dev/",
     "sources": "https://github.com/CobaltScripts/Cobalt"

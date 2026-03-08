@@ -5,6 +5,8 @@ import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
 import org.cobalt.command.CommandManager
 import org.cobalt.command.impl.MainCommand
+import org.cobalt.util.ui.Renderer
+import org.cobalt.util.ui.nvg.NanoVGImpl
 
 object Cobalt : ClientModInitializer {
 
@@ -16,6 +18,10 @@ object Cobalt : ClientModInitializer {
 
   @JvmField
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
+
+  @JvmStatic
+  val renderer: Renderer
+    get() = NanoVGImpl
 
   override fun onInitializeClient() {
     CommandManager.register(MainCommand)

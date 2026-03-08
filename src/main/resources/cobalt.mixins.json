@@ -6,6 +6,7 @@
   "client": [
     "client.MinecraftMixin",
     "gui.SplashRendererMixin",
+    "opengl.GlStateManagerMixin",
     "render.GameRendererMixin"
   ],
   "mixins": [
