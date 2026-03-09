@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   alias(libs.plugins.kotlin)
   alias(libs.plugins.loom)
+  alias(libs.plugins.detekt)
   `maven-publish`
 }
 
@@ -70,4 +71,11 @@ java {
   toolchain {
     languageVersion.set(JavaLanguageVersion.of(21))
   }
+}
+
+
+detekt {
+  buildUponDefaultConfig = true
+  config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+  allRules = false
 }
