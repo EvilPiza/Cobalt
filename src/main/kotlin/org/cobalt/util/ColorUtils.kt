@@ -9,43 +9,34 @@ import net.minecraft.network.chat.TextColor
 object ColorUtils {
 
   @JvmStatic
-  fun buildTextGradient(text: String, startRgb: Int, endRgb: Int): MutableComponent {
+  fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
     val result = Component.empty()
-    val length = text.length
+    val textLength = text.length
 
-    if (length <= 1) {
-      return Component.literal(text).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(startRgb)))
+    if (textLength <= 1) {
+      return Component.literal(text)
+        .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(startColor)))
     }
 
-    val sr = (startRgb shr 16) and 0xFF
-    val sg = (startRgb shr 8) and 0xFF
-    val sb = startRgb and 0xFF
+    for (index in text.indices) {
+      val ratio = index.toDouble() / (textLength - 1)
+      val red = (startColor.red + ratio * (endColor.red - startColor.red)).roundToInt()
+      val green = (startColor.green + ratio * (endColor.green - startColor.green)).roundToInt()
+      val blue = (startColor.blue + ratio * (endColor.blue - startColor.blue)).roundToInt()
+      val interpolatedColor = (red shl 16) or (green shl 8) or blue
 
-    val er = (endRgb shr 16) and 0xFF
-    val eg = (endRgb shr 8) and 0xFF
-    val eb = endRgb and 0xFF
+      val coloredChar = Component.literal(text[index].toString())
+        .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(interpolatedColor)))
 
-    for (i in text.indices) {
-      val ratio = i.toDouble() / (length - 1)
-
-      val r = (sr + ratio * (er - sr)).roundToInt()
-      val g = (sg + ratio * (eg - sg)).roundToInt()
-      val b = (sb + ratio * (eb - sb)).roundToInt()
-
-      val rgb = (r shl 16) or (g shl 8) or b
-
-      val charText = Component.literal(text[i].toString())
-        .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb)))
-
-      result.append(charText)
+      result.append(coloredChar)
     }
 
     return result
   }
 
-  internal inline val Int.red get() = this shr 16 and 0xFF
-  internal inline val Int.green get() = this shr 8 and 0xFF
-  internal inline val Int.blue get() = this and 0xFF
-  internal inline val Int.alpha get() = this shr 24 and 0xFF
+  inline val Int.red get() = this shr 16 and 0xFF
+  inline val Int.green get() = this shr 8 and 0xFF
+  inline val Int.blue get() = this and 0xFF
+  inline val Int.alpha get() = this shr 24 and 0xFF
 
 }

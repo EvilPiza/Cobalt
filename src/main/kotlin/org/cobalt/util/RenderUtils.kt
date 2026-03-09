@@ -16,8 +16,7 @@ import org.joml.Vector3f
 
 object RenderUtils {
 
-  private val mc: Minecraft =
-    Minecraft.getInstance()
+  private const val BOX_FILL_ALPHA = 150f
 
   @JvmStatic
   fun drawBlockPos(
@@ -82,7 +81,7 @@ object RenderUtils {
       bufferSource.getBuffer(fillLayer),
       box.minX, box.minY, box.minZ,
       box.maxX, box.maxY, box.maxZ,
-      r, g, b, 150 / 255F
+      r, g, b, BOX_FILL_ALPHA / 255F
     )
 
     ShapeRenderer.renderLineBox(

@@ -3,6 +3,7 @@ package org.cobalt.util
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URI
+import org.cobalt.Cobalt
 
 object WebUtils {
 
@@ -13,7 +14,7 @@ object WebUtils {
       useCaches = cache
       connectTimeout = timeout
       readTimeout = timeout
-      setRequestProperty("User-Agent", "Cobalt")
+      setRequestProperty("User-Agent", Cobalt.MOD_NAME)
     }
 
     return connection.inputStream

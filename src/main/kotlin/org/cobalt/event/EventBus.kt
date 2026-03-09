@@ -4,6 +4,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import java.lang.invoke.MethodHandles
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import org.slf4j.LoggerFactory
 
 object EventBus {
 
@@ -18,6 +19,7 @@ object EventBus {
 
   private val handlers = CopyOnWriteArrayList<Handler>()
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
   @JvmStatic
   fun register(listener: Any) {
@@ -36,7 +38,7 @@ object EventBus {
       }
 
       if (!method.trySetAccessible()) {
-        System.err.println(
+        logger.error(
           "EventBus: could not access method ${listener.javaClass.name}#${method.name}, skipping"
         )
         return@forEach
