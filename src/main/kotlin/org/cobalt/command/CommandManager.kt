@@ -6,15 +6,15 @@ object CommandManager {
 
   private val commandsList = mutableListOf<Command>()
 
-  @JvmStatic
-  fun register(command: Command) {
-    commandsList.add(command)
-  }
-
-  internal fun hookCommandRegistration() {
+  init {
     ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
       commandsList.forEach { it.dispatch(dispatcher) }
     }
+  }
+
+  @JvmStatic
+  fun register(command: Command) {
+    commandsList.add(command)
   }
 
 }

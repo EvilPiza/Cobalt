@@ -25,7 +25,6 @@ object Cobalt : ClientModInitializer {
 
   override fun onInitializeClient() {
     CommandManager.register(MainCommand)
-    CommandManager.hookCommandRegistration()
   }
 
 }
