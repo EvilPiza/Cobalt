@@ -5,6 +5,9 @@ import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
 import org.cobalt.command.CommandManager
 import org.cobalt.command.impl.MainCommand
+import org.cobalt.event.EventBus
+import org.cobalt.module.ModuleManager
+import org.cobalt.util.helper.TickScheduler
 import org.cobalt.util.ui.Renderer
 import org.cobalt.util.ui.nvg.NanoVGImpl
 
@@ -24,6 +27,7 @@ object Cobalt : ClientModInitializer {
     get() = NanoVGImpl
 
   override fun onInitializeClient() {
+    ModuleManager.registerModules()
     CommandManager.register(MainCommand)
   }
 
