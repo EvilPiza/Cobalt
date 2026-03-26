@@ -5,10 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "client.MinecraftMixin",
+    "gui.GuiRendererMixin",
     "gui.SplashRendererMixin",
-    "opengl.GlStateManagerMixin",
     "render.FrustumInvoker",
-    "render.GameRendererMixin",
     "render.LevelRendererMixin"
   ],
   "mixins": [
@@ -17,6 +16,9 @@
   ],
   "injectors": {
     "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   }
 }
 

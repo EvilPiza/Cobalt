@@ -1,21 +1,17 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  alias(libs.plugins.kotlin)
   alias(libs.plugins.loom)
+  alias(libs.plugins.kotlin)
   alias(libs.plugins.detekt)
   `maven-publish`
 }
 
-val baseGroup: String by project
-val modVersion: String by project
-val modName: String by project
-
-version = modVersion
-group = baseGroup
+version = providers.gradleProperty("modVersion").get()
+group = providers.gradleProperty("baseGroup").get()
 
 base {
-  archivesName.set(modName)
+  archivesName = providers.gradleProperty("modName").get()
 }
 
 repositories {
@@ -24,55 +20,45 @@ repositories {
 
 dependencies {
   minecraft(libs.minecraft)
-  mappings(loom.officialMojangMappings())
+  implementation(libs.bundles.fabric)
 
-  modImplementation(libs.bundles.fabric)
-
-  implementation(libs.nanovg) {
-    include(this)
-  }
-
-  listOf("windows", "linux", "macos", "macos-arm64").forEach {
-    implementation(variantOf(libs.nanovg) { classifier("natives-$it") }) {
-      include(this)
-    }
-  }
+  implementation(libs.skija.shared) { include(this) }
+  runtimeOnly(libs.bundles.skija.natives) { include(this) }
 }
 
 tasks {
   processResources {
-    val fabricKotlinVersion = libs.versions.fabric.kotlin.get()
     val fabricLoaderVersion = libs.versions.fabric.loader.get()
     val minecraftVersion = libs.versions.minecraft.version.get()
 
     inputs.property("version", project.version)
-    inputs.property("fabricKotlinVersion", fabricKotlinVersion)
     inputs.property("fabricLoaderVersion", fabricLoaderVersion)
     inputs.property("minecraftVersion", minecraftVersion)
 
     filesMatching("fabric.mod.json") {
       expand(
         "version" to project.version,
-        "fabricKotlinVersion" to fabricKotlinVersion,
         "fabricLoaderVersion" to fabricLoaderVersion,
         "minecraftVersion" to minecraftVersion,
       )
     }
   }
+}
 
-  compileKotlin {
-    compilerOptions {
-      jvmTarget = JvmTarget.JVM_21
-    }
+tasks.withType<JavaCompile>().configureEach {
+  options.release = 25
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget = JvmTarget.JVM_25
   }
 }
 
 java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(21))
-  }
+  sourceCompatibility = JavaVersion.VERSION_25
+  targetCompatibility = JavaVersion.VERSION_25
 }
-
 
 detekt {
   buildUponDefaultConfig = true

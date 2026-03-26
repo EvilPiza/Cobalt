@@ -8,13 +8,12 @@ object ModuleManager {
   private val modules = ObjectRBTreeSet<Module>()
 
   fun registerModules() {
-    val builtIn = arrayOf(
-      object : Module("Test", "/assets/cobalt/icon.png", Category.MISC) {}
-    )
-
-    builtIn.forEach { module ->
-      addModule(module)
-    }
+//    val builtIn = arrayOf(
+//    )
+//
+//    builtIn.forEach { module ->
+//      addModule(module)
+//    }
   }
 
   fun addModule(module: Module) {

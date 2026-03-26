@@ -36,36 +36,57 @@
  * Licensed under GPL-3.0
  */
 
-package org.cobalt.util.ui.style
+package org.cobalt.util.render.resource
 
+import java.io.File
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.nio.file.Files
+import org.cobalt.util.WebUtils
+import org.lwjgl.system.MemoryUtil
 
-class Font(val name: String, private val resourcePath: String) {
+class Image(
+  val identifier: String,
+  var isSVG: Boolean = false,
+  var stream: InputStream = getStream(identifier),
+  private var buffer: ByteBuffer? = null,
+) {
 
-  private var cachedBytes: ByteArray? = null
-
-  fun buffer(): ByteBuffer {
-    val bytes = cachedBytes ?: run {
-      val stream = this::class.java.getResourceAsStream(resourcePath)
-        ?: throw FileNotFoundException(resourcePath)
-
-      stream.use { it.readBytes() }.also { cachedBytes = it }
-    }
-
-    return ByteBuffer.allocateDirect(bytes.size)
-      .order(ByteOrder.nativeOrder())
-      .put(bytes)
-      .flip() as ByteBuffer
+  init {
+    isSVG = identifier.endsWith(".svg", true)
   }
 
-  override fun hashCode(): Int {
-    return name.hashCode()
+  fun buffer(): ByteBuffer {
+    if (buffer == null) {
+      val bytes = stream.readBytes()
+      buffer = MemoryUtil.memAlloc(bytes.size).put(bytes).flip() as ByteBuffer
+      stream.close()
+    }
+
+    return buffer ?: throw IllegalStateException("Image has no data")
   }
 
   override fun equals(other: Any?): Boolean {
-    return other is Font && name == other.name
+    if (this === other) return true
+    if (other !is Image) return false
+    return identifier == other.identifier
+  }
+
+  override fun hashCode(): Int {
+    return identifier.hashCode()
+  }
+
+  companion object {
+    private fun getStream(path: String): InputStream {
+      val trimmedPath = path.trim()
+      return if (trimmedPath.startsWith("http")) WebUtils.setupConnection(trimmedPath)
+      else {
+        val file = File(trimmedPath)
+        if (file.exists() && file.isFile) Files.newInputStream(file.toPath())
+        else this::class.java.getResourceAsStream(trimmedPath) ?: throw FileNotFoundException(trimmedPath)
+      }
+    }
   }
 
 }

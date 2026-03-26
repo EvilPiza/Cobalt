@@ -36,9 +36,36 @@
  * Licensed under GPL-3.0
  */
 
-package org.cobalt.util.ui.style
+package org.cobalt.util.render.resource
 
-enum class Gradient {
-  TOP_TO_BOTTOM,
-  LEFT_TO_RIGHT,
+import java.io.FileNotFoundException
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
+class Font(val name: String, private val resourcePath: String) {
+
+  private var cachedBytes: ByteArray? = null
+
+  fun buffer(): ByteBuffer {
+    val bytes = cachedBytes ?: run {
+      val stream = this::class.java.getResourceAsStream(resourcePath)
+        ?: throw FileNotFoundException(resourcePath)
+
+      stream.use { it.readBytes() }.also { cachedBytes = it }
+    }
+
+    return ByteBuffer.allocateDirect(bytes.size)
+      .order(ByteOrder.nativeOrder())
+      .put(bytes)
+      .flip() as ByteBuffer
+  }
+
+  override fun hashCode(): Int {
+    return name.hashCode()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    return other is Font && name == other.name
+  }
+
 }

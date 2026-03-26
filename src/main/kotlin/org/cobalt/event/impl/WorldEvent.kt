@@ -2,8 +2,10 @@ package org.cobalt.event.impl
 
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Camera
+import net.minecraft.client.DeltaTracker
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.culling.Frustum
+import net.minecraft.client.renderer.state.level.CameraRenderState
 import org.cobalt.event.Event
 
 abstract class WorldEvent : Event() {
@@ -12,8 +14,8 @@ abstract class WorldEvent : Event() {
 }
 
 class RenderContext {
-  var matrixStack: PoseStack? = null
-  lateinit var consumers: MultiBufferSource
-  lateinit var camera: Camera
+  var poseStack: PoseStack? = null
+  lateinit var deltaTracker: DeltaTracker
+  lateinit var bufferSource: MultiBufferSource
   lateinit var frustum: Frustum
 }

@@ -15,7 +15,7 @@ public class MinecraftMixin {
 
   @Inject(method = "<init>", at = @At("RETURN"))
   private static void onInit(CallbackInfo ci) {
-    Cobalt.getRenderer().init();
+    Cobalt.getRender2D().init();
   }
 
   @Inject(at = @At("HEAD"), method = "tick")

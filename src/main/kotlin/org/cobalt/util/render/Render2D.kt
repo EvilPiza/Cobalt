@@ -1,10 +1,10 @@
-package org.cobalt.util.ui
+package org.cobalt.util.render
 
-import org.cobalt.util.ui.style.Font
-import org.cobalt.util.ui.style.Gradient
-import org.cobalt.util.ui.style.Image
+import org.cobalt.util.render.resource.Font
+import org.cobalt.util.render.resource.Gradient
+import org.cobalt.util.render.resource.Image
 
-interface Renderer {
+interface Render2D {
 
   fun init()
   fun render(screenWidth: Float, screenHeight: Float, block: () -> Unit)

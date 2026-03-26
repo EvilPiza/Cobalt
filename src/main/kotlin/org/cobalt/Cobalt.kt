@@ -7,9 +7,10 @@ import org.cobalt.command.CommandManager
 import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
 import org.cobalt.module.ModuleManager
-import org.cobalt.util.helper.TickScheduler
-import org.cobalt.util.ui.Renderer
-import org.cobalt.util.ui.nvg.NanoVGImpl
+import org.cobalt.util.render.Render2D
+import org.cobalt.util.render.Render3D
+import org.cobalt.util.render.impl.GizmoRenderer3D
+import org.cobalt.util.render.impl.SkijaRenderer2D
 
 object Cobalt : ClientModInitializer {
 
@@ -23,8 +24,12 @@ object Cobalt : ClientModInitializer {
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
 
   @JvmStatic
-  val renderer: Renderer
-    get() = NanoVGImpl
+  val render2D: Render2D
+    get() = SkijaRenderer2D
+
+  @JvmStatic
+  val render3D: Render3D
+    get() = GizmoRenderer3D
 
   override fun onInitializeClient() {
     ModuleManager.registerModules()

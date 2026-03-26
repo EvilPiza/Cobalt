@@ -24,9 +24,10 @@
     "cobalt.mixins.json"
   ],
   "depends": {
-    "java": ">=21",
+    "java": ">=25",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*",
     "fabricloader": ">=${fabricLoaderVersion}",
-    "minecraft": "~${minecraftVersion}",
-    "fabric-language-kotlin": ">=${fabricKotlinVersion}"
+    "minecraft": "~${minecraftVersion}"
   }
 }
