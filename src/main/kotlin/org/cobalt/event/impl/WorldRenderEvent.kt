@@ -8,5 +8,5 @@ import net.minecraft.client.renderer.culling.Frustum
 import org.cobalt.event.Event
 
 class WorldRenderEvent(
-  val poseStack: LevelRenderContext
+  val context: LevelRenderContext
 ) : Event()
