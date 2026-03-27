@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import org.cobalt.Cobalt;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.TickEvent;
+import org.cobalt.util.render.Render2D;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +16,7 @@ public class MinecraftMixin {
 
   @Inject(method = "<init>", at = @At("RETURN"))
   private static void onInit(CallbackInfo ci) {
-    Cobalt.getRender2D().init();
+    Render2D.INSTANCE.init();
   }
 
   @Inject(at = @At("HEAD"), method = "tick")

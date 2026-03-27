@@ -7,8 +7,7 @@
     "client.MinecraftMixin",
     "gui.GuiRendererMixin",
     "gui.SplashRendererMixin",
-    "render.FrustumInvoker",
-    "render.LevelRendererMixin"
+    "render.FrustumInvoker"
   ],
   "mixins": [
     "mojang.YggdrasilServicesKeyInfoMixin",

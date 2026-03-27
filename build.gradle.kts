@@ -16,6 +16,7 @@ base {
 
 repositories {
   mavenCentral()
+  maven("https://api.modrinth.com/maven")
 }
 
 dependencies {
@@ -24,6 +25,9 @@ dependencies {
 
   implementation(libs.skija.shared) { include(this) }
   runtimeOnly(libs.bundles.skija.natives) { include(this) }
+
+  // Additional Mods
+  runtimeOnly("maven.modrinth:sodium:mc26.1-0.8.7-fabric")
 }
 
 tasks {

@@ -17,10 +17,9 @@ abstract class UIScreen : Screen(Component.empty()) {
     val window = mc.window
     val screenWidth = window.width.toFloat()
     val screenHeight = window.height.toFloat()
-    val renderer = Cobalt.render2D
 
-    renderer.render(screenWidth, screenHeight) {
-      renderScreen(screenWidth, screenHeight, renderer)
+    Render2D.render(screenWidth, screenHeight) {
+      renderScreen(screenWidth, screenHeight, Render2D)
     }
   }
 

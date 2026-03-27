@@ -1,16 +1,14 @@
 package org.cobalt
 
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
 import org.cobalt.command.CommandManager
 import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
+import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
-import org.cobalt.util.render.Render2D
-import org.cobalt.util.render.Render3D
-import org.cobalt.util.render.impl.GizmoRenderer3D
-import org.cobalt.util.render.impl.SkijaRenderer2D
 
 object Cobalt : ClientModInitializer {
 
@@ -23,17 +21,14 @@ object Cobalt : ClientModInitializer {
   @JvmField
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
 
-  @JvmStatic
-  val render2D: Render2D
-    get() = SkijaRenderer2D
-
-  @JvmStatic
-  val render3D: Render3D
-    get() = GizmoRenderer3D
-
   override fun onInitializeClient() {
     ModuleManager.registerModules()
     CommandManager.register(MainCommand)
+
+    // Dispatch Events
+    LevelRenderEvents.END_MAIN.register { context ->
+      EventBus.post(WorldRenderEvent(context))
+    }
   }
 
 }
