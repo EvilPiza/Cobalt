@@ -7,6 +7,7 @@
     "client.MinecraftMixin",
     "gui.GuiRendererMixin",
     "gui.SplashRendererMixin",
+    "platform.WindowMixin",
     "render.FrustumInvoker"
   ],
   "mixins": [

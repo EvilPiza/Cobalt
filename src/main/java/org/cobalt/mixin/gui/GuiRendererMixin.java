@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GuiRendererMixin {
 
   @Unique
-  private static final CubeMap cobalt$cubeMap = new CubeMap(Identifier.fromNamespaceAndPath(Cobalt.MOD_NAME.toLowerCase(), "gui/panorama/panorama"));
+  private static final CubeMap cobalt$cubeMap = new CubeMap(Identifier.fromNamespaceAndPath(Cobalt.MOD_NAME.toLowerCase(), "panorama/panorama"));
 
   @Redirect(
     method = "render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",

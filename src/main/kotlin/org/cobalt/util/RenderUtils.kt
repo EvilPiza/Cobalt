@@ -1,4 +1,4 @@
-package org.cobalt.util.render
+package org.cobalt.util
 
 import java.awt.Color
 import kotlin.math.max
@@ -9,38 +9,38 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import org.cobalt.util.FrustumUtils
 import org.cobalt.util.helper.Layers
 
-object Render3D {
+object RenderUtils {
 
-  private val minecraft: Minecraft = Minecraft.getInstance()
+  private val minecraft: Minecraft =
+    Minecraft.getInstance()
 
   fun drawBlockPos(
-    context: LevelRenderContext,
-    pos: BlockPos,
-    color: Color,
-    esp: Boolean = false,
-    lineWidth: Float = 1f,
+      context: LevelRenderContext,
+      pos: BlockPos,
+      color: Color,
+      esp: Boolean = false,
+      lineWidth: Float = 1f,
   ) {
     val box = AABB(
-      pos.x.toDouble(),
-      pos.y.toDouble(),
-      pos.z.toDouble(),
-      pos.x + 1.0,
-      pos.y + 1.0,
-      pos.z + 1.0
+        pos.x.toDouble(),
+        pos.y.toDouble(),
+        pos.z.toDouble(),
+        pos.x + 1.0,
+        pos.y + 1.0,
+        pos.z + 1.0
     )
 
     drawBox(context, box, color, esp, lineWidth)
   }
 
   fun drawEntityOutline(
-    context: LevelRenderContext,
-    entity: Entity,
-    color: Color,
-    esp: Boolean = false,
-    lineWidth: Float = 1f,
+      context: LevelRenderContext,
+      entity: Entity,
+      color: Color,
+      esp: Boolean = false,
+      lineWidth: Float = 1f,
   ) {
     val partialTicks = minecraft.deltaTracker.getGameTimeDeltaPartialTick(true)
 
@@ -56,11 +56,11 @@ object Render3D {
   }
 
   fun drawTracer(
-    context: LevelRenderContext,
-    to: Vec3,
-    color: Color,
-    esp: Boolean = true,
-    lineWidth: Float = 1f,
+      context: LevelRenderContext,
+      to: Vec3,
+      color: Color,
+      esp: Boolean = true,
+      lineWidth: Float = 1f,
   ) {
     val camera = minecraft.gameRenderer.mainCamera
     val cameraPos = camera.position()
@@ -70,11 +70,11 @@ object Render3D {
   }
 
   fun drawBox(
-    context: LevelRenderContext,
-    box: AABB,
-    color: Color,
-    esp: Boolean = false,
-    lineWidth: Float = 1f,
+      context: LevelRenderContext,
+      box: AABB,
+      color: Color,
+      esp: Boolean = false,
+      lineWidth: Float = 1f,
   ) {
     if (color.alpha == 0) {
       return
@@ -94,10 +94,10 @@ object Render3D {
 
     val fillColor = Color(color.red, color.green, color.blue, 100)
     val corners = arrayOf(
-      Vec3(box.minX, box.minY, box.minZ), Vec3(box.maxX, box.minY, box.minZ),
-      Vec3(box.maxX, box.minY, box.maxZ), Vec3(box.minX, box.minY, box.maxZ),
-      Vec3(box.minX, box.maxY, box.minZ), Vec3(box.maxX, box.maxY, box.minZ),
-      Vec3(box.maxX, box.maxY, box.maxZ), Vec3(box.minX, box.maxY, box.maxZ),
+        Vec3(box.minX, box.minY, box.minZ), Vec3(box.maxX, box.minY, box.minZ),
+        Vec3(box.maxX, box.minY, box.maxZ), Vec3(box.minX, box.minY, box.maxZ),
+        Vec3(box.minX, box.maxY, box.minZ), Vec3(box.maxX, box.maxY, box.minZ),
+        Vec3(box.maxX, box.maxY, box.maxZ), Vec3(box.minX, box.maxY, box.maxZ),
     )
 
     val quadBuffer = bufferSource.getBuffer(Layers.getQuads(esp))
@@ -138,12 +138,12 @@ object Render3D {
   }
 
   fun drawLine(
-    context: LevelRenderContext,
-    from: Vec3,
-    to: Vec3,
-    color: Color,
-    esp: Boolean = false,
-    lineWidth: Float = 1f,
+      context: LevelRenderContext,
+      from: Vec3,
+      to: Vec3,
+      color: Color,
+      esp: Boolean = false,
+      lineWidth: Float = 1f,
   ) {
     if (color.alpha == 0) {
       return
@@ -154,8 +154,8 @@ object Render3D {
     if (
       !FrustumUtils.isVisible(
         frustum,
-        min(from.x, to.x), min(from.y, to.y), min(from.z, to.z),
-        max(from.x, to.x), max(from.y, to.y), max(from.z, to.z),
+          min(from.x, to.x), min(from.y, to.y), min(from.z, to.z),
+          max(from.x, to.x), max(from.y, to.y), max(from.z, to.z),
       )
     ) {
       return

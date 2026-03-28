@@ -1,12 +1,24 @@
 package org.cobalt.ui.screen
 
-import org.cobalt.ui.UIScreen
-import org.cobalt.util.render.Render2D
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
+import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.SkiaDrawEvent
 
-internal object ConfigScreen : UIScreen() {
+internal object ConfigScreen : Screen(Component.empty()) {
 
-  override fun renderScreen(screenWidth: Float, screenHeight: Float, renderer: Render2D) {
+  init {
+    EventBus.register(this)
+  }
 
+  @SubscribeEvent
+  fun onSkiaDraw(event: SkiaDrawEvent) {
+    if (minecraft.screen != this) {
+      return
+    }
+
+    // TODO: draw the UI
   }
 
 }
