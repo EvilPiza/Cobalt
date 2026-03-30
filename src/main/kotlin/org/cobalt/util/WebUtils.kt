@@ -8,7 +8,7 @@ import org.cobalt.Cobalt
 object WebUtils {
 
   @JvmStatic
-  fun setupConnection(url: String, timeout: Int = 5000, cache: Boolean = true): InputStream {
+  fun getInputStream(url: String, timeout: Int = 5000, cache: Boolean = true): InputStream {
     val connection = (URI(url).toURL().openConnection() as HttpURLConnection).apply {
       requestMethod = "GET"
       useCaches = cache
