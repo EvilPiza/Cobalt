@@ -10,7 +10,7 @@ object SkiaRenderer {
   private data class ImageCacheKey(
     val identifier: String,
     val radius: Float?,
-    val colorMask: Int?
+    val colorMask: Int?,
   )
 
   private val fonts = mutableMapOf<String, Font>()
@@ -197,7 +197,7 @@ object SkiaRenderer {
   }
 
   @JvmStatic
-  fun roundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int, thickness: Float = 1f) {
+  fun roundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int) {
     val canvas = this.canvas ?: return
 
     if (width <= 0f || height <= 0f) {
@@ -241,10 +241,11 @@ object SkiaRenderer {
       )
     }
   }
+
   @JvmStatic
   fun gradientRect(
     x: Float, y: Float, width: Float, height: Float,
-    colorStart: Int, colorEnd: Int, direction: SkiaGradient
+    colorStart: Int, colorEnd: Int, direction: SkiaGradient,
   ) {
     val canvas = this.canvas ?: return
 
@@ -276,7 +277,16 @@ object SkiaRenderer {
   }
 
   @JvmStatic
-  fun gradientRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, colorStart: Int, colorEnd: Int, direction: SkiaGradient) {
+  fun gradientRoundedRect(
+    x: Float,
+    y: Float,
+    width: Float,
+    height: Float,
+    radius: Float,
+    colorStart: Int,
+    colorEnd: Int,
+    direction: SkiaGradient,
+  ) {
     val canvas = this.canvas ?: return
 
     if (width <= 0f || height <= 0f) {
@@ -309,7 +319,7 @@ object SkiaRenderer {
   @JvmStatic
   fun halfRoundedRect(
     x: Float, y: Float, width: Float, height: Float,
-    radius: Float, color: Int, side: SkiaSide = SkiaSide.TOP
+    radius: Float, color: Int, side: SkiaSide = SkiaSide.TOP,
   ) {
     val canvas = this.canvas ?: return
     if (width <= 0f || height <= 0f) return

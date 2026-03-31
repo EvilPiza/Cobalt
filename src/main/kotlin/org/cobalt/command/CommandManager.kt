@@ -17,4 +17,9 @@ object CommandManager {
     commandsList.add(command)
   }
 
+  @JvmStatic
+  fun unregister(command: Command) {
+    commandsList.remove(command)
+  }
+
 }

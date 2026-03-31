@@ -8,14 +8,6 @@ import org.lwjgl.opengl.GL11
 
 internal object SkiaContext {
 
-  private val states = arrayOf(
-    BackendState.GL_BLEND,
-    BackendState.GL_VERTEX,
-    BackendState.GL_PIXEL_STORE,
-    BackendState.GL_TEXTURE_BINDING,
-    BackendState.GL_MISC
-  )
-
   private var context: DirectContext? = null
   private var renderTarget: WrappedBackendRenderTarget? = null
   private var surface: Surface? = null
@@ -54,7 +46,7 @@ internal object SkiaContext {
     GL11.glDisable(GL11.GL_CULL_FACE)
     GL11.glClearColor(0f, 0f, 0f, 0f)
 
-    context?.reset(*states)
+    context?.resetGLAll()
 
     canvas?.let { canvas ->
       context?.let { context ->
