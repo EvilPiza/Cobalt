@@ -1,8 +1,10 @@
+import net.fabricmc.loom.task.RemapJarTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.loom)
   alias(libs.plugins.kotlin)
+  alias(libs.plugins.shadow)
   `maven-publish`
 }
 
@@ -18,12 +20,16 @@ repositories {
   maven("https://api.modrinth.com/maven")
 }
 
+val shadowImpl: Configuration by configurations.creating {
+  configurations.implementation.get().extendsFrom(this)
+}
+
 dependencies {
   minecraft(libs.minecraft)
   implementation(libs.bundles.fabric)
 
-  implementation(libs.skija.shared) { include(this) }
-  runtimeOnly(libs.bundles.skija.natives) { include(this) }
+  shadowImpl(libs.skija.shared)
+  shadowImpl(libs.bundles.skija.natives)
 
   // Additional Mods
   runtimeOnly("maven.modrinth:sodium:mc26.1-0.8.7-fabric")
@@ -45,6 +51,16 @@ tasks {
         "minecraftVersion" to minecraftVersion,
       )
     }
+  }
+
+  shadowJar {
+    archiveClassifier.set("")
+    configurations = listOf(shadowImpl)
+  }
+
+  withType(RemapJarTask::class) {
+    dependsOn(shadowJar)
+    inputFile = shadowJar.get().archiveFile
   }
 }
 
