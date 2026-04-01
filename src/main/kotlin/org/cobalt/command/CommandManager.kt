@@ -1,25 +1,50 @@
 package org.cobalt.command
 
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import com.mojang.brigadier.suggestion.Suggestions
+import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet
+import java.util.concurrent.CompletableFuture
+import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.ChatSendEvent
 
 object CommandManager {
 
-  private val commandsList = mutableListOf<Command>()
+  private data class ParsedInput(
+    val tokens: List<String>,
+    val partial: String,
+    val replacementStart: Int,
+  )
+
+  private val commands = ObjectRBTreeSet<Command>()
 
   init {
-    ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-      commandsList.forEach { it.dispatch(dispatcher) }
-    }
+    EventBus.register(this)
   }
 
   @JvmStatic
   fun register(command: Command) {
-    commandsList.add(command)
+    if (!commands.add(command)) {
+      error("'${command.name}' is already registered")
+    }
   }
 
   @JvmStatic
   fun unregister(command: Command) {
-    commandsList.remove(command)
+    commands.remove(command)
   }
+
+  @SubscribeEvent
+  fun handleCommandExecution(event: ChatSendEvent) {
+    // TODO: handle command execution
+  }
+
+  @JvmStatic
+  fun getPendingSuggestions(value: String, cursorPosition: Int): CompletableFuture<Suggestions> {
+    // TODO: handle suggestions
+    return Suggestions.empty()
+  }
+
+  @JvmStatic
+  fun getPrefix(): String = "."
 
 }

@@ -1,3 +1,5 @@
 package org.cobalt.command.annotation
 
-annotation class SubCommand
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
+annotation class SubCommand(val name: String = "")
