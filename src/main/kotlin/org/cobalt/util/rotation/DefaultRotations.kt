@@ -6,6 +6,7 @@ import kotlin.math.abs
 import org.cobalt.Cobalt.mc
 
 object DefaultRotations : IRotation {
+
   private var rotating = false
   private var targetYaw = 0.0
   private var targetPitch = 0.0
@@ -42,24 +43,26 @@ object DefaultRotations : IRotation {
 
     applyRotation(newYaw, newPitch)
 
-    if (distance(newYaw, targetYaw) < 0.05 &&
-      kotlin.math.abs(newPitch - targetPitch) < 0.05
+    if (
+      distance(newYaw, targetYaw) < 0.05 &&
+      abs(newPitch - targetPitch) < 0.05
     ) {
       stopRotation()
     }
   }
 
   private fun lerpAngle(current: Double, target: Double, alpha: Double): Double {
-    var delta = ((target - current + 540) % 360) - 180
+    val delta = ((target - current + 540) % 360) - 180
     return current + delta * alpha
   }
+
   // YES its lerp, do I care? no! ill change in my next commit.
   private fun lerp(a: Double, b: Double, t: Double): Double {
     return a + (b - a) * t
   }
 
   private fun distance(a: Double, b: Double): Double {
-    return kotlin.math.abs(a - b)
+    return abs(a - b)
   }
 
   override fun isRotating(): Boolean = rotating
@@ -80,13 +83,6 @@ object DefaultRotations : IRotation {
     player.yBodyRot = y
   }
 
-  private fun wrapAngle(angle: Double): Double {
-    var a = angle % 360.0
-    if (a >= 180) a -= 360.0
-    if (a < -180) a += 360.0
-    return a
-  }
-
   private fun getPlayerYaw(): Double {
     return getPlayer()?.yRot?.toDouble() ?: 0.0
   }
@@ -96,4 +92,5 @@ object DefaultRotations : IRotation {
   }
 
   private fun getPlayer() = mc.player
+
 }

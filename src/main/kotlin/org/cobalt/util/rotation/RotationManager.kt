@@ -1,7 +1,16 @@
 package org.cobalt.util.rotation
 
+import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.WorldRenderEvent
+
 object RotationManager {
+
   private var rotation: IRotation = DefaultRotations
+
+  init {
+    EventBus.register(this)
+  }
 
   fun setActiveRotation(newRotation: IRotation, yaw: Double, pitch: Double) {
     if (rotation.isRotating()) {
@@ -18,12 +27,14 @@ object RotationManager {
     if (rotation.isRotating()) {
       rotation.stopRotation()
     }
+
     rotation = DefaultRotations
   }
 
-  fun onWorldRender() {
-    if (rotation.isRotating()) {
-      rotation.onRotationWorldRender()
-    }
+  @SubscribeEvent
+  fun onWorldRender(event: WorldRenderEvent) {
+    if (!rotation.isRotating()) return
+    rotation.onRotationWorldRender()
   }
+
 }
