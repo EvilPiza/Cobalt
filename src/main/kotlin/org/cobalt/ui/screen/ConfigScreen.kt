@@ -1,6 +1,5 @@
 package org.cobalt.ui.screen
 
-import java.awt.Color
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -34,15 +33,15 @@ internal object ConfigScreen : Screen(Component.empty()) {
       val cy = height / 2f
 
       SkiaRenderer.save()
-      event.canvas.translate(cx, cy)
-      event.canvas.scale(scale, scale)
-      event.canvas.translate(-cx, -cy)
+      SkiaRenderer.translate(cx, cy)
+      SkiaRenderer.scale(scale, scale)
+      SkiaRenderer.translate(-cx, -cy)
     }
 
     // TODO: draw the actual UI here..
 
     if (openAnim.isAnimating()) {
-      event.canvas.restore()
+      SkiaRenderer.restore()
     }
   }
 

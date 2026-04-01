@@ -9,13 +9,12 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.helper.Layers
 
 object RenderUtils {
 
-  private val minecraft: Minecraft =
-    Minecraft.getInstance()
-
+  @JvmStatic
   fun drawBlockPos(
       context: LevelRenderContext,
       pos: BlockPos,
@@ -55,6 +54,7 @@ object RenderUtils {
     drawBox(context, entity.boundingBox.move(dx, dy, dz), color, esp, lineWidth)
   }
 
+  @JvmStatic
   fun drawTracer(
       context: LevelRenderContext,
       to: Vec3,
@@ -69,6 +69,7 @@ object RenderUtils {
     drawLine(context, from, to, color, esp, lineWidth)
   }
 
+  @JvmStatic
   fun drawBox(
       context: LevelRenderContext,
       box: AABB,
@@ -137,6 +138,7 @@ object RenderUtils {
     bufferSource.endBatch(Layers.getLines(esp))
   }
 
+  @JvmStatic
   fun drawLine(
       context: LevelRenderContext,
       from: Vec3,

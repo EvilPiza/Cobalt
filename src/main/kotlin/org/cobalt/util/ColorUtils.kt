@@ -5,6 +5,10 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
+import org.cobalt.dsl.alpha
+import org.cobalt.dsl.blue
+import org.cobalt.dsl.green
+import org.cobalt.dsl.red
 
 object ColorUtils {
 
@@ -34,9 +38,16 @@ object ColorUtils {
     return result
   }
 
-  inline val Int.red get() = this shr 16 and 0xFF
-  inline val Int.green get() = this shr 8 and 0xFF
-  inline val Int.blue get() = this and 0xFF
-  inline val Int.alpha get() = this shr 24 and 0xFF
+  @JvmStatic
+  fun getRed(color: Int) = color.red
+
+  @JvmStatic
+  fun getGreen(color: Int) = color.green
+
+  @JvmStatic
+  fun getBlue(color: Int) = color.blue
+
+  @JvmStatic
+  fun getAlpha(color: Int) = color.alpha
 
 }

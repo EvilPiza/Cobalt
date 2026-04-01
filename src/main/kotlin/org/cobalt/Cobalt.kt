@@ -14,6 +14,9 @@ import org.cobalt.module.ModuleManager
 object Cobalt : ClientModInitializer {
 
   @JvmField
+  val minecraft: Minecraft = Minecraft.getInstance()
+
+  @JvmField
   val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer("cobalt").orElseThrow()
 
   @JvmField
@@ -21,9 +24,6 @@ object Cobalt : ClientModInitializer {
 
   @JvmField
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
-
-  @JvmField
-  val mc: Minecraft = Minecraft.getInstance()
 
   override fun onInitializeClient() {
     ModuleManager.registerModules()
