@@ -1,8 +1,6 @@
 package org.cobalt.command
 
-import com.mojang.brigadier.suggestion.Suggestions
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet
-import java.util.concurrent.CompletableFuture
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.ChatSendEvent
@@ -30,12 +28,6 @@ object CommandManager {
   @SubscribeEvent
   fun handleCommandExecution(event: ChatSendEvent) {
     // TODO: handle command execution
-  }
-
-  @JvmStatic
-  fun getPendingSuggestions(value: String, cursorPosition: Int): CompletableFuture<Suggestions> {
-    // TODO: handle suggestions
-    return Suggestions.empty()
   }
 
   @JvmStatic

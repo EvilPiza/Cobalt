@@ -33,16 +33,7 @@ public abstract class CommandSuggestionsMixin {
   @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z", remap = false), cancellable = true)
   private void updateCommandInfo(CallbackInfo ci) {
     if (this.input.getValue().startsWith(CommandManager.getPrefix())) {
-      this.pendingSuggestions = CommandManager.getPendingSuggestions(this.input.getValue(), this.input.getCursorPosition());
-
-      this.pendingSuggestions.thenRun(() -> {
-        if (suggestions == null) {
-          this.showSuggestions(false);
-        }
-      });
-
-      this.currentParse = null;
-      ci.cancel();
+      // TODO: do something here?
     }
   }
 
