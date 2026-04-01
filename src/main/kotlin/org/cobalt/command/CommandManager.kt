@@ -9,12 +9,6 @@ import org.cobalt.event.impl.ChatSendEvent
 
 object CommandManager {
 
-  private data class ParsedInput(
-    val tokens: List<String>,
-    val partial: String,
-    val replacementStart: Int,
-  )
-
   private val commands = ObjectRBTreeSet<Command>()
 
   init {
