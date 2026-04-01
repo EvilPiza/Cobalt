@@ -3,7 +3,7 @@ package org.cobalt.util.rotation
 import org.cobalt.util.ChatUtils
 import org.cobalt.util.MessageType
 import kotlin.math.abs
-import org.cobalt.Cobalt.mc
+import org.cobalt.Cobalt.minecraft
 
 object DefaultRotations : IRotation {
 
@@ -20,12 +20,12 @@ object DefaultRotations : IRotation {
     currentYaw = getPlayerYaw()
     currentPitch = getPlayerPitch()
 
-    ChatUtils.message("Rotation started to $yaw, $pitch", MessageType.DEBUG)
+    ChatUtils.sendMessage("Rotation started to $yaw, $pitch", MessageType.DEBUG)
   }
 
   override fun onRotationEnd() {
     rotating = false
-    ChatUtils.message("Ended rotation.", MessageType.DEBUG)
+    ChatUtils.sendMessage("Ended rotation.", MessageType.DEBUG)
   }
 
   override fun onRotationWorldRender() {
@@ -91,6 +91,6 @@ object DefaultRotations : IRotation {
     return getPlayer()?.xRot?.toDouble() ?: 0.0
   }
 
-  private fun getPlayer() = mc.player
+  private fun getPlayer() = minecraft.player
 
 }
