@@ -1,0 +1,99 @@
+package org.cobalt.util.rotation
+
+import org.cobalt.util.ChatUtils
+import org.cobalt.util.MessageType
+import kotlin.math.abs
+import org.cobalt.Cobalt.mc
+
+object DefaultRotations : IRotation {
+  private var rotating = false
+  private var targetYaw = 0.0
+  private var targetPitch = 0.0
+  private var currentYaw = 0.0
+  private var currentPitch = 0.0
+
+  override fun onRotationStart(yaw: Double, pitch: Double) {
+    rotating = true
+    targetYaw = yaw
+    targetPitch = pitch
+    currentYaw = getPlayerYaw()
+    currentPitch = getPlayerPitch()
+
+    ChatUtils.message("Rotation started to $yaw, $pitch", MessageType.DEBUG)
+  }
+
+  override fun onRotationEnd() {
+    rotating = false
+    ChatUtils.message("Ended rotation.", MessageType.DEBUG)
+  }
+
+  override fun onRotationWorldRender() {
+    if (!rotating) return
+
+    val player = getPlayer() ?: return
+
+    val currentYaw = player.yRot.toDouble()
+    val currentPitch = player.xRot.toDouble()
+
+    val speed = 0.15 // TODO: add this as param in function
+
+    val newYaw = lerpAngle(currentYaw, targetYaw, speed)
+    val newPitch = lerp(currentPitch, targetPitch, speed)
+
+    applyRotation(newYaw, newPitch)
+
+    if (distance(newYaw, targetYaw) < 0.05 &&
+      kotlin.math.abs(newPitch - targetPitch) < 0.05
+    ) {
+      stopRotation()
+    }
+  }
+
+  private fun lerpAngle(current: Double, target: Double, alpha: Double): Double {
+    var delta = ((target - current + 540) % 360) - 180
+    return current + delta * alpha
+  }
+  // YES its lerp, do I care? no! ill change in my next commit.
+  private fun lerp(a: Double, b: Double, t: Double): Double {
+    return a + (b - a) * t
+  }
+
+  private fun distance(a: Double, b: Double): Double {
+    return kotlin.math.abs(a - b)
+  }
+
+  override fun isRotating(): Boolean = rotating
+
+  private fun applyRotation(yaw: Double, pitch: Double) {
+    val player = getPlayer() ?: return
+
+    val y = yaw.toFloat()
+    val p = pitch.toFloat()
+
+    player.yRot = y
+    player.xRot = p
+
+    player.yRotO = y
+    player.xRotO = p
+
+    player.yHeadRot = y
+    player.yBodyRot = y
+  }
+
+  private fun wrapAngle(angle: Double): Double {
+    var a = angle % 360.0
+    if (a >= 180) a -= 360.0
+    if (a < -180) a += 360.0
+    return a
+  }
+
+  private fun getPlayerYaw(): Double {
+    return getPlayer()?.yRot?.toDouble() ?: 0.0
+  }
+
+  private fun getPlayerPitch(): Double {
+    return getPlayer()?.xRot?.toDouble() ?: 0.0
+  }
+
+  private fun getPlayer() = mc.player
+}

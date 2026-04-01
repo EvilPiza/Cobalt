@@ -10,6 +10,7 @@ import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
+import org.cobalt.util.rotation.RotationHandler
 
 object Cobalt : ClientModInitializer {
 
@@ -28,7 +29,7 @@ object Cobalt : ClientModInitializer {
   override fun onInitializeClient() {
     ModuleManager.registerModules()
     CommandManager.register(MainCommand)
-
+    EventBus.register(RotationHandler)
     // Dispatch Events
     LevelRenderEvents.END_MAIN.register { context ->
       EventBus.post(WorldRenderEvent(context))

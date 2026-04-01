@@ -3,9 +3,12 @@ package org.cobalt.command.impl
 import net.minecraft.client.Minecraft
 import org.cobalt.command.Command
 import org.cobalt.command.annotation.DefaultHandler
+import org.cobalt.command.annotation.SubCommand
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.ChatUtils
 import org.cobalt.util.helper.TickScheduler
+import org.cobalt.util.rotation.DefaultRotations
+import org.cobalt.util.rotation.RotationManager
 
 internal object MainCommand : Command(
   name = "cobalt",
@@ -22,4 +25,12 @@ internal object MainCommand : Command(
     }
   }
 
+  @SubCommand
+  fun rotate(yaw: Double, pitch: Double) {
+    RotationManager.setActiveRotation(
+      DefaultRotations,
+      yaw = yaw,
+      pitch = pitch
+    )
+  }
 }
