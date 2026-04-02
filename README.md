@@ -15,6 +15,11 @@
 
 </div>
 
+> [!NOTE]
+> This project was made possible thanks to:
+> - Lyzev Skia Impl | [Github](https://github.com/Lyzev/Skija)
+> - Odin | [Github](https://github.com/odtheking/Odin)
+
 ## About The Project
 
 Cobalt is an open-source Hypixel Skyblock mod built for the Fabric mod loader. It provides a variety of features designed to improve the Skyblock experience by enhancing the interface, simplifying common tasks, and adding helpful utilities for everyday gameplay.

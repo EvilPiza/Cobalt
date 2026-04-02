@@ -1,3 +1,8 @@
+/*
+ * Original code Copyright (c) 2025 odtheking
+ * Licensed under the BSD 3-Clause License
+ */
+
 package org.cobalt.ui.animation
 
 abstract class Animation<T>(private val duration: Long) {
