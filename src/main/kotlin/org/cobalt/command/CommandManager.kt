@@ -1,134 +1,44 @@
 package org.cobalt.command
 
-import com.mojang.brigadier.suggestion.Suggestions
-import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet
-import org.cobalt.command.annotation.DefaultHandler
-import org.cobalt.command.annotation.SubCommand
-import org.cobalt.event.EventBus
-import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.ChatSendEvent
+import com.mojang.brigadier.CommandDispatcher
+import net.minecraft.ChatFormatting
+import net.minecraft.client.multiplayer.ClientSuggestionProvider
+import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.ChatUtils
+import org.slf4j.LoggerFactory
+
 
 object CommandManager {
 
-  private val commands = ObjectRBTreeSet<Command>()
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
-  init {
-    EventBus.register(this)
-  }
+  @JvmStatic
+  val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
+
+  @JvmStatic
+  val prefix: Char = '.'
+
 
   @JvmStatic
   fun register(command: Command) {
-    if (!commands.add(command)) {
-      error("'${command.name}' is already registered")
-    }
+    dispatcher.register(command.build())
   }
 
   @JvmStatic
-  fun unregister(command: Command) {
-    commands.remove(command)
-  }
+  fun handleCommandExecution(content: String) {
+    val player = minecraft.player ?: return
+    val commandLine = content.removePrefix(prefix.toString()).trim()
 
-  @SubscribeEvent
-  fun handleCommandExecution(event: ChatSendEvent) {
-    val prefix = getPrefix()
-    if (!event.message.startsWith(prefix)) return
-
-    val parts = event.message.removePrefix(prefix).split(" ")
-    val inputName = parts[0]
-    val args = parts.drop(1)
-
-    val command = commands.find { it.name.equals(inputName, ignoreCase = true) }
-
-    if (command != null) {
-      executeCommand(command, args)
-      event.setCancelled(true)
-    }
-  }
-
-  private fun executeCommand(command: Command, args: List<String>) {
-    val methods = command::class.java.declaredMethods
-
-    if (args.isEmpty()) {
-      val defaultMethod = methods.find { it.isAnnotationPresent(DefaultHandler::class.java) }
-      defaultMethod?.invoke(command)
+    if (commandLine.isEmpty()) {
       return
     }
 
-    val subCommandName = args[0]
-    val subArgs = args.drop(1)
-
-    val subMethod = methods.find {
-      it.isAnnotationPresent(SubCommand::class.java) && it.name.equals(subCommandName, ignoreCase = true)
+    try {
+      dispatcher.execute(commandLine, player.connection.suggestionsProvider)
+    } catch (exception: Exception) {
+      logger.error("Error while executing command: $commandLine", exception)
+      ChatUtils.sendMessage("${ChatFormatting.RED}Something went wrong when executing the command")
     }
-
-    if (subMethod != null) {
-      val parameters = subMethod.parameters
-      val convertedArgs = mutableListOf<Any?>()
-
-      for (i in parameters.indices) {
-        val type = parameters[i].type
-        val value = subArgs.getOrNull(i)
-
-        convertedArgs.add(when (type) {
-          Double::class.java -> value?.toDoubleOrNull() ?: 0.0
-          Int::class.java -> value?.toIntOrNull() ?: 0
-          String::class.java -> value ?: ""
-          else -> null
-        })
-      }
-
-      subMethod.invoke(command, *convertedArgs.toTypedArray())
-    } else {
-      ChatUtils.sendMessage("Unknown subcommand: $subCommandName")
-    }
-  }
-
-
-  @JvmStatic
-  fun getPrefix(): String = "."
-
-  @JvmStatic
-  fun getSuggestions(text: String): Suggestions {
-    val prefix = getPrefix()
-    val raw = text.removePrefix(prefix)
-    val parts = raw.split(" ")
-
-    val builder = SuggestionsBuilder(text, prefix.length)
-
-    if (parts.size == 1) {
-      val input = parts[0].lowercase()
-
-      commands.forEach { command ->
-        if (command.name.lowercase().startsWith(input)) {
-          builder.suggest(prefix + command.name)
-        }
-      }
-    } else {
-      val commandName = parts[0]
-      val subInput = parts.getOrNull(1)?.lowercase() ?: ""
-
-      val command = commands.find {
-        it.name.equals(commandName, ignoreCase = true)
-      }
-
-      if (command != null) {
-        val methods = command::class.java.declaredMethods
-
-        methods.forEach { method ->
-          if (method.isAnnotationPresent(SubCommand::class.java)) {
-            val name = method.name
-
-            if (name.lowercase().startsWith(subInput)) {
-              builder.suggest("$prefix$commandName $name")
-            }
-          }
-        }
-      }
-    }
-
-    return builder.build()
   }
 
 }

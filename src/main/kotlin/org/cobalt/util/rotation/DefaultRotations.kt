@@ -1,9 +1,9 @@
 package org.cobalt.util.rotation
 
-import org.cobalt.util.ChatUtils
-import org.cobalt.util.MessageType
 import kotlin.math.abs
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.util.ChatUtils
+import org.cobalt.util.MessageType
 
 object DefaultRotations : IRotation {
 
@@ -75,12 +75,6 @@ object DefaultRotations : IRotation {
 
     player.yRot = y
     player.xRot = p
-
-    player.yRotO = y
-    player.xRotO = p
-
-    player.yHeadRot = y
-    player.yBodyRot = y
   }
 
   private fun getPlayerYaw(): Double {

@@ -26,4 +26,5 @@ internal object MainCommand : Command(name = "cobalt") {
       pitch = pitch
     )
   }
+
 }
