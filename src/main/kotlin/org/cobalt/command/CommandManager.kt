@@ -1,5 +1,7 @@
 package org.cobalt.command
 
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
@@ -86,5 +88,47 @@ object CommandManager {
 
   @JvmStatic
   fun getPrefix(): String = "."
+
+  @JvmStatic
+  fun getSuggestions(text: String): Suggestions {
+    val prefix = getPrefix()
+    val raw = text.removePrefix(prefix)
+    val parts = raw.split(" ")
+
+    val builder = SuggestionsBuilder(text, prefix.length)
+
+    if (parts.size == 1) {
+      val input = parts[0].lowercase()
+
+      commands.forEach { command ->
+        if (command.name.lowercase().startsWith(input)) {
+          builder.suggest(prefix + command.name)
+        }
+      }
+    } else {
+      val commandName = parts[0]
+      val subInput = parts.getOrNull(1)?.lowercase() ?: ""
+
+      val command = commands.find {
+        it.name.equals(commandName, ignoreCase = true)
+      }
+
+      if (command != null) {
+        val methods = command::class.java.declaredMethods
+
+        methods.forEach { method ->
+          if (method.isAnnotationPresent(SubCommand::class.java)) {
+            val name = method.name
+
+            if (name.lowercase().startsWith(subInput)) {
+              builder.suggest("$prefix$commandName $name")
+            }
+          }
+        }
+      }
+    }
+
+    return builder.build()
+  }
 
 }
