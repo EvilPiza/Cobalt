@@ -18,7 +18,6 @@ object CommandManager {
   @JvmStatic
   val prefix: Char = '.'
 
-
   @JvmStatic
   fun register(command: Command) {
     dispatcher.register(command.build())

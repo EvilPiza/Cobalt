@@ -4,6 +4,7 @@ import io.github.humbleui.skija.*
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
 import java.io.IOException
+import org.cobalt.Cobalt.minecraft
 
 object SkiaRenderer {
 
@@ -19,6 +20,16 @@ object SkiaRenderer {
 
   private val canvas: Canvas?
     get() = SkiaContext.canvas
+
+  fun getWindowScale(): Float {
+    val baseWidth = 1920f
+    val baseHeight = 1080f
+
+    val windowWidth = minecraft.window.width.toFloat()
+    val windowHeight = minecraft.window.height.toFloat()
+
+    return minOf(windowWidth / baseWidth, windowHeight / baseHeight)
+  }
 
   @JvmStatic
   fun save() =
@@ -61,7 +72,7 @@ object SkiaRenderer {
   }
 
   @JvmStatic
-  fun loadFont(resourcePath: String, size: Float = 16f) = fonts.computeIfAbsent("$resourcePath:$size") {
+  fun loadFont(resourcePath: String) = fonts.computeIfAbsent(resourcePath) {
     val bytes = javaClass.classLoader
       ?.getResourceAsStream(resourcePath)
       ?.use { it.readAllBytes() }
@@ -70,9 +81,7 @@ object SkiaRenderer {
     val font = FontMgr.getDefault().makeFromData(Data.makeFromBytes(bytes))
       ?: throw IllegalArgumentException("Invalid font data: $resourcePath")
 
-    Font(
-      font, size
-    ).apply {
+    Font(font).apply {
       isSubpixel = false
       hinting = FontHinting.NORMAL
       edging = FontEdging.ANTI_ALIAS
@@ -80,11 +89,12 @@ object SkiaRenderer {
   }
 
   @JvmStatic
-  fun text(font: Font, text: String, x: Float, y: Float, color: Int) {
+  fun text(font: Font, text: String, x: Float, y: Float, fontSize: Float, color: Int) {
     val canvas = this.canvas ?: return
+    font.size = fontSize
 
     TextLine.make(text, font).use { line ->
-      val baseline = y - line.ascent
+      val baseline = y - line.ascent - 1f
 
       Paint().setColor(color).use { paint ->
         canvas.drawTextLine(line, x, baseline, paint)
@@ -93,7 +103,9 @@ object SkiaRenderer {
   }
 
   @JvmStatic
-  fun textWidth(font: Font, text: String): Float {
+  fun textWidth(font: Font, text: String, fontSize: Float): Float {
+    font.size = fontSize
+
     TextLine.make(text, font).use { line ->
       return line.width
     }

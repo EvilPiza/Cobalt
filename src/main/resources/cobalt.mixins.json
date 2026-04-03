@@ -4,6 +4,7 @@
   "package": "org.cobalt.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "client.AbstractClientPlayerAccessor",
     "client.MinecraftMixin",
     "gui.ChatScreenMixin",
     "gui.ClientPacketListenerMixin",
