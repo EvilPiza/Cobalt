@@ -12,14 +12,15 @@ object DefaultRotations : IRotation {
   private var targetPitch = 0.0
   private var currentYaw = 0.0
   private var currentPitch = 0.0
+  private var currentSpeed = 0.0
 
-  override fun onRotationStart(yaw: Double, pitch: Double) {
+  override fun onRotationStart(yaw: Double, pitch: Double, speed: Double) {
     rotating = true
     targetYaw = yaw
     targetPitch = pitch
     currentYaw = getPlayerYaw()
     currentPitch = getPlayerPitch()
-
+    currentSpeed = speed
     ChatUtils.sendMessage("Rotation started to $yaw, $pitch", MessageType.DEBUG)
   }
 
@@ -36,16 +37,15 @@ object DefaultRotations : IRotation {
     val currentYaw = player.yRot.toDouble()
     val currentPitch = player.xRot.toDouble()
 
-    val speed = 0.15 // TODO: add this as param in function
 
-    val newYaw = lerpAngle(currentYaw, targetYaw, speed)
-    val newPitch = lerp(currentPitch, targetPitch, speed)
+    val newYaw = lerpAngle(currentYaw, targetYaw, currentSpeed)
+    val newPitch = lerp(currentPitch, targetPitch, currentSpeed)
 
     applyRotation(newYaw, newPitch)
 
     if (
-      distance(newYaw, targetYaw) < 0.05 &&
-      abs(newPitch - targetPitch) < 0.05
+      angleDistance(newYaw, targetYaw) < 0.5 &&
+      abs(newPitch - targetPitch) < 0.5
     ) {
       stopRotation()
     }
@@ -61,6 +61,10 @@ object DefaultRotations : IRotation {
     return a + (b - a) * t
   }
 
+  private fun angleDistance(a: Double, b: Double): Double {
+    val d = ((b - a + 540) % 360) - 180
+    return abs(d)
+  }
   private fun distance(a: Double, b: Double): Double {
     return abs(a - b)
   }
