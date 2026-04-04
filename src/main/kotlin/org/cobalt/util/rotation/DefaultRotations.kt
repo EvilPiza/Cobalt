@@ -56,7 +56,6 @@ object DefaultRotations : IRotation {
     return current + delta * alpha
   }
 
-  // YES its lerp, do I care? no! ill change in my next commit.
   private fun lerp(a: Double, b: Double, t: Double): Double {
     return a + (b - a) * t
   }
