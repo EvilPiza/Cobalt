@@ -2,6 +2,7 @@ package org.cobalt.ui
 
 import java.awt.Color
 
+// TODO: bring this over to a theme manager
 object ColorPalette {
 
   val BACKGROUND_PRIMARY = Color(18, 18, 18).rgb
