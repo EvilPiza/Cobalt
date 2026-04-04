@@ -18,6 +18,8 @@ object SkiaRenderer {
   private val images = mutableMapOf<ImageCacheKey, SkiaImage>()
   private var scissorStackDepth = 0
 
+  val primaryFont = loadFont("assets/cobalt/font/ProductSans-Bold.ttf")
+
   private val canvas: Canvas?
     get() = SkiaContext.canvas
 

@@ -16,7 +16,6 @@ object PerformanceHUD : RenderableModule(
 ) {
 
   private const val PADDING = 25f
-  private val primaryFont = SkiaRenderer.loadFont("assets/cobalt/font/ProductSans-Bold.ttf")
 
   override fun renderModule() {
     val width = getWidth()
@@ -39,27 +38,27 @@ object PerformanceHUD : RenderableModule(
         currentX += PADDING / 2 + 5f
       }
 
-      SkiaRenderer.text(primaryFont, stat.value, currentX, textY, 16f, ColorPalette.TEXT_PRIMARY)
-      currentX += SkiaRenderer.textWidth(primaryFont, stat.value, 16f) + 5f
+      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.value, currentX, textY, 16f, ColorPalette.TEXT_PRIMARY)
+      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, 16f) + 5f
 
-      SkiaRenderer.text(primaryFont, stat.unit, currentX, textY, 16f, ColorPalette.TEXT_DISABLED)
-      currentX += SkiaRenderer.textWidth(primaryFont, stat.unit, 16f)
+      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.unit, currentX, textY, 16f, ColorPalette.TEXT_DISABLED)
+      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, 16f)
     }
   }
 
   override fun getWidth(): Float {
-    var width = PADDING
+    var width = PADDING * 2
 
     for ((index, stat) in getStats().withIndex()) {
       if (index > 0) {
         width += PADDING / 2 + PADDING / 2 + 10f
       }
 
-      width += SkiaRenderer.textWidth(primaryFont, stat.value, 16f) + 5f
-      width += SkiaRenderer.textWidth(primaryFont, stat.unit, 16f)
+      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, 16f) + 5f
+      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, 16f)
     }
 
-    return width + PADDING
+    return width
   }
 
   override fun getHeight(): Float = 50f
@@ -72,7 +71,7 @@ object PerformanceHUD : RenderableModule(
 
   private fun getFPS(): String = minecraft.fps.toString()
   private fun getTPS(): String = ServerUtils.averageTps.roundToInt().toString()
-  private fun getPing(): String = ServerUtils.averagePing.toString()
+  private fun getPing(): String = ServerUtils.currentPing.toString()
 
   private data class Stat(val value: String, val unit: String)
 
