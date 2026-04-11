@@ -1,0 +1,127 @@
+config:
+  validation: true
+  warningsAsErrors: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  MagicNumber:
+    active: true
+    ignoreNumbers: ["-1", "0", "1", "2"]
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+
+  WildcardImport:
+    active: true
+
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+
+  ReturnCount:
+    active: true
+    max: 1
+    excludedFunctions:
+      - equals
+
+  ThrowsCount:
+    active: true
+    max: 1
+
+  NewLineAtEndOfFile:
+    active: true
+
+  TrailingWhitespace:
+    active: true
+
+  ForbiddenComment:
+    active: true
+    comments:
+      - "TODO:"
+      - "FIXME:"
+      - "STOPSHIP:"
+
+  UnusedImport:
+    active: true
+
+complexity:
+  LongMethod:
+    active: true
+    allowedLines: 20
+
+  CyclomaticComplexMethod:
+    active: true
+    allowedComplexity: 5
+
+  NestedBlockDepth:
+    active: true
+    allowedDepth: 2
+
+  LongParameterList:
+    active: true
+    allowedFunctionParameters: 4
+    allowedConstructorParameters: 4
+
+  LargeClass:
+    active: true
+    allowedLines: 300
+
+  TooManyFunctions:
+    active: true
+    allowedFunctionsPerFile: 20
+    allowedFunctionsPerClass: 20
+    allowedFunctionsPerInterface: 20
+    allowedFunctionsPerObject: 20
+    allowedFunctionsPerEnum: 20
+
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: true
+
+  UnreachableCode:
+    active: true
+
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+
+  ImplicitUnitReturnType:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: true
+
+naming:
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][a-zA-Z0-9]*'
+
+  ObjectPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+
+  PackageNaming:
+    active: true
+    packagePattern: '[a-z]+(\.[a-z][a-z0-9]*)*'
+
+comments:
+  UndocumentedPublicFunction:
+    active: true
+
+  UndocumentedPublicProperty:
+    active: true
