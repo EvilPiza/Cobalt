@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.loom)
   alias(libs.plugins.kotlin)
   alias(libs.plugins.shadow)
+  alias(libs.plugins.detekt)
   `maven-publish`
 }
 
@@ -77,4 +78,11 @@ kotlin {
 java {
   sourceCompatibility = JavaVersion.VERSION_25
   targetCompatibility = JavaVersion.VERSION_25
+}
+
+detekt {
+  buildUponDefaultConfig = true
+  config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+  allRules = false
+  ignoredBuildTypes = listOf()
 }
