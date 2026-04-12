@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.rendertype.OutputTarget
 import net.minecraft.client.renderer.rendertype.RenderSetup
 import net.minecraft.client.renderer.rendertype.RenderType
 
+/** Pre-configured RenderType providers used by RenderUtils for lines and quads (ESP variants). */
 object Layers {
 
   private val LINES: RenderType = RenderType.create(
@@ -40,10 +41,12 @@ object Layers {
       .createRenderSetup()
   )
 
+  /** Return a RenderType for drawing quads; pass true to use the ESP variant. */
   fun getQuads(esp: Boolean): RenderType {
     return if (esp) QUADS_ESP else QUADS
   }
 
+  /** Return a RenderType for drawing lines; pass true to use the ESP variant. */
   fun getLines(esp: Boolean): RenderType {
     return if (esp) LINES_ESP else LINES
   }

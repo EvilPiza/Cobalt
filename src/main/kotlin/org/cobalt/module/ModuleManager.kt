@@ -7,6 +7,7 @@ import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
 import org.cobalt.util.skia.SkiaRenderer
 
+/** Manager responsible for registering, storing and dispatching modules. */
 object ModuleManager {
 
   private val modules = mutableSetOf<Module>()
@@ -15,6 +16,7 @@ object ModuleManager {
     EventBus.register(this)
   }
 
+  /** Register built-in modules and perform their onRegistration lifecycle call. */
   fun registerModules() {
     val builtIn = arrayOf(
       PerformanceHUD
@@ -25,6 +27,7 @@ object ModuleManager {
     }
   }
 
+  /** Add a module to the manager; will throw if a module with the same name is already registered. */
   fun addModule(module: Module) {
     if (!modules.add(module)) {
       error("'${module.name}' is already registered")
@@ -33,16 +36,19 @@ object ModuleManager {
     module.onRegistration()
   }
 
+  /** Lookup a module by its name (case-insensitive). */
   fun getModule(moduleName: String): Module? {
     return modules.find { module ->
       module.name.equals(moduleName, true)
     }
   }
 
+  /** Return the set of registered modules. */
   fun getModules(): Set<Module> {
     return modules
   }
 
+  /** Draw all enabled modules that implement renderable behavior during the Skia render pass. */
   @SubscribeEvent
   fun drawRenderableModules(event: SkiaDrawEvent) {
     if (minecraft.level == null) {

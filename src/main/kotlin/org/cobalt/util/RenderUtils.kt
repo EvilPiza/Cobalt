@@ -12,8 +12,17 @@ import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.helper.Layers
 
+/** Utility rendering helpers for drawing boxes, outlines, tracers and lines in world space. */
 object RenderUtils {
 
+  /** Draw a unit cube wireframe and optional translucent fill at the given block position.
+   *
+   * @param context the level render context to draw with
+   * @param pos the block position to draw
+   * @param color the color to use for outline/fill
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth line thickness for outlines
+   */
   @JvmStatic
   fun drawBlockPos(
       context: LevelRenderContext,
@@ -34,6 +43,14 @@ object RenderUtils {
     drawBox(context, box, color, esp, lineWidth)
   }
 
+  /** Draw an outline around the provided entity's bounding box, interpolated for rendering.
+   *
+   * @param context the level render context to draw with
+   * @param entity the entity whose bounding box will be outlined
+   * @param color the outline color
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth outline thickness
+   */
   fun drawEntityOutline(
       context: LevelRenderContext,
       entity: Entity,
@@ -54,6 +71,14 @@ object RenderUtils {
     drawBox(context, entity.boundingBox.move(dx, dy, dz), color, esp, lineWidth)
   }
 
+  /** Draw a line from the camera position toward the supplied world-space target point.
+   *
+   * @param context the level render context to draw with
+   * @param to world-space target coordinate for the tracer
+   * @param color tracer color
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth tracer thickness
+   */
   @JvmStatic
   fun drawTracer(
       context: LevelRenderContext,
@@ -69,6 +94,14 @@ object RenderUtils {
     drawLine(context, from, to, color, esp, lineWidth)
   }
 
+  /** Draw a colored axis-aligned bounding box (AABB) with optional translucent fill and outline.
+   *
+   * @param context the level render context to draw with
+   * @param box the world-space axis-aligned bounding box
+   * @param color color used for fill/outline
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth outline thickness
+   */
   @JvmStatic
   fun drawBox(
       context: LevelRenderContext,
@@ -138,6 +171,15 @@ object RenderUtils {
     bufferSource.endBatch(Layers.getLines(esp))
   }
 
+  /** Draw a colored line between two world-space points.
+   *
+   * @param context the level render context to draw with
+   * @param from start point in world coordinates
+   * @param to end point in world coordinates
+   * @param color the color to use for the line
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth line thickness
+   */
   @JvmStatic
   fun drawLine(
       context: LevelRenderContext,

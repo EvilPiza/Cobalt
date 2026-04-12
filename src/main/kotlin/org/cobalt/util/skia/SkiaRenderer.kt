@@ -6,6 +6,9 @@ import io.github.humbleui.types.Rect
 import java.io.IOException
 import org.cobalt.Cobalt.minecraft
 
+ /** High-level Skia drawing helpers used by UI and module renderers.
+ * Provides convenience functions for text, shapes, images and scissor management.
+ */
 object SkiaRenderer {
 
   private data class ImageCacheKey(
@@ -23,6 +26,7 @@ object SkiaRenderer {
   private val canvas: Canvas?
     get() = SkiaContext.canvas
 
+  /** Calculate a window scale factor relative to a 1920x1080 baseline for consistent UI sizing. */
   fun getWindowScale(): Float {
     val baseWidth = 1920f
     val baseHeight = 1080f
@@ -33,26 +37,34 @@ object SkiaRenderer {
     return minOf(windowWidth / baseWidth, windowHeight / baseHeight)
   }
 
+  /** Save the current Skia canvas state. */
   @JvmStatic
   fun save() =
     this.canvas?.save()
 
+  /** Restore the previously saved Skia canvas state. */
   @JvmStatic
   fun restore() =
     this.canvas?.restore()
 
+  /** Translate the canvas by the given x/y offset. */
   @JvmStatic
   fun translate(x: Float, y: Float) =
     this.canvas?.translate(x, y)
 
+  /** Rotate the canvas by the given angle in degrees. */
   @JvmStatic
   fun rotate(angleDeg: Float) =
     this.canvas?.rotate(angleDeg)
 
+  /** Scale the canvas by the specified X and Y factors. */
   @JvmStatic
   fun scale(x: Float, y: Float) =
     this.canvas?.scale(x, y)
 
+  /** Push a scissor/clip rectangle onto the canvas stack. Subsequent draws will be clipped.
+   * Coordinates are in canvas space.
+   */
   @JvmStatic
   fun pushScissor(x: Float, y: Float, width: Float, height: Float) {
     val canvas = this.canvas ?: return
@@ -66,6 +78,7 @@ object SkiaRenderer {
     scissorStackDepth++
   }
 
+  /** Pop the last scissor/clip rectangle and restore the previous canvas state. */
   @JvmStatic
   fun popScissor() {
     if (scissorStackDepth <= 0) return
@@ -73,6 +86,7 @@ object SkiaRenderer {
     scissorStackDepth--
   }
 
+  /** Load and cache a font from the given resource path. */
   @JvmStatic
   fun loadFont(resourcePath: String) = fonts.computeIfAbsent(resourcePath) {
     val bytes = javaClass.classLoader
@@ -90,6 +104,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw text using the specified font at the given position and size. */
   @JvmStatic
   fun text(font: Font, text: String, x: Float, y: Float, fontSize: Float, color: Int) {
     val canvas = this.canvas ?: return
@@ -104,6 +119,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Measure and return the width of the given text using the font and size. */
   @JvmStatic
   fun textWidth(font: Font, text: String, fontSize: Float): Float {
     font.size = fontSize
@@ -113,6 +129,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Load and cache an image by identifier, optionally applying rounding and color masking. */
   @JvmStatic
   fun loadImage(
     identifier: String,
@@ -127,6 +144,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a SkiaImage raster into the specified destination rectangle. */
   @JvmStatic
   fun image(image: SkiaImage, x: Float, y: Float, width: Float, height: Float) {
     val canvas = this.canvas ?: return
@@ -159,6 +177,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a straight line between two points. */
   @JvmStatic
   fun line(x1: Float, x2: Float, y1: Float, y2: Float, color: Int, thickness: Float = 1f) {
     val canvas = this.canvas ?: return
@@ -173,6 +192,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a filled rectangle. */
   @JvmStatic
   fun rect(x: Float, y: Float, width: Float, height: Float, color: Int) {
     val canvas = this.canvas ?: return
@@ -186,6 +206,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a stroked rectangle outline with the given thickness. */
   @JvmStatic
   fun outline(x: Float, y: Float, width: Float, height: Float, color: Int, thickness: Float = 1f) {
     val canvas = this.canvas ?: return
@@ -210,6 +231,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a filled rounded rectangle with the specified corner radius. */
   @JvmStatic
   fun roundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int) {
     val canvas = this.canvas ?: return
@@ -223,6 +245,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a rounded rectangle outline with the specified thickness. */
   @JvmStatic
   fun roundedOutline(
     x: Float,
@@ -256,6 +279,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a rectangle filled with a two-color linear gradient. */
   @JvmStatic
   fun gradientRect(
     x: Float, y: Float, width: Float, height: Float,
@@ -290,6 +314,7 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a rounded rectangle filled with a two-color linear gradient. */
   @JvmStatic
   fun gradientRoundedRect(
     x: Float,
@@ -330,6 +355,10 @@ object SkiaRenderer {
     }
   }
 
+  /** Draw a rectangle with rounded corners on one side only.
+   *
+   * @param side which side should have rounded corners
+   */
   @JvmStatic
   fun halfRoundedRect(
     x: Float, y: Float, width: Float, height: Float,

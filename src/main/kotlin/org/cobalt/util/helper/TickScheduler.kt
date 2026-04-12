@@ -5,6 +5,8 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
 
+/** Schedule Runnable tasks to run after a number of client ticks.
+ * Tasks are executed on TickEvent.End and are ordered by scheduled tick. */
 object TickScheduler {
 
   private val taskQueue = PriorityQueue<ScheduledTask>(Comparator.comparingLong(ScheduledTask::executeTick))
@@ -16,11 +18,13 @@ object TickScheduler {
     EventBus.register(this)
   }
 
+  /** Schedule an action to execute after the given number of ticks. */
   @JvmStatic
   fun schedule(delayTicks: Long, action: Runnable) {
     taskQueue.offer(ScheduledTask(currentTick + delayTicks, action))
   }
 
+  /** Internal event handler invoked at the end of each client tick to flush scheduled tasks. */
   @SubscribeEvent
   fun onClientTick(event: TickEvent.End) {
     currentTick++

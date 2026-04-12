@@ -8,6 +8,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractClientPlayer.class)
 public interface AbstractClientPlayerAccessor {
 
+  /**
+   * Returns the backing {@link PlayerInfo} instance from {@link AbstractClientPlayer}.
+   *
+   * @return the current player info for this client player
+   */
   @Accessor("playerInfo")
   PlayerInfo getClientPlayerInfo();
 

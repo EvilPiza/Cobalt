@@ -11,8 +11,13 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
+/** Base class for defining chat commands; reflection is used to discover handlers and subcommands.
+ *
+ * @property name the primary literal name of this command
+ */
 abstract class Command(val name: String) {
 
+  /** Build a Brigadier LiteralArgumentBuilder for this command, wiring discovered handlers and subcommands. */
   fun build(): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val root = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
     val functions = this::class.declaredFunctions
@@ -36,6 +41,7 @@ abstract class Command(val name: String) {
     return root
   }
 
+  /** Construct a subcommand literal from a handler function and its parameters. */
   private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)
     val params = function.parameters.drop(1)
@@ -78,6 +84,7 @@ abstract class Command(val name: String) {
     return literal.then(argumentTree)
   }
 
+  /** Create a Brigadier RequiredArgumentBuilder for a supported parameter type. */
   private fun createArgument(
     name: String,
     type: Any?,

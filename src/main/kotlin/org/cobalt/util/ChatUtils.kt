@@ -7,6 +7,7 @@ import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
 import org.slf4j.LoggerFactory
 
+  /** Utilities for sending chat/system messages and building message components. */
 object ChatUtils {
 
   private val defaultPrefix = Component.literal("")
@@ -21,6 +22,11 @@ object ChatUtils {
 
   private val logger = LoggerFactory.getLogger(this::class.java)
 
+  /** Send a system chat message to the player using the configured message prefix.
+   *
+   * @param message the plain text message to send
+   * @param type the MessageType that controls prefixing/formatting
+   */
   @JvmStatic
   fun sendMessage(message: String, type: MessageType = MessageType.DEFAULT) {
     val player = minecraft.player
@@ -39,11 +45,13 @@ object ChatUtils {
     player.sendSystemMessage(component)
   }
 
+  /** Convert a plain string into a MutableComponent. */
   @JvmStatic
   fun stringToComponent(string: String): MutableComponent {
     return Component.literal(string)
   }
 
+  /** Send a raw chat message as though typed by the player. */
   @JvmStatic
   fun sendChatMessage(message: String) {
     val player = minecraft.player
@@ -56,6 +64,7 @@ object ChatUtils {
     player.connection.sendChat(message)
   }
 
+  /** Send a client-side command string to the server. */
   @JvmStatic
   fun sendCommand(command: String) {
     val player = minecraft.player
@@ -70,8 +79,12 @@ object ChatUtils {
 
 }
 
+/** Type of message to send via ChatUtils. */
 enum class MessageType {
+  /** Default message includes the mod prefix. */
   DEFAULT,
+  /** Debug messages include the debug prefix. */
   DEBUG,
+  /** Raw messages are sent without any prefix. */
   RAW
 }

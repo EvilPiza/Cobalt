@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import org.slf4j.LoggerFactory
 
+/** Lightweight event bus used to register listeners and post events to handlers with priorities. */
 object EventBus {
 
   private data class Handler(
@@ -21,6 +22,7 @@ object EventBus {
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
+  /** Register all methods annotated with [SubscribeEvent] from the given listener instance. */
   @JvmStatic
   fun register(listener: Any) {
     if (handlers.any { it.listener === listener }) {
@@ -67,12 +69,14 @@ object EventBus {
     cache.clear()
   }
 
+  /** Unregister all handlers for the given listener instance. */
   @JvmStatic
   fun unregister(listener: Any) {
     handlers.removeIf { it.listener === listener }
     cache.clear()
   }
 
+  /** Post an event to all matching handlers and return the event. */
   @JvmStatic
   fun post(event: Event): Event {
     val eventClass = event.javaClass

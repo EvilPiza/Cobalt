@@ -10,8 +10,17 @@ import org.cobalt.dsl.blue
 import org.cobalt.dsl.green
 import org.cobalt.dsl.red
 
+/** Color-related utility helpers for building text gradients and extracting ARGB components. */
 object ColorUtils {
 
+  /** Build a MutableComponent where each character of the input text is colored with an interpolated
+   * color between startColor and endColor.
+   *
+   * @param text the text to colorize
+   * @param startColor ARGB integer color used at the start of the text
+   * @param endColor ARGB integer color used at the end of the text
+   * @return a MutableComponent with per-character gradient coloring
+   */
   @JvmStatic
   fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
     val result = Component.empty()
@@ -38,15 +47,19 @@ object ColorUtils {
     return result
   }
 
+  /** Return the red component (0-255) of the supplied ARGB color integer. */
   @JvmStatic
   fun getRed(color: Int) = color.red
 
+  /** Return the green component (0-255) of the supplied ARGB color integer. */
   @JvmStatic
   fun getGreen(color: Int) = color.green
 
+  /** Return the blue component (0-255) of the supplied ARGB color integer. */
   @JvmStatic
   fun getBlue(color: Int) = color.blue
 
+  /** Return the alpha component (0-255) of the supplied ARGB color integer. */
   @JvmStatic
   fun getAlpha(color: Int) = color.alpha
 
