@@ -12,6 +12,7 @@ skija-version = "0.143.11"
 kotlin = "2.3.10"
 loom = "1.15-SNAPSHOT"
 shadow = "9.3.0"
+detekt = "2.0.0-alpha.2"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft-version" }
@@ -36,3 +37,4 @@ skija-natives = ["skija-windows", "skija-linux", "skija-linux-arm", "skija-macos
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
