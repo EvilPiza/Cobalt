@@ -13,6 +13,10 @@ import org.cobalt.dsl.red
 /** Color-related utility helpers for building text gradients and extracting ARGB components. */
 object ColorUtils {
 
+  private const val MIN_TEXT_LENGTH = 1
+  private const val SHIFT_RED = 16
+  private const val SHIFT_GREEN = 8
+
   /** Build a MutableComponent where each character of the input text is colored with an interpolated
    * color between startColor and endColor.
    *
@@ -26,17 +30,18 @@ object ColorUtils {
     val result = Component.empty()
     val textLength = text.length
 
-    if (textLength <= 1) {
+    if (textLength <= MIN_TEXT_LENGTH) {
       return Component.literal(text)
         .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(startColor)))
     }
 
     for (index in text.indices) {
-      val ratio = index.toDouble() / (textLength - 1)
+      val denominator = (textLength - MIN_TEXT_LENGTH).toDouble()
+      val ratio = index.toDouble() / denominator
       val red = (startColor.red + ratio * (endColor.red - startColor.red)).roundToInt()
       val green = (startColor.green + ratio * (endColor.green - startColor.green)).roundToInt()
       val blue = (startColor.blue + ratio * (endColor.blue - startColor.blue)).roundToInt()
-      val interpolatedColor = (red shl 16) or (green shl 8) or blue
+      val interpolatedColor = (red shl SHIFT_RED) or (green shl SHIFT_GREEN) or blue
 
       val coloredChar = Component.literal(text[index].toString())
         .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(interpolatedColor)))

@@ -41,7 +41,7 @@ object CommandManager {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
     } catch (exception: Exception) {
       logger.error("Error while executing command: $commandLine", exception)
-      ChatUtils.sendMessage("${ChatFormatting.RED}Something went wrong when executing the command")
+      ChatUtils.sendSystemMessage("${ChatFormatting.RED}Something went wrong when executing the command")
     }
   }
 

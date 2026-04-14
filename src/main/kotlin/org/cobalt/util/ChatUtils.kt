@@ -28,11 +28,11 @@ object ChatUtils {
    * @param type the MessageType that controls prefixing/formatting
    */
   @JvmStatic
-  fun sendMessage(message: String, type: MessageType = MessageType.DEFAULT) {
+  fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
     val player = minecraft.player
 
     if (player == null) {
-      logger.error("Attempted to send message ($message) but mc.player is null")
+      logger.error("Attempted to send system message ($message) but mc.player is null")
       return
     }
 
@@ -53,11 +53,11 @@ object ChatUtils {
 
   /** Send a raw chat message as though typed by the player. */
   @JvmStatic
-  fun sendChatMessage(message: String) {
+  fun sendMessageAsPlayer(message: String) {
     val player = minecraft.player
 
     if (player == null) {
-      logger.error("Attempted to send message ($message) but mc.player is null")
+      logger.error("Attempted to send message as player ($message) but mc.player is null")
       return
     }
 

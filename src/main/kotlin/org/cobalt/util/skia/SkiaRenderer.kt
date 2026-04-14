@@ -1,6 +1,19 @@
 package org.cobalt.util.skia
 
-import io.github.humbleui.skija.*
+import io.github.humbleui.skija.BlendMode
+import io.github.humbleui.skija.Canvas
+import io.github.humbleui.skija.ClipMode
+import io.github.humbleui.skija.ColorFilter
+import io.github.humbleui.skija.Data
+import io.github.humbleui.skija.Font
+import io.github.humbleui.skija.FontEdging
+import io.github.humbleui.skija.FontHinting
+import io.github.humbleui.skija.FontMgr
+import io.github.humbleui.skija.Paint
+import io.github.humbleui.skija.PaintMode
+import io.github.humbleui.skija.SamplingMode
+import io.github.humbleui.skija.Shader
+import io.github.humbleui.skija.TextLine
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
 import java.io.IOException
@@ -10,6 +23,8 @@ import org.cobalt.Cobalt.minecraft
  * Provides convenience functions for text, shapes, images and scissor management.
  */
 object SkiaRenderer {
+  private const val BASE_WIDTH = 1920f
+  private const val BASE_HEIGHT = 1080f
 
   private data class ImageCacheKey(
     val identifier: String,
@@ -28,13 +43,10 @@ object SkiaRenderer {
 
   /** Calculate a window scale factor relative to a 1920x1080 baseline for consistent UI sizing. */
   fun getWindowScale(): Float {
-    val baseWidth = 1920f
-    val baseHeight = 1080f
-
     val windowWidth = minecraft.window.width.toFloat()
     val windowHeight = minecraft.window.height.toFloat()
 
-    return minOf(windowWidth / baseWidth, windowHeight / baseHeight)
+    return minOf(windowWidth / BASE_WIDTH, windowHeight / BASE_HEIGHT)
   }
 
   /** Save the current Skia canvas state. */

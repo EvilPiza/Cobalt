@@ -21,12 +21,12 @@ object DefaultRotations : IRotation {
     currentYaw = getPlayerYaw()
     currentPitch = getPlayerPitch()
     currentSpeed = speed
-    ChatUtils.sendMessage("Rotation started to $yaw, $pitch", MessageType.DEBUG)
+    ChatUtils.sendSystemMessage("Rotation started to $yaw, $pitch", MessageType.DEBUG)
   }
 
   override fun onRotationEnd() {
     rotating = false
-    ChatUtils.sendMessage("Ended rotation.", MessageType.DEBUG)
+    ChatUtils.sendSystemMessage("Ended rotation.", MessageType.DEBUG)
   }
 
   override fun onRotationWorldRender() {

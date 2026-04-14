@@ -14,6 +14,7 @@ import org.cobalt.util.helper.Layers
 
 /** Utility rendering helpers for drawing boxes, outlines, tracers and lines in world space. */
 object RenderUtils {
+  private const val ALPHA = 100;
 
   /** Draw a unit cube wireframe and optional translucent fill at the given block position.
    *
@@ -126,7 +127,7 @@ object RenderUtils {
     val matrix = poseStack.last().pose()
     val poseEntry = poseStack.last()
 
-    val fillColor = Color(color.red, color.green, color.blue, 100)
+    val fillColor = Color(color.red, color.green, color.blue, ALPHA)
     val corners = arrayOf(
         Vec3(box.minX, box.minY, box.minZ), Vec3(box.maxX, box.minY, box.minZ),
         Vec3(box.maxX, box.minY, box.maxZ), Vec3(box.minX, box.minY, box.maxZ),
