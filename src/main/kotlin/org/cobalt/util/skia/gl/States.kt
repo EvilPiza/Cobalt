@@ -18,8 +18,10 @@
 
 package org.cobalt.util.skia.gl
 
-import org.lwjgl.opengl.GL30.*
 import java.util.*
+import org.lwjgl.opengl.GL30.glGetIntegerv
+import org.lwjgl.opengl.GL30.GL_MAJOR_VERSION
+import org.lwjgl.opengl.GL30.GL_MINOR_VERSION
 
 object States {
 

@@ -8,7 +8,6 @@ import org.cobalt.event.impl.PacketEvent
 import org.cobalt.mixin.client.AbstractClientPlayerAccessor
 
 object ServerUtils {
-
   private var lastTickTime = 0L
 
   var averageTps = 20f
