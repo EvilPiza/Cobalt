@@ -7,12 +7,20 @@ import org.cobalt.util.MessageType
 
 object DefaultRotations : IRotation {
 
+  private const val FULL_CIRCLE = 360.0
+  private const val HALF_CIRCLE = 180.0
+  private const val NORMALIZE_OFFSET = FULL_CIRCLE + HALF_CIRCLE
+  private const val ANGLE_TOLERANCE = 0.5
+  private const val ZERO_ANGLE = 0.0
+
   private var rotating = false
-  private var targetYaw = 0.0
-  private var targetPitch = 0.0
-  private var currentYaw = 0.0
-  private var currentPitch = 0.0
-  private var currentSpeed = 0.0
+  private var targetYaw = ZERO_ANGLE
+  private var targetPitch = ZERO_ANGLE
+  private var currentYaw = ZERO_ANGLE
+  private var currentPitch = ZERO_ANGLE
+  private var currentSpeed = ZERO_ANGLE
+
+  private val player = minecraft.player
 
   override fun onRotationStart(yaw: Double, pitch: Double, speed: Double) {
     rotating = true
@@ -32,7 +40,7 @@ object DefaultRotations : IRotation {
   override fun onRotationWorldRender() {
     if (!rotating) return
 
-    val player = getPlayer() ?: return
+    val player = player?: return
 
     val currentYaw = player.yRot.toDouble()
     val currentPitch = player.xRot.toDouble()
@@ -44,15 +52,15 @@ object DefaultRotations : IRotation {
     applyRotation(newYaw, newPitch)
 
     if (
-      angleDistance(newYaw, targetYaw) < 0.5 &&
-      abs(newPitch - targetPitch) < 0.5
+      angleDistance(newYaw, targetYaw) < ANGLE_TOLERANCE &&
+      abs(newPitch - targetPitch) < ANGLE_TOLERANCE
     ) {
       stopRotation()
     }
   }
- // lerp!
+
   private fun lerpAngle(current: Double, target: Double, alpha: Double): Double {
-    val delta = ((target - current + 540) % 360) - 180
+    val delta = ((target - current + NORMALIZE_OFFSET) % FULL_CIRCLE) - HALF_CIRCLE
     return current + delta * alpha
   }
 
@@ -61,9 +69,10 @@ object DefaultRotations : IRotation {
   }
 
   private fun angleDistance(a: Double, b: Double): Double {
-    val d = ((b - a + 540) % 360) - 180
+    val d = ((b - a + NORMALIZE_OFFSET) % FULL_CIRCLE) - HALF_CIRCLE
     return abs(d)
   }
+
   private fun distance(a: Double, b: Double): Double {
     return abs(a - b)
   }
@@ -71,7 +80,7 @@ object DefaultRotations : IRotation {
   override fun isRotating(): Boolean = rotating
 
   private fun applyRotation(yaw: Double, pitch: Double) {
-    val player = getPlayer() ?: return
+    val player = player ?: return
 
     val y = yaw.toFloat()
     val p = pitch.toFloat()
@@ -81,13 +90,11 @@ object DefaultRotations : IRotation {
   }
 
   private fun getPlayerYaw(): Double {
-    return getPlayer()?.yRot?.toDouble() ?: 0.0
+    return player?.yRot?.toDouble() ?: ZERO_ANGLE
   }
 
   private fun getPlayerPitch(): Double {
-    return getPlayer()?.xRot?.toDouble() ?: 0.0
+    return player?.xRot?.toDouble() ?: ZERO_ANGLE
   }
-
-  private fun getPlayer() = minecraft.player
 
 }

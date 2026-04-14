@@ -8,7 +8,14 @@ package org.cobalt.ui.animation
 /** Generic animation base for interpolating values over a duration in milliseconds. */
 abstract class Animation<T>(private val duration: Long) {
 
-  private var startTime: Long = 0L
+  companion object {
+    private const val PERCENT_MAX: Float = 100f
+    private const val MIN_PROGRESS: Float = 0f
+    private const val MAX_PROGRESS: Float = 1f
+    private const val ZERO_TIME: Long = 0L
+  }
+
+  private var startTime: Long = ZERO_TIME
   private var animating = false
   private var reversed = false
 
@@ -31,23 +38,23 @@ abstract class Animation<T>(private val duration: Long) {
       return
     }
 
-    val percent = ((currentTime - startTime) / duration.toFloat()).coerceIn(0f, 1f)
+    val percent = ((currentTime - startTime) / duration.toFloat()).coerceIn(MIN_PROGRESS, MAX_PROGRESS)
     reversed = !reversed
-    startTime = currentTime - ((1f - percent) * duration).toLong()
+    startTime = currentTime - ((MAX_PROGRESS - percent) * duration).toLong()
     return
   }
 
   /** Return animation progress as a percentage between 0 and 100. */
   fun getPercent(): Float {
-    if (!animating) return 100f
-    val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * 100f)
+    if (!animating) return PERCENT_MAX
+    val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * PERCENT_MAX)
 
-    if (percent >= 100f) {
+    if (percent >= PERCENT_MAX) {
       animating = false
-      return 100f
+      return PERCENT_MAX
     }
 
-    return percent.coerceAtMost(100f)
+    return percent.coerceAtMost(PERCENT_MAX)
   }
 
   /** Whether the animation is currently running. */

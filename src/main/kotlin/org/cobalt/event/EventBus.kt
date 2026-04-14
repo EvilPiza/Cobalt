@@ -46,7 +46,7 @@ object EventBus {
         return@forEach
       }
 
-      val eventType = params[0]
+      val eventType = params.first()
       val lookup = MethodHandles.privateLookupIn(listener.javaClass, MethodHandles.lookup())
       val handle = lookup.unreflect(method).bindTo(listener)
 

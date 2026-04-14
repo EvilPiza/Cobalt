@@ -11,17 +11,18 @@ import org.cobalt.util.rotation.DefaultRotations
 import org.cobalt.util.rotation.RotationManager
 
 internal object MainCommand : Command(name = "cobalt") {
+  private const val DELAY_TICKS = 1L
 
   @DefaultHandler
   fun main() {
-    TickScheduler.schedule(1) {
+    TickScheduler.schedule(DELAY_TICKS) {
       minecraft.setScreen(ConfigScreen)
     }
   }
 
   @SubCommand
   fun hud() {
-    TickScheduler.schedule(1) {
+    TickScheduler.schedule(DELAY_TICKS) {
       minecraft.setScreen(HudEditorScreen)
     }
   }
