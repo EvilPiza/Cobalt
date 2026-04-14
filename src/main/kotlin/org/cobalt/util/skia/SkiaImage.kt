@@ -11,13 +11,15 @@ import java.nio.file.Files
 import kotlinx.coroutines.runBlocking
 import org.cobalt.util.WebUtils
 
-/** Represents a lazily-loaded image resource; supports raster images and SVGs with caching and optional rounding/color masks. */
+/** Represents a lazily-loaded image resource;
+ * supports raster images and SVGs with caching and optional rounding/color masks.
+ */
 class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: Int? = null) {
 
   /** True when the identifier points to an SVG resource. */
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
   /** Deferred Skia Image for raster formats; null for SVG resources. */
-  val skiaImage: Image?
+  val image: Image?
   /** Parsed SVG DOM for SVG resources; null for raster images. */
   val svgDom: SVGDOM?
 
@@ -30,16 +32,18 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
 
     if (isSvg) {
       svgDom = Data.makeFromBytes(bytes).use { data -> SVGDOM(data) }
-      skiaImage = null
+      image = null
     } else {
-      skiaImage = Image.makeDeferredFromEncodedBytes(bytes)
+      image = Image.makeDeferredFromEncodedBytes(bytes)
       svgDom = null
     }
   }
 
-  /** Return a raster Image sized to the requested width/height. For SVGs this will generate and cache a raster snapshot. */
+  /** Return a raster Image sized to the requested width/height.
+   * For SVGs this will generate and cache a raster snapshot.
+   */
   fun getOrGenerateRaster(width: Int, height: Int): Image? {
-    if (!isSvg) return skiaImage
+    if (!isSvg) return image
     val dom = svgDom ?: return null
 
     if (cachedRaster != null && width == lastWidth && height == lastHeight) {
@@ -68,7 +72,7 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
 
   /** Release any native image resources held by this instance. */
   fun delete() {
-    skiaImage?.close()
+    image?.close()
     svgDom?.close()
     cachedRaster?.close()
   }
