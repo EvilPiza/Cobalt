@@ -22,6 +22,18 @@ import io.github.humbleui.skija.BackendRenderTarget
 import io.github.humbleui.skija.impl.Stats
 import org.jetbrains.annotations.Contract
 
+/**
+ * A thin wrapper around Skija's [BackendRenderTarget] that carries additional
+ * information about the GL framebuffer used to back the render target.
+ *
+ * @property width framebuffer width in pixels
+ * @property height framebuffer height in pixels
+ * @property sampleCnt number of samples for multisampling
+ * @property stencilBits number of stencil bits in the framebuffer
+ * @property fbId OpenGL framebuffer id
+ * @property fbFormat OpenGL framebuffer format
+ * @param ptr native pointer passed to the Skija BackendRenderTarget base
+ */
 class WrappedBackendRenderTarget(
   val width: Int,
   val height: Int,
@@ -35,6 +47,19 @@ class WrappedBackendRenderTarget(
   companion object {
 
     @Contract("_, _, _, _, _, _ -> new")
+    /**
+     * Create a new [WrappedBackendRenderTarget] backed by an OpenGL framebuffer.
+     *
+     * The native helper [_nMakeGL] is invoked to allocate the platform-specific
+     * backend render target and its pointer is stored in the created wrapper.
+     *
+     * @param width framebuffer width in pixels
+     * @param height framebuffer height in pixels
+     * @param sampleCnt number of samples for multisampling
+     * @param stencilBits number of stencil bits in the framebuffer
+     * @param fbId OpenGL framebuffer id
+     * @param fbFormat OpenGL framebuffer format
+     */
     fun makeGL(
       width: Int, height: Int, sampleCnt: Int, stencilBits: Int, fbId: Int, fbFormat: Int
     ): WrappedBackendRenderTarget {

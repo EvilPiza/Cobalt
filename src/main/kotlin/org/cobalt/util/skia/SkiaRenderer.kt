@@ -36,6 +36,10 @@ object SkiaRenderer {
   private val images = mutableMapOf<ImageCacheKey, SkiaImage>()
   private var scissorStackDepth = 0
 
+  /**
+   * Primary UI font used throughout the client. Loaded and cached at
+   * initialization from the bundled assets.
+   */
   val primaryFont = loadFont("assets/cobalt/font/ProductSans-Bold.ttf")
 
   private val canvas: Canvas?

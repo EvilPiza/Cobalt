@@ -21,10 +21,30 @@ package org.cobalt.util.skia.gl
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*
 
+/**
+ * Represents a snapshot of relevant OpenGL state that can be pushed and
+ * restored. The snapshot reads multiple GL bindings and pixel store
+ * parameters so rendering code can change GL state and then restore it to
+ * the previous values.
+ *
+ * @param glVersion computed GL version (major * 100 + minor * 10) used to
+ * determine which GL features are available when capturing/restoring state.
+ */
 class State(private val glVersion: Int) {
 
   private val props = Properties()
 
+  /**
+   * Capture the current GL state into this [State] instance.
+   *
+   * This method queries a wide set of GL bindings (textures, buffers,
+   * vertex arrays), pixel store parameters and enabled/disabled flags and
+   * stores them inside the internal [Properties] object. It also resets a
+   * handful of pixel store parameters (unpack alignment/row/skip) to safe
+   * defaults required by the renderer.
+   *
+   * @return this [State] instance for convenience.
+   */
   fun push(): State {
     with(props) {
       glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture)
@@ -97,6 +117,16 @@ class State(private val glVersion: Int) {
     return this
   }
 
+  /**
+   * Restore GL state previously captured by [push].
+   *
+   * The stored values are applied back to the GL context, including bound
+   * program, textures, samplers, vertex arrays, pixel store parameters and
+   * enabled/disabled capabilities. The method returns this [State]
+   * instance for chaining if desired.
+   *
+   * @return this [State] instance after restoration.
+   */
   fun pop(): State {
     with(props) {
       glUseProgram(lastProgram[0])

@@ -11,16 +11,28 @@ import java.nio.file.Files
 import kotlinx.coroutines.runBlocking
 import org.cobalt.util.WebUtils
 
-/** Represents a lazily-loaded image resource;
- * supports raster images and SVGs with caching and optional rounding/color masks.
+/**
+ * Represents a lazily-loaded image resource. Supports both raster images and
+ * SVG documents. Raster images are loaded as deferred Skia [Image] objects,
+ * while SVGs are parsed into an [SVGDOM] and can be rasterized on demand.
+ *
+ * @property radius optional corner radius to apply when rendering the image
+ * @property colorMask optional ARGB color mask applied when drawing
  */
 class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: Int? = null) {
 
-  /** True when the identifier points to an SVG resource. */
+  /** True when the identifier points to an SVG resource (case-insensitive). */
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
-  /** Deferred Skia Image for raster formats; null for SVG resources. */
+
+  /**
+   * Deferred Skia [Image] used for raster formats (png/jpg/etc.). This will be
+   * null for SVG resources.
+   */
   val image: Image?
-  /** Parsed SVG DOM for SVG resources; null for raster images. */
+
+  /**
+   * Parsed [SVGDOM] for SVG resources. Null for raster images.
+   */
   val svgDom: SVGDOM?
 
   private var cachedRaster: Image? = null
@@ -39,8 +51,18 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     }
   }
 
-  /** Return a raster Image sized to the requested width/height.
-   * For SVGs this will generate and cache a raster snapshot.
+  /**
+   * Return a raster [Image] sized to the requested [width]/[height].
+   *
+   * For raster inputs this returns the deferred image (no resizing). For SVG
+   * inputs this will render the SVG to a raster surface, cache the generated
+   * snapshot and return it. Subsequent calls with the same dimensions will
+   * return the cached snapshot.
+   *
+   * @param width desired pixel width of the rasterized image
+   * @param height desired pixel height of the rasterized image
+   * @return a Skia [Image] at the requested dimensions, or null if the image
+   *         could not be loaded or rendered
    */
   fun getOrGenerateRaster(width: Int, height: Int): Image? {
     if (!isSvg) return image
@@ -70,7 +92,11 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     return cachedRaster
   }
 
-  /** Release any native image resources held by this instance. */
+  /**
+   * Release any native resources (Skia images and DOMs) held by this
+   * instance. After calling this method the instance should not be used to
+   * produce images.
+   */
   fun delete() {
     image?.close()
     svgDom?.close()

@@ -5,13 +5,18 @@ import org.cobalt.ui.UIComponent
 
 /** Simple on-screen notification displayed for a given duration.
  *
- * @param title short headline text shown prominently
- * @param description body text shown below the title
- * @param duration how long the notification should be visible
+ * @property title short headline text shown prominently
+ * @property description body text shown below the title
+ * @property duration how long the notification should be visible
  */
 data class Notification(
+  /** Short headline text shown prominently. */
   val title: String,
+
+  /** Body text shown below the title. */
   val description: String,
+
+  /** How long the notification should be visible. */
   val duration: Duration
 ) : UIComponent(
   xPos = DEFAULT_X,
@@ -27,7 +32,13 @@ data class Notification(
     private const val DEFAULT_HEIGHT: Float = 100f
   }
 
-  /** Render the notification UI. */
+  /**
+   * Render the notification UI.
+   *
+   * Implementations should draw the notification background, title and
+   * description within the component bounds. This method is called every
+   * frame while the notification is visible.
+   */
   override fun renderComponent() {
 
   }
@@ -35,9 +46,17 @@ data class Notification(
 
 }
 
+/** Types of notifications used to indicate severity or purpose. */
 enum class NotificationType {
+  /** Indicates a successful operation. */
   SUCCESS,
+
+  /** Indicates a warning or non-critical issue. */
   WARNING,
+
+  /** Indicates an error or critical problem. */
   ERROR,
+
+  /** Informational message without success/error semantics. */
   INFO
 }
