@@ -7,6 +7,12 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.PacketEvent
 import org.cobalt.mixin.client.AbstractClientPlayerAccessor
 
+private const val DEFAULT_TPS = 20f
+private const val TPS_ALPHA = 0.05
+private const val TPS_BETA = 0.95
+private const val TPS_SCALE = 20000.0
+private const val TPS_MAX = 20.0
+
 /**
  * Utility object for retrieving and tracking server-side metrics such as
  * average TPS (ticks per second) and the current player ping.
@@ -24,7 +30,7 @@ object ServerUtils {
    * smoothed over time to avoid rapid fluctuations. The setter is private; the
    * value should be read-only from callers.
    */
-  var averageTps = 20f
+  var averageTps = DEFAULT_TPS
     private set
 
   /**
@@ -60,8 +66,8 @@ object ServerUtils {
 
       if (delta <= 0) return
 
-      val tps = (20000.0 / delta).coerceIn(0.0, 20.0)
-      averageTps = (averageTps * 0.95 + tps * 0.05).toFloat()
+      val tps = (TPS_SCALE / delta).coerceIn(0.0, TPS_MAX)
+      averageTps = (averageTps * TPS_BETA + tps * TPS_ALPHA).toFloat()
     }
   }
 

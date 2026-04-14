@@ -23,6 +23,9 @@ import org.lwjgl.opengl.GL30.glGetIntegerv
 import org.lwjgl.opengl.GL30.GL_MAJOR_VERSION
 import org.lwjgl.opengl.GL30.GL_MINOR_VERSION
 
+private const val GL_MAJOR_MULTIPLIER = 100
+private const val GL_MINOR_MULTIPLIER = 10
+
 /**
  * Utility that manages a stack of OpenGL state snapshots.
  *
@@ -62,7 +65,7 @@ object States {
     val minor = IntArray(1)
     glGetIntegerv(GL_MAJOR_VERSION, major)
     glGetIntegerv(GL_MINOR_VERSION, minor)
-    glVersion = major[0] * 100 + minor[0] * 10
+    glVersion = major[0] * GL_MAJOR_MULTIPLIER + minor[0] * GL_MINOR_MULTIPLIER
   }
 
 }
