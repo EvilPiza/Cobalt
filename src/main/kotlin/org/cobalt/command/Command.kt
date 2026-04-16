@@ -11,30 +11,36 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
-abstract class Command(val name: String) {
+abstract class Command(val name: String, val aliases: List<String> = emptyList<String>()) {
 
-  fun build(): LiteralArgumentBuilder<ClientSuggestionProvider> {
-    val root = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
+  fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
+    val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
     val functions = this::class.declaredFunctions
 
     for (function in functions) {
       function.isAccessible = true
-
       if (function.findAnnotation<DefaultHandler>() != null) {
-        root.executes {
-          function.call(this)
-          return@executes 1
+        mainRoot.executes {
+          function.call(this@Command)
+          1
         }
         continue
       }
-
       if (function.findAnnotation<SubCommand>() != null) {
-        root.then(buildSubCommand(function))
+        mainRoot.then(buildSubCommand(function))
       }
     }
 
-    return root
+    val aliasRoots = aliases.filter { it.isNotBlank() }.map { alias ->
+      val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
+      mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
+      mainRoot.command?.let { aliasRoot.executes(it) }
+      aliasRoot
+    }
+
+    return listOf(mainRoot) + aliasRoots
   }
+
 
   private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)

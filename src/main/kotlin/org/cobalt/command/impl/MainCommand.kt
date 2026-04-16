@@ -10,7 +10,7 @@ import org.cobalt.util.helper.TickScheduler
 import org.cobalt.util.rotation.DefaultRotations
 import org.cobalt.util.rotation.RotationManager
 
-internal object MainCommand : Command(name = "cobalt") {
+internal object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
 
   @DefaultHandler
   fun main() {

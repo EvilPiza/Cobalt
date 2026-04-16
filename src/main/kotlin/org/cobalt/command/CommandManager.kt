@@ -7,9 +7,7 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.ChatUtils
 import org.slf4j.LoggerFactory
 
-
 object CommandManager {
-
   private val logger = LoggerFactory.getLogger(this::class.java)
 
   @JvmStatic
@@ -20,18 +18,14 @@ object CommandManager {
 
   @JvmStatic
   fun register(command: Command) {
-    dispatcher.register(command.build())
+    command.build().forEach { dispatcher.register(it) }
   }
 
   @JvmStatic
   fun handleCommandExecution(content: String) {
     val player = minecraft.player ?: return
     val commandLine = content.removePrefix(prefix.toString()).trim()
-
-    if (commandLine.isEmpty()) {
-      return
-    }
-
+    if (commandLine.isEmpty()) return
     try {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
     } catch (exception: Exception) {
@@ -39,5 +33,4 @@ object CommandManager {
       ChatUtils.sendMessage("${ChatFormatting.RED}Something went wrong when executing the command")
     }
   }
-
 }
