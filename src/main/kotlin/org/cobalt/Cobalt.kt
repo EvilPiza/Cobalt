@@ -35,7 +35,6 @@ object Cobalt : ClientModInitializer {
     ModuleManager.registerModules()
     CommandManager.register(MainCommand)
 
-    // Dispatch Events
     LevelRenderEvents.END_MAIN.register { context ->
       EventBus.post(WorldRenderEvent(context))
     }
