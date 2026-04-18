@@ -33,7 +33,7 @@ abstract class Command(val name: String) {
 
       if (function.findAnnotation<DefaultHandler>() != null) {
         root.executes {
-          function.call(this)
+          function.call(this@Command)
           return@executes 1
         }
         continue
