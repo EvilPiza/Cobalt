@@ -4,6 +4,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.render.skia.SkiaRenderer
+import org.cobalt.math.SimpleVec3
 
 /**
  * Manager responsible for displaying on-screen notifications.
@@ -53,9 +54,9 @@ object NotificationManager {
         val originX = notification.xPos
         val originY = notification.yPos
 
-        SkiaRenderer.translate(originX, originY)
-        SkiaRenderer.scale(windowScale, windowScale)
-        SkiaRenderer.translate(-originX, -originY)
+        SkiaRenderer.translate(SimpleVec3(originX, originY))
+        SkiaRenderer.scale(SimpleVec3(windowScale, windowScale))
+        SkiaRenderer.translate(SimpleVec3(-originX, -originY))
 
         notification.renderComponent()
 
@@ -64,3 +65,5 @@ object NotificationManager {
   }
 
 }
+
+

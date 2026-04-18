@@ -68,28 +68,49 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     if (!isSvg) return image
     val dom = svgDom ?: return null
 
-    if (cachedRaster != null && width == lastWidth && height == lastHeight) {
-      return cachedRaster
+    if (!isCachedMatch(width, height)) {
+      cachedRaster?.close()
+      val generated = generateRaster(dom, width, height)
+      if (generated != null) {
+        cachedRaster = generated
+        lastWidth = width
+        lastHeight = height
+      }
     }
 
-    cachedRaster?.close()
+    return cachedRaster
+  }
 
+  private fun isCachedMatch(width: Int, height: Int): Boolean {
+    return cachedRaster != null && width == lastWidth && height == lastHeight
+  }
+
+  private fun generateRaster(dom: SVGDOM, width: Int, height: Int): Image? {
     val root = dom.root ?: return null
     val sourceWidth = root.width.value.takeIf { it > 0 } ?: width.toFloat()
     val sourceHeight = root.height.value.takeIf { it > 0 } ?: height.toFloat()
 
+    return renderDomToSurface(dom, width, height, sourceWidth, sourceHeight)
+  }
+
+  private fun renderDomToSurface(
+    dom: SVGDOM,
+    width: Int,
+    height: Int,
+    sourceWidth: Float,
+    sourceHeight: Float,
+  ): Image? {
+    var snapshot: Image? = null
     Surface.makeRaster(ImageInfo.makeN32Premul(width, height)).use { surface ->
       surface.canvas.apply {
         scale(width / sourceWidth, height / sourceHeight)
         dom.render(this)
       }
 
-      cachedRaster = surface.makeImageSnapshot()
+      snapshot = surface.makeImageSnapshot()
     }
 
-    lastWidth = width
-    lastHeight = height
-    return cachedRaster
+    return snapshot
   }
 
   /**

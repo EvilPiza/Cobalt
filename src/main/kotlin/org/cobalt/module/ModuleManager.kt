@@ -6,6 +6,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
 import org.cobalt.render.skia.SkiaRenderer
+import org.cobalt.math.SimpleVec3
 
 /** Manager responsible for registering, storing and dispatching modules. */
 object ModuleManager {
@@ -68,9 +69,9 @@ object ModuleManager {
         val originY = renderable.yPos
         val moduleScale = renderable.scale * windowScale
 
-        SkiaRenderer.translate(originX, originY)
-        SkiaRenderer.scale(moduleScale, moduleScale)
-        SkiaRenderer.translate(-originX, -originY)
+        SkiaRenderer.translate(SimpleVec3(originX, originY))
+        SkiaRenderer.scale(SimpleVec3(moduleScale, moduleScale))
+        SkiaRenderer.translate(SimpleVec3(-originX, -originY))
 
         renderable.renderModule()
 
@@ -79,3 +80,5 @@ object ModuleManager {
   }
 
 }
+
+

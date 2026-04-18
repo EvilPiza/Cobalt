@@ -7,8 +7,10 @@ import io.github.humbleui.skija.FontHinting
 import io.github.humbleui.skija.FontMgr
 import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.TextLine
+import org.cobalt.math.SimpleVec3
 import java.io.IOException
 
+/** Text drawing module */
 object SkiaText {
   private val fonts = mutableMapOf<String, Font>()
 
@@ -17,7 +19,11 @@ object SkiaText {
 
   private val canvas get() = SkiaContext.canvas
 
-  /** Load and cache a font from the given resource path. */
+  /**
+   * Load and cache a font
+   * @param resourcePath the path
+   * @return the font
+   */
   fun loadFont(resourcePath: String) = fonts.computeIfAbsent(resourcePath) {
     val bytes = javaClass.classLoader
       ?.getResourceAsStream(resourcePath)
@@ -34,24 +40,43 @@ object SkiaText {
     }
   }
 
+  /**
+   * Text styling
+   * @property fontSize font size
+   * @property color color
+   */
   data class TextStyle(val fontSize: Float, val color: Int)
 
+  /**
+   * Draw text
+   * @param font the font
+   * @param text the text
+   * @param pos the position
+   * @param style the style
+   */
   @JvmStatic
-  fun text(font: Font, text: String, x: Float, y: Float, style: TextStyle) {
+  fun text(font: Font, text: String, pos: SimpleVec3, style: TextStyle) {
     val canvas = this.canvas ?: return
+
     font.size = style.fontSize
 
     TextLine.make(text, font).use { line ->
-      val baseline = y - line.ascent - 1f
+      val baseline = pos.y - line.ascent - 1f
 
       Paint().setColor(style.color).use { paint ->
-        canvas.drawTextLine(line, x, baseline, paint)
+        canvas.drawTextLine(line, pos.x, baseline, paint)
       }
     }
   }
 
+  /**
+   * Get text width
+   * @param font the font
+   * @param text the text
+   * @param fontSize the font size
+   * @return the width
+   */
   @JvmStatic
-  /** Measure and return the width of the given text using the font and size. */
   fun textWidth(font: Font, text: String, fontSize: Float): Float {
     font.size = fontSize
 
@@ -61,5 +86,3 @@ object SkiaText {
   }
 
 }
-
-

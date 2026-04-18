@@ -2,6 +2,8 @@ package org.cobalt.render.skia
 
 import io.github.humbleui.skija.Canvas
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.math.SimpleVec3
+import kotlin.math.min
 
  /** High-level Skia drawing helpers used by UI and module renderers.
  * Provides convenience functions for text, shapes, images and scissor management.
@@ -18,7 +20,7 @@ object SkiaRenderer {
     val windowWidth = minecraft.window.width.toFloat()
     val windowHeight = minecraft.window.height.toFloat()
 
-    return minOf(windowWidth / BASE_WIDTH, windowHeight / BASE_HEIGHT)
+    return min(windowWidth / BASE_WIDTH, windowHeight / BASE_HEIGHT)
   }
 
   /** Save the current Skia canvas state. */
@@ -31,10 +33,9 @@ object SkiaRenderer {
 
   /** Translate the canvas by the given x/y offset. */
   @JvmStatic
-  fun translate(x: Float, y: Float) = this.canvas?.translate(x, y)
+  fun translate(pos: SimpleVec3) = this.canvas?.translate(pos.x, pos.y)
 
   /** Scale the canvas by the specified X and Y factors. */
   @JvmStatic
-  fun scale(x: Float, y: Float) = this.canvas?.scale(x, y)
-
+  fun scale(scale: SimpleVec3) = this.canvas?.scale(scale.x, scale.y)
 }

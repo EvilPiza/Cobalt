@@ -39,10 +39,7 @@ data class Notification(
    * description within the component bounds. This method is called every
    * frame while the notification is visible.
    */
-  override fun renderComponent() {
-
-  }
-
+  override fun renderComponent() { return }
 
 }
 

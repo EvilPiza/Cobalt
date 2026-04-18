@@ -75,61 +75,9 @@ class State(private val glVersion: Int) {
       glGetIntegerv(GL_CURRENT_PROGRAM, lastProgram)
       glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture)
 
-      if (glVersion >= GL_VERSION_3_3 || GL.getCapabilities().GL_ARB_sampler_objects) {
-        glGetIntegerv(GL_SAMPLER_BINDING, lastSampler)
-      }
-
-      glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer)
-      glGetIntegerv(GL_VERTEX_ARRAY_BINDING, lastVertexArrayObject)
-
-      if (glVersion >= GL_VERSION_2_0) {
-        glGetIntegerv(GL_POLYGON_MODE, lastPolygonMode)
-      }
-
-      glGetIntegerv(GL_VIEWPORT, lastViewport)
-      glGetIntegerv(GL_SCISSOR_BOX, lastScissorBox)
-      glGetIntegerv(GL_BLEND_SRC_RGB, lastBlendSrcRgb)
-      glGetIntegerv(GL_BLEND_DST_RGB, lastBlendDstRgb)
-      glGetIntegerv(GL_BLEND_SRC_ALPHA, lastBlendSrcAlpha)
-      glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlendDstAlpha)
-      glGetIntegerv(GL_BLEND_EQUATION_RGB, lastBlendEquationRgb)
-      glGetIntegerv(GL_BLEND_EQUATION_ALPHA, lastBlendEquationAlpha)
-
-      lastEnableBlend = glIsEnabled(GL_BLEND)
-      lastEnableCullFace = glIsEnabled(GL_CULL_FACE)
-      lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST)
-      lastEnableStencilTest = glIsEnabled(GL_STENCIL_TEST)
-      lastEnableScissorTest = glIsEnabled(GL_SCISSOR_TEST)
-
-      if (glVersion >= GL_VERSION_3_1) {
-        lastEnablePrimitiveRestart = glIsEnabled(GL_PRIMITIVE_RESTART)
-      }
-
-      lastDepthMask = glGetBoolean(GL_DEPTH_WRITEMASK)
-
-      glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, lastPixelUnpackBufferBinding)
-      glBindBuffer(GL_PIXEL_UNPACK_BUFFER, DEFAULT_PIXEL_UNPACK_BINDING)
-
-      glGetIntegerv(GL_PACK_SWAP_BYTES, lastPackSwapBytes)
-      glGetIntegerv(GL_PACK_LSB_FIRST, lastPackLsbFirst)
-      glGetIntegerv(GL_PACK_ROW_LENGTH, lastPackRowLength)
-      glGetIntegerv(GL_PACK_SKIP_PIXELS, lastPackSkipPixels)
-      glGetIntegerv(GL_PACK_SKIP_ROWS, lastPackSkipRows)
-      glGetIntegerv(GL_PACK_ALIGNMENT, lastPackAlignment)
-
-      glGetIntegerv(GL_UNPACK_SWAP_BYTES, lastUnpackSwapBytes)
-      glGetIntegerv(GL_UNPACK_LSB_FIRST, lastUnpackLsbFirst)
-      glGetIntegerv(GL_UNPACK_ALIGNMENT, lastUnpackAlignment)
-      glGetIntegerv(GL_UNPACK_ROW_LENGTH, lastUnpackRowLength)
-      glGetIntegerv(GL_UNPACK_SKIP_PIXELS, lastUnpackSkipPixels)
-      glGetIntegerv(GL_UNPACK_SKIP_ROWS, lastUnpackSkipRows)
-
-      if (glVersion >= GL_VERSION_1_2) {
-        glGetIntegerv(GL_PACK_IMAGE_HEIGHT, lastPackImageHeight)
-        glGetIntegerv(GL_PACK_SKIP_IMAGES, lastPackSkipImages)
-        glGetIntegerv(GL_UNPACK_IMAGE_HEIGHT, lastUnpackImageHeight)
-        glGetIntegerv(GL_UNPACK_SKIP_IMAGES, lastUnpackSkipImages)
-      }
+      pushBindings()
+      pushEnables()
+      pushPixelStores()
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, DEFAULT_UNPACK_ALIGNMENT)
       glPixelStorei(GL_UNPACK_ROW_LENGTH, DEFAULT_UNPACK_ROW_LENGTH)
@@ -138,6 +86,75 @@ class State(private val glVersion: Int) {
     }
 
     return this
+  }
+
+  private fun Properties.pushBindings() {
+    if (glVersion >= GL_VERSION_3_3 || GL.getCapabilities().GL_ARB_sampler_objects) {
+      glGetIntegerv(GL_SAMPLER_BINDING, lastSampler)
+    }
+
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer)
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, lastVertexArrayObject)
+
+    if (glVersion >= GL_VERSION_2_0) {
+      glGetIntegerv(GL_POLYGON_MODE, lastPolygonMode)
+    }
+
+    glGetIntegerv(GL_VIEWPORT, lastViewport)
+    glGetIntegerv(GL_SCISSOR_BOX, lastScissorBox)
+    glGetIntegerv(GL_BLEND_SRC_RGB, lastBlendSrcRgb)
+    glGetIntegerv(GL_BLEND_DST_RGB, lastBlendDstRgb)
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, lastBlendSrcAlpha)
+    glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlendDstAlpha)
+    glGetIntegerv(GL_BLEND_EQUATION_RGB, lastBlendEquationRgb)
+    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, lastBlendEquationAlpha)
+  }
+
+  private fun Properties.pushEnables() {
+    lastEnableBlend = glIsEnabled(GL_BLEND)
+    lastEnableCullFace = glIsEnabled(GL_CULL_FACE)
+    lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST)
+    lastEnableStencilTest = glIsEnabled(GL_STENCIL_TEST)
+    lastEnableScissorTest = glIsEnabled(GL_SCISSOR_TEST)
+
+    if (glVersion >= GL_VERSION_3_1) {
+      lastEnablePrimitiveRestart = glIsEnabled(GL_PRIMITIVE_RESTART)
+    }
+
+    lastDepthMask = glGetBoolean(GL_DEPTH_WRITEMASK)
+  }
+
+  private fun Properties.pushPixelStores() {
+    glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, lastPixelUnpackBufferBinding)
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, DEFAULT_PIXEL_UNPACK_BINDING)
+
+    pushPackPixelStores()
+    pushUnpackPixelStores()
+
+    if (glVersion >= GL_VERSION_1_2) {
+      glGetIntegerv(GL_PACK_IMAGE_HEIGHT, lastPackImageHeight)
+      glGetIntegerv(GL_PACK_SKIP_IMAGES, lastPackSkipImages)
+      glGetIntegerv(GL_UNPACK_IMAGE_HEIGHT, lastUnpackImageHeight)
+      glGetIntegerv(GL_UNPACK_SKIP_IMAGES, lastUnpackSkipImages)
+    }
+  }
+
+  private fun Properties.pushPackPixelStores() {
+    glGetIntegerv(GL_PACK_SWAP_BYTES, lastPackSwapBytes)
+    glGetIntegerv(GL_PACK_LSB_FIRST, lastPackLsbFirst)
+    glGetIntegerv(GL_PACK_ROW_LENGTH, lastPackRowLength)
+    glGetIntegerv(GL_PACK_SKIP_PIXELS, lastPackSkipPixels)
+    glGetIntegerv(GL_PACK_SKIP_ROWS, lastPackSkipRows)
+    glGetIntegerv(GL_PACK_ALIGNMENT, lastPackAlignment)
+  }
+
+  private fun Properties.pushUnpackPixelStores() {
+    glGetIntegerv(GL_UNPACK_SWAP_BYTES, lastUnpackSwapBytes)
+    glGetIntegerv(GL_UNPACK_LSB_FIRST, lastUnpackLsbFirst)
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, lastUnpackAlignment)
+    glGetIntegerv(GL_UNPACK_ROW_LENGTH, lastUnpackRowLength)
+    glGetIntegerv(GL_UNPACK_SKIP_PIXELS, lastUnpackSkipPixels)
+    glGetIntegerv(GL_UNPACK_SKIP_ROWS, lastUnpackSkipRows)
   }
 
   /**
@@ -196,26 +213,20 @@ class State(private val glVersion: Int) {
         lastBlendDstAlpha[0]
       )
 
-      if (lastEnableBlend) glEnable(GL_BLEND)
-      else glDisable(GL_BLEND)
-
-      if (lastEnableCullFace) glEnable(GL_CULL_FACE)
-      else glDisable(GL_CULL_FACE)
-
-      if (lastEnableDepthTest) glEnable(GL_DEPTH_TEST)
-      else glDisable(GL_DEPTH_TEST)
-
-      if (lastEnableStencilTest) glEnable(GL_STENCIL_TEST)
-      else glDisable(GL_STENCIL_TEST)
-
-      if (lastEnableScissorTest) glEnable(GL_SCISSOR_TEST)
-      else glDisable(GL_SCISSOR_TEST)
+      setEnable(GL_BLEND, lastEnableBlend)
+      setEnable(GL_CULL_FACE, lastEnableCullFace)
+      setEnable(GL_DEPTH_TEST, lastEnableDepthTest)
+      setEnable(GL_STENCIL_TEST, lastEnableStencilTest)
+      setEnable(GL_SCISSOR_TEST, lastEnableScissorTest)
 
       if (glVersion >= GL_VERSION_3_1) {
-        if (lastEnablePrimitiveRestart) glEnable(GL_PRIMITIVE_RESTART)
-        else glDisable(GL_PRIMITIVE_RESTART)
+        setEnable(GL_PRIMITIVE_RESTART, lastEnablePrimitiveRestart)
       }
     }
+  }
+
+  private fun setEnable(capability: Int, enable: Boolean) {
+    if (enable) glEnable(capability) else glDisable(capability)
   }
 
   private fun restorePolygonViewportAndScissor() {
@@ -242,20 +253,8 @@ class State(private val glVersion: Int) {
 
   private fun restorePixelStoresAndBuffers() {
     with(props) {
-      glPixelStorei(GL_PACK_SWAP_BYTES, lastPackSwapBytes[0])
-      glPixelStorei(GL_PACK_LSB_FIRST, lastPackLsbFirst[0])
-      glPixelStorei(GL_PACK_ROW_LENGTH, lastPackRowLength[0])
-      glPixelStorei(GL_PACK_SKIP_PIXELS, lastPackSkipPixels[0])
-      glPixelStorei(GL_PACK_SKIP_ROWS, lastPackSkipRows[0])
-      glPixelStorei(GL_PACK_ALIGNMENT, lastPackAlignment[0])
-
-      glBindBuffer(GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBufferBinding[0])
-      glPixelStorei(GL_UNPACK_SWAP_BYTES, lastUnpackSwapBytes[0])
-      glPixelStorei(GL_UNPACK_LSB_FIRST, lastUnpackLsbFirst[0])
-      glPixelStorei(GL_UNPACK_ALIGNMENT, lastUnpackAlignment[0])
-      glPixelStorei(GL_UNPACK_ROW_LENGTH, lastUnpackRowLength[0])
-      glPixelStorei(GL_UNPACK_SKIP_PIXELS, lastUnpackSkipPixels[0])
-      glPixelStorei(GL_UNPACK_SKIP_ROWS, lastUnpackSkipRows[0])
+      restorePackPixelStores()
+      restoreUnpackPixelStores()
 
       if (glVersion >= GL_VERSION_1_2) {
         glPixelStorei(GL_PACK_IMAGE_HEIGHT, lastPackImageHeight[0])
@@ -264,6 +263,25 @@ class State(private val glVersion: Int) {
         glPixelStorei(GL_UNPACK_SKIP_IMAGES, lastUnpackSkipImages[0])
       }
     }
+  }
+
+  private fun Properties.restorePackPixelStores() {
+    glPixelStorei(GL_PACK_SWAP_BYTES, lastPackSwapBytes[0])
+    glPixelStorei(GL_PACK_LSB_FIRST, lastPackLsbFirst[0])
+    glPixelStorei(GL_PACK_ROW_LENGTH, lastPackRowLength[0])
+    glPixelStorei(GL_PACK_SKIP_PIXELS, lastPackSkipPixels[0])
+    glPixelStorei(GL_PACK_SKIP_ROWS, lastPackSkipRows[0])
+    glPixelStorei(GL_PACK_ALIGNMENT, lastPackAlignment[0])
+  }
+
+  private fun Properties.restoreUnpackPixelStores() {
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBufferBinding[0])
+    glPixelStorei(GL_UNPACK_SWAP_BYTES, lastUnpackSwapBytes[0])
+    glPixelStorei(GL_UNPACK_LSB_FIRST, lastUnpackLsbFirst[0])
+    glPixelStorei(GL_UNPACK_ALIGNMENT, lastUnpackAlignment[0])
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, lastUnpackRowLength[0])
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, lastUnpackSkipPixels[0])
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, lastUnpackSkipRows[0])
   }
 
   private fun restoreDepthMask() {

@@ -1,12 +1,16 @@
 package org.cobalt.render.skia
 
 import io.github.humbleui.skija.BlendMode
+import io.github.humbleui.skija.Canvas
 import io.github.humbleui.skija.ClipMode
 import io.github.humbleui.skija.ColorFilter
+import io.github.humbleui.skija.Image
 import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.SamplingMode
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
+import org.cobalt.math.SimpleVec3
+import org.cobalt.math.Dimensions
 
 /** Utilities for loading and drawing cached Skia images.
  * Images may be rounded and color-masked when drawn.
@@ -47,43 +51,80 @@ object SkiaImages {
    * Draw the provided [SkiaImage] into the destination rectangle.
    *
    * @param image the cached image to draw
-   * @param x destination x coordinate
-   * @param y destination y coordinate
-   * @param width destination width in pixels
-   * @param height destination height in pixels
+   * @param pos destination coordinate
+   * @param dim destination dimension
    */
   @JvmStatic
-  fun image(image: SkiaImage, x: Float, y: Float, width: Float, height: Float) {
+  fun image(image: SkiaImage, pos: SimpleVec3, dim: Dimensions) {
+    if (!isValidDimension(dim)) return
     val canvas = this.canvas ?: return
-    if (width <= 0 || height <= 0) return
 
-    val sourceImage = image.getOrGenerateRaster(width.toInt(), height.toInt()) ?: return
+    val sourceImage = image.getOrGenerateRaster(dim.width.toInt(), dim.height.toInt()) ?: return
 
+    drawConfiguredImage(canvas, image, pos, dim, sourceImage)
+  }
+
+  private fun drawConfiguredImage(
+    canvas: Canvas,
+    image: SkiaImage,
+    pos: SimpleVec3,
+    dim: Dimensions,
+    sourceImage: Image
+  ) {
     Paint().use { paint ->
-      image.colorMask?.let {
-        paint.colorFilter = ColorFilter.makeBlend(it, BlendMode.SRC_ATOP)
-      }
+      configurePaint(paint, image.colorMask)
+      drawWithOptionalClip(canvas, image, pos, dim, sourceImage, paint)
+    }
+  }
 
-      if (image.radius != null && image.radius > 0f) {
-        canvas.save()
-        canvas.clipRRect(RRect.makeXYWH(x, y, width, height, image.radius), ClipMode.INTERSECT, true)
-      }
+  private fun isValidDimension(dim: Dimensions) = dim.width > 0 && dim.height > 0
 
+  private fun drawWithOptionalClip(
+    canvas: Canvas,
+    image: SkiaImage,
+    pos: SimpleVec3,
+    dim: Dimensions,
+    sourceImage: Image,
+    paint: Paint
+  ) {
+    val rrect = if (image.radius != null && image.radius > 0f) {
+      RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, image.radius)
+    } else null
+
+    withOptionalClip(canvas, rrect) {
       canvas.drawImageRect(
         sourceImage,
         Rect.makeWH(sourceImage.width.toFloat(), sourceImage.height.toFloat()),
-        Rect.makeXYWH(x, y, width, height),
+        Rect.makeXYWH(pos.x, pos.y, dim.width, dim.height),
         SamplingMode.MITCHELL,
         paint,
         false
       )
+    }
+  }
 
-      if (image.radius != null && image.radius > 0f) {
+  private fun configurePaint(paint: Paint, colorMask: Int?) {
+    if (colorMask != null) {
+      paint.colorFilter = ColorFilter.makeBlend(colorMask, BlendMode.SRC_ATOP)
+    }
+  }
+
+  private inline fun withOptionalClip(
+    canvas: io.github.humbleui.skija.Canvas,
+    rrect: RRect?,
+    block: () -> Unit,
+  ) {
+    if (rrect != null) {
+      canvas.save()
+      canvas.clipRRect(rrect, ClipMode.INTERSECT, true)
+      try {
+        block()
+      } finally {
         canvas.restore()
       }
+    } else {
+      block()
     }
   }
 
 }
-
-

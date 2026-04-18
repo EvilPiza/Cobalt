@@ -52,10 +52,18 @@ internal object SkiaContext {
   }
 
   fun initSkia(width: Int, height: Int) {
-    if (context == null) {
-      context = DirectContext.makeGL()
-    }
+    ensureContext()
 
+    recreateRenderTarget(width, height)
+
+    canvas = surface?.canvas
+  }
+
+  private fun ensureContext() {
+    if (context == null) context = DirectContext.makeGL()
+  }
+
+  private fun recreateRenderTarget(width: Int, height: Int) {
     surface?.close()
     renderTarget?.close()
 
@@ -67,6 +75,7 @@ internal object SkiaContext {
       DEFAULT_PREFER_SAMPLES,
       FramebufferFormat.GR_GL_RGBA8
     )
+
     surface = Surface.wrapBackendRenderTarget(
       requireNotNull(context),
       requireNotNull(renderTarget),
@@ -74,28 +83,25 @@ internal object SkiaContext {
       ColorType.RGBA_8888,
       ColorSpace.getSRGB()
     )
-
-    canvas = surface?.canvas
   }
 
   fun draw() {
-    if (context == null || surface == null) return
+    val ctx = context ?: return
+    val srf = surface ?: return
 
     States.push()
     GL11.glDisable(GL11.GL_CULL_FACE)
     GL11.glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A_TRANSPARENT)
 
-    context?.resetGLAll()
+    ctx.resetGLAll()
 
-    canvas?.let { canvas ->
-      context?.let { context ->
-        renderTarget?.let { renderTarget ->
-          EventBus.post(SkiaDrawEvent(context, renderTarget, canvas))
-        }
-      }
+    val cvs = canvas
+    val rt = renderTarget
+    if (cvs != null && rt != null) {
+      EventBus.post(SkiaDrawEvent(ctx, rt, cvs))
     }
 
-    context?.flushAndSubmit(surface)
+    ctx.flushAndSubmit(srf)
 
     States.pop()
   }

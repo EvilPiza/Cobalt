@@ -128,19 +128,31 @@ object RenderUtils {
       return
     }
 
-    val poseStack = context.poseStack()
-    val bufferSource = context.bufferSource()
     val cameraPos = minecraft.gameRenderer.mainCamera.position()
-    val matrix = poseStack.last().pose()
-    val poseEntry = poseStack.last()
 
-    val fillColor = Color(color.red, color.green, color.blue, ALPHA)
     val corners = arrayOf(
         Vec3(box.minX, box.minY, box.minZ), Vec3(box.maxX, box.minY, box.minZ),
         Vec3(box.maxX, box.minY, box.maxZ), Vec3(box.minX, box.minY, box.maxZ),
         Vec3(box.minX, box.maxY, box.minZ), Vec3(box.maxX, box.maxY, box.minZ),
         Vec3(box.maxX, box.maxY, box.maxZ), Vec3(box.minX, box.maxY, box.maxZ),
     )
+
+    drawBoxQuads(context, corners, color, esp, cameraPos)
+    drawBoxLines(context, corners, color, esp, lineWidth, cameraPos)
+  }
+
+  private fun drawBoxQuads(
+      context: LevelRenderContext,
+      corners: Array<Vec3>,
+      color: Color,
+      esp: Boolean,
+      cameraPos: Vec3
+  ) {
+    val poseStack = context.poseStack()
+    val bufferSource = context.bufferSource()
+    val matrix = poseStack.last().pose()
+
+    val fillColor = Color(color.red, color.green, color.blue, ALPHA)
 
     val quadBuffer = bufferSource.getBuffer(Layers.getQuads(esp))
 
@@ -155,6 +167,20 @@ object RenderUtils {
     }
 
     bufferSource.endBatch(Layers.getQuads(esp))
+  }
+
+  private fun drawBoxLines(
+      context: LevelRenderContext,
+      corners: Array<Vec3>,
+      color: Color,
+      esp: Boolean,
+      lineWidth: Float,
+      cameraPos: Vec3
+  ) {
+    val poseStack = context.poseStack()
+    val bufferSource = context.bufferSource()
+    val matrix = poseStack.last().pose()
+    val poseEntry = poseStack.last()
 
     val lineBuffer = bufferSource.getBuffer(Layers.getLines(esp))
 
@@ -163,23 +189,38 @@ object RenderUtils {
       val lineEnd = corners[BOX_LINES[i + 1]]
       val lineNormal = lineEnd.subtract(lineStart).normalize()
 
-      for (vertex in listOf(lineStart, lineEnd)) {
-        lineBuffer.addVertex(
-          matrix,
-          (vertex.x - cameraPos.x).toFloat(),
-          (vertex.y - cameraPos.y).toFloat(),
-          (vertex.z - cameraPos.z).toFloat(),
-        )
-          .setLineWidth(lineWidth)
-          .setColor(color.red, color.green, color.blue, color.alpha)
-          .setNormal(poseEntry, lineNormal.x.toFloat(), lineNormal.y.toFloat(), lineNormal.z.toFloat())
-      }
+      addBlockLineVertices(lineBuffer, matrix, poseEntry, lineStart, lineEnd, lineNormal, color, lineWidth, cameraPos)
     }
 
     bufferSource.endBatch(Layers.getLines(esp))
   }
 
-  /** Draw a colored line between two world-space points.
+  private fun addBlockLineVertices(
+      lineBuffer: com.mojang.blaze3d.vertex.VertexConsumer,
+      matrix: org.joml.Matrix4f,
+      poseEntry: com.mojang.blaze3d.vertex.PoseStack.Pose,
+      lineStart: Vec3,
+      lineEnd: Vec3,
+      lineNormal: Vec3,
+      color: Color,
+      lineWidth: Float,
+      cameraPos: Vec3
+  ) {
+    for (vertex in listOf(lineStart, lineEnd)) {
+      lineBuffer.addVertex(
+        matrix,
+        (vertex.x - cameraPos.x).toFloat(),
+        (vertex.y - cameraPos.y).toFloat(),
+        (vertex.z - cameraPos.z).toFloat(),
+      )
+        .setLineWidth(lineWidth)
+        .setColor(color.red, color.green, color.blue, color.alpha)
+        .setNormal(poseEntry, lineNormal.x.toFloat(), lineNormal.y.toFloat(), lineNormal.z.toFloat())
+    }
+  }
+
+  /**
+   * Draw a colored line between two world-space points.
    *
    * @param context the level render context to draw with
    * @param from start point in world coordinates
@@ -195,34 +236,48 @@ object RenderUtils {
       color: Color,
       style: LineStyle = LineStyle(),
   ) {
-    if (color.alpha == 0) {
-      return
-    }
-
+    if (color.alpha == 0) return
     val frustum = context.levelState().cameraRenderState.cullFrustum
+    if (!FrustumUtils.isVisible(
+        frustum, min(from.x, to.x), min(from.y, to.y), min(from.z, to.z),
+        max(from.x, to.x), max(from.y, to.y), max(from.z, to.z)
+    )) return
 
-    if (
-      !FrustumUtils.isVisible(
-        frustum,
-          min(from.x, to.x), min(from.y, to.y), min(from.z, to.z),
-          max(from.x, to.x), max(from.y, to.y), max(from.z, to.z),
-      )
-    ) {
-      return
-    }
+    drawVisibleLine(context, from, to, color, style)
+  }
 
-    val poseStack = context.poseStack()
+  private fun drawVisibleLine(
+      context: LevelRenderContext,
+      from: Vec3,
+      to: Vec3,
+      color: Color,
+      style: LineStyle
+  ) {
     val bufferSource = context.bufferSource()
+    val lineBuffer = bufferSource.getBuffer(Layers.getLines(style.esp))
+
+    addLineVertices(context, lineBuffer, from, to, color, style)
+
+    bufferSource.endBatch(Layers.getLines(style.esp))
+  }
+
+  private fun addLineVertices(
+      context: LevelRenderContext,
+      lineBuffer: com.mojang.blaze3d.vertex.VertexConsumer,
+      from: Vec3,
+      to: Vec3,
+      color: Color,
+      style: LineStyle
+  ) {
+    val poseStack = context.poseStack()
     val cameraPos = minecraft.gameRenderer.mainCamera.position()
     val poseEntry = poseStack.last()
-    val matrix = poseEntry.pose()
-    val lineBuffer = bufferSource.getBuffer(Layers.getLines(style.esp))
     val lineNormal = to.subtract(from).normalize()
 
     for (vertex in listOf(from, to)) {
       lineBuffer
         .addVertex(
-          matrix,
+          poseEntry.pose(),
           (vertex.x - cameraPos.x).toFloat(),
           (vertex.y - cameraPos.y).toFloat(),
           (vertex.z - cameraPos.z).toFloat()
@@ -231,8 +286,6 @@ object RenderUtils {
         .setColor(color.red, color.green, color.blue, color.alpha)
         .setNormal(poseEntry, lineNormal.x.toFloat(), lineNormal.y.toFloat(), lineNormal.z.toFloat())
     }
-
-    bufferSource.endBatch(Layers.getLines(style.esp))
   }
 
   private val BOX_QUADS = intArrayOf(

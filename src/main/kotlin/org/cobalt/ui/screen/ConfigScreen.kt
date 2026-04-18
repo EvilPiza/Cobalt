@@ -8,6 +8,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.render.skia.SkiaRenderer
+import org.cobalt.math.SimpleVec3
 
 internal object ConfigScreen : Screen(Component.empty()) {
 
@@ -33,9 +34,9 @@ internal object ConfigScreen : Screen(Component.empty()) {
       val cy = height / 2f
 
       SkiaRenderer.save()
-      SkiaRenderer.translate(cx, cy)
-      SkiaRenderer.scale(scale, scale)
-      SkiaRenderer.translate(-cx, -cy)
+      SkiaRenderer.translate(SimpleVec3(cx, cy))
+      SkiaRenderer.scale(SimpleVec3(scale, scale))
+      SkiaRenderer.translate(SimpleVec3(-cx, -cy))
     }
 
     // TODO: draw the actual UI here..
@@ -58,3 +59,5 @@ internal object ConfigScreen : Screen(Component.empty()) {
   }
 
 }
+
+
