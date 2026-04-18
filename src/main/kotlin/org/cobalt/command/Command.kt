@@ -20,19 +20,20 @@ import org.cobalt.command.annotation.SubCommand
 /** Base class for defining chat commands; reflection is used to discover handlers and subcommands.
  *
  * @property name the primary literal name of this command
+ * @property aliases any secondary names for this command
  */
-abstract class Command(val name: String) {
+abstract class Command(val name: String, val aliases: List<String> = emptyList<String>()) {
 
   /** Build a Brigadier LiteralArgumentBuilder for this command, wiring discovered handlers and subcommands. */
-  fun build(): LiteralArgumentBuilder<ClientSuggestionProvider> {
-    val root = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
+  fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
+    val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
     val functions = this::class.declaredFunctions
 
     for (function in functions) {
       function.isAccessible = true
 
       if (function.findAnnotation<DefaultHandler>() != null) {
-        root.executes {
+        mainRoot.executes {
           function.call(this@Command)
           return@executes 1
         }
@@ -40,11 +41,18 @@ abstract class Command(val name: String) {
       }
 
       if (function.findAnnotation<SubCommand>() != null) {
-        root.then(buildSubCommand(function))
+        mainRoot.then(buildSubCommand(function))
       }
     }
 
-    return root
+    val aliasRoots = aliases.filter { it.isNotBlank() }.map { alias ->
+      val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
+      mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
+      mainRoot.command?.let { aliasRoot.executes(it) }
+      aliasRoot
+    }
+
+    return listOf(mainRoot) + aliasRoots
   }
 
   /** Construct a subcommand literal from a handler function and its parameters. */

@@ -21,7 +21,7 @@ object CommandManager {
   /** Register a top-level command into the Brigadier dispatcher. */
   @JvmStatic
   fun register(command: Command) {
-    dispatcher.register(command.build())
+    command.build().forEach { dispatcher.register(it) }
   }
 
   /** Execute a command line string as if entered by the player; logs and notifies on failure. */
@@ -30,9 +30,7 @@ object CommandManager {
     val player = minecraft.player ?: return
     val commandLine = content.removePrefix(prefix.toString()).trim()
 
-    if (commandLine.isEmpty()) {
-      return
-    }
+    if (commandLine.isEmpty()) { return }
 
     try {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
@@ -40,5 +38,4 @@ object CommandManager {
       ChatUtils.sendSystemMessage("${ChatFormatting.RED}${exception.message}")
     }
   }
-
 }
