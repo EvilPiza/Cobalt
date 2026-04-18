@@ -7,7 +7,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.animation.BounceAnimation
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.render.skia.SkiaRenderer
 
 internal object ConfigScreen : Screen(Component.empty()) {
 
@@ -18,7 +18,7 @@ internal object ConfigScreen : Screen(Component.empty()) {
   }
 
   @SubscribeEvent
-  fun onSkiaDraw(event: SkiaDrawEvent) {
+  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }
@@ -49,7 +49,12 @@ internal object ConfigScreen : Screen(Component.empty()) {
     openAnim.start()
   }
 
-  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {}
-  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) {}
+  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {
+    return
+  }
+
+  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) {
+    return
+  }
 
 }

@@ -5,7 +5,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.render.skia.SkiaRenderer
 
 /** Manager responsible for registering, storing and dispatching modules. */
 object ModuleManager {
@@ -50,7 +50,7 @@ object ModuleManager {
 
   /** Draw all enabled modules that implement renderable behavior during the Skia render pass. */
   @SubscribeEvent
-  fun drawRenderableModules(event: SkiaDrawEvent) {
+  fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.level == null) {
       return
     }

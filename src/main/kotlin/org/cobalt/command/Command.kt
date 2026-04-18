@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.isAccessible
@@ -48,9 +49,11 @@ abstract class Command(val name: String) {
   /** Construct a subcommand literal from a handler function and its parameters. */
   private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)
-    val params = function.parameters.drop(1)
 
-    if (params.isEmpty()) {
+    val parameters = function.parameters
+    val valueParams = parameters.filter { it.kind == KParameter.Kind.VALUE }
+
+    if (valueParams.isEmpty()) {
       literal.executes {
         function.call(this)
         return@executes 1
@@ -59,13 +62,13 @@ abstract class Command(val name: String) {
       return literal
     }
 
-    val arguments = params.mapIndexed { index, param ->
+    val arguments = valueParams.mapIndexed { index, param ->
       val name = param.name ?: "argument$index"
       createArgument(name, param.type.classifier)
     }
 
     arguments.last().executes { ctx ->
-      val mappedArgs = params.mapIndexed { index, param ->
+      val mappedValues = valueParams.mapIndexed { index, param ->
         val argumentName = param.name ?: "argument$index"
         when (param.type.classifier) {
           Double::class -> DoubleArgumentType.getDouble(ctx, argumentName)
@@ -77,7 +80,17 @@ abstract class Command(val name: String) {
         }
       }
 
-      function.call(this, *mappedArgs.toTypedArray())
+      val argsMap = mutableMapOf<KParameter, Any?>()
+
+      val instanceParam = parameters.firstOrNull { it.kind == KParameter.Kind.INSTANCE }
+      if (instanceParam != null) argsMap[instanceParam] = this
+
+      for (i in valueParams.indices) {
+        argsMap[valueParams[i]] = mappedValues[i]
+      }
+
+      function.callBy(argsMap)
+
       return@executes 1
     }
 

@@ -1,4 +1,4 @@
-package org.cobalt.util.skia
+package org.cobalt.render.skia
 
 /**
  * Lightweight enums used by the Skia-based renderer helpers.

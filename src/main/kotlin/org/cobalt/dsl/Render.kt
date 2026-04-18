@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import org.cobalt.util.RenderUtils
+import org.cobalt.render.RenderUtils
 
 /** Draw a wireframe outline of a block at the given world block position. */
 fun LevelRenderContext.drawBlockPos(pos: BlockPos, color: Color, esp: Boolean = false, lineWidth: Float = 1f) =
@@ -26,4 +26,4 @@ fun LevelRenderContext.drawBox(box: AABB, color: Color, esp: Boolean = false, li
 
 /** Draw a colored line between two world-space points using the renderer context. */
 fun LevelRenderContext.drawLine(from: Vec3, to: Vec3, color: Color, esp: Boolean = false, lineWidth: Float = 1f) =
-  RenderUtils.drawLine(this, from, to, color, esp, lineWidth)
+  RenderUtils.drawLine(this, from, to, color, RenderUtils.LineStyle(esp, lineWidth))

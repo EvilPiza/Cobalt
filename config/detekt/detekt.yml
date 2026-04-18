@@ -23,7 +23,7 @@ style:
     maxLineLength: 120
     excludePackageStatements: true
     excludeImportStatements: true
-    excludeCommentStatements: false
+    excludeCommentStatements: true
 
   ReturnCount:
     active: true
@@ -61,7 +61,7 @@ complexity:
 
   NestedBlockDepth:
     active: true
-    allowedDepth: 2
+    allowedDepth: 3
 
   LongParameterList:
     active: true

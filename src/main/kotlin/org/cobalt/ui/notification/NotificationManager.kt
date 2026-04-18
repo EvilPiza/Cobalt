@@ -3,7 +3,7 @@ package org.cobalt.ui.notification
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.render.skia.SkiaRenderer
 
 /**
  * Manager responsible for displaying on-screen notifications.
@@ -43,7 +43,7 @@ object NotificationManager {
    * notification draw call.
    */
   @SubscribeEvent
-  fun onSkiaDraw(event: SkiaDrawEvent) {
+  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     val windowScale = SkiaRenderer.getWindowScale()
 
     notificationsList

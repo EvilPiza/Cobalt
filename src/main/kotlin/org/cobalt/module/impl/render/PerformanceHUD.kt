@@ -6,7 +6,8 @@ import org.cobalt.module.ModuleCategory
 import org.cobalt.module.RenderableModule
 import org.cobalt.ui.ColorPalette
 import org.cobalt.util.ServerUtils
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.render.skia.SkiaShapes
+import org.cobalt.render.skia.SkiaText
 
 private const val DEFAULT_OFFSET = 5.0f
 
@@ -32,8 +33,8 @@ object PerformanceHUD : RenderableModule(
     val height = getHeight()
     val centerY = yPos + height / 2
 
-    SkiaRenderer.roundedRect(xPos, yPos, width, height, CORNER_RADIUS, ColorPalette.PANEL)
-    SkiaRenderer.roundedOutline(xPos, yPos, width, height, CORNER_RADIUS, ColorPalette.BORDER, OUTLINE_THICKNESS)
+    SkiaShapes.roundedRect(xPos, yPos, width, height, CORNER_RADIUS, ColorPalette.PANEL)
+    SkiaShapes.roundedOutline(xPos, yPos, width, height, CORNER_RADIUS, ColorPalette.BORDER, OUTLINE_THICKNESS)
 
     var currentX = xPos + PADDING
     val textY = centerY - FONT_SIZE / 2
@@ -43,7 +44,7 @@ object PerformanceHUD : RenderableModule(
         currentX += DIVIDER_GAP
 
         val midY = yPos + height * MID_FACTOR
-        SkiaRenderer.line(
+        SkiaShapes.line(
           currentX,
           currentX,
           midY - DIVIDER_HALF_HEIGHT,
@@ -55,11 +56,11 @@ object PerformanceHUD : RenderableModule(
         currentX += DIVIDER_GAP
       }
 
-      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.value, currentX, textY, FONT_SIZE, ColorPalette.TEXT_PRIMARY)
-      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      SkiaText.text(SkiaText.primaryFont, stat.value, currentX, textY, SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_PRIMARY))
+      currentX += SkiaText.textWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
 
-      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.unit, currentX, textY, FONT_SIZE, ColorPalette.TEXT_DISABLED)
-      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, FONT_SIZE)
+      SkiaText.text(SkiaText.primaryFont, stat.unit, currentX, textY, SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_DISABLED))
+      currentX += SkiaText.textWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
     }
   }
 
@@ -71,8 +72,8 @@ object PerformanceHUD : RenderableModule(
         width += PADDING + 2 * TEXT_SPACING
       }
 
-      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, FONT_SIZE)
+      width += SkiaText.textWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += SkiaText.textWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
     }
 
     return width

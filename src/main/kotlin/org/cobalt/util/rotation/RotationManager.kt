@@ -58,7 +58,7 @@ object RotationManager {
    * to the active rotation controller when a rotation is in progress.
    */
   @SubscribeEvent
-  fun onWorldRender(event: WorldRenderEvent) {
+  fun onWorldRender(@Suppress("UnusedParameter") event: WorldRenderEvent) {
     if (!rotation.isRotating()) return
     rotation.onRotationWorldRender()
   }

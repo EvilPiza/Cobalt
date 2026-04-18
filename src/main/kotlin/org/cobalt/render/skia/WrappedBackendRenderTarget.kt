@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cobalt.util.skia
+package org.cobalt.render.skia
 
 import io.github.humbleui.skija.BackendRenderTarget
 import io.github.humbleui.skija.impl.Stats

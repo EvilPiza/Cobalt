@@ -24,7 +24,7 @@ object HudEditorScreen : Screen(Component.empty()) {
    * @param event the Skia draw event (unused in the current implementation)
    */
   @SubscribeEvent
-  fun onSkiaDraw(event: SkiaDrawEvent) {
+  fun onSkiaDraw(@Suppress("UNUSED_PARAMETER") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }

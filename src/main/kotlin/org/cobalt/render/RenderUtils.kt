@@ -1,20 +1,27 @@
-package org.cobalt.util
+package org.cobalt.render
 
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
-import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.util.FrustumUtils
 import org.cobalt.util.helper.Layers
 
 /** Utility rendering helpers for drawing boxes, outlines, tracers and lines in world space. */
 object RenderUtils {
-  private const val ALPHA = 100;
+  private const val ALPHA = 100
+
+  /** Style options for drawing lines.
+   *
+   * @param esp when true uses ESP render type variants
+   * @param lineWidth line thickness
+   */
+  data class LineStyle(val esp: Boolean = false, val lineWidth: Float = 1f)
 
   /** Draw a unit cube wireframe and optional translucent fill at the given block position.
    *
@@ -92,7 +99,7 @@ object RenderUtils {
     val cameraPos = camera.position()
     val from = cameraPos.add(Vec3.directionFromRotation(camera.xRot(), camera.yRot()))
 
-    drawLine(context, from, to, color, esp, lineWidth)
+    drawLine(context, from, to, color, LineStyle(esp, lineWidth))
   }
 
   /** Draw a colored axis-aligned bounding box (AABB) with optional translucent fill and outline.
@@ -178,8 +185,7 @@ object RenderUtils {
    * @param from start point in world coordinates
    * @param to end point in world coordinates
    * @param color the color to use for the line
-   * @param esp when true uses ESP render type variants
-   * @param lineWidth line thickness
+   * @param style line drawing style (esp and lineWidth)
    */
   @JvmStatic
   fun drawLine(
@@ -187,8 +193,7 @@ object RenderUtils {
       from: Vec3,
       to: Vec3,
       color: Color,
-      esp: Boolean = false,
-      lineWidth: Float = 1f,
+      style: LineStyle = LineStyle(),
   ) {
     if (color.alpha == 0) {
       return
@@ -211,7 +216,7 @@ object RenderUtils {
     val cameraPos = minecraft.gameRenderer.mainCamera.position()
     val poseEntry = poseStack.last()
     val matrix = poseEntry.pose()
-    val lineBuffer = bufferSource.getBuffer(Layers.getLines(esp))
+    val lineBuffer = bufferSource.getBuffer(Layers.getLines(style.esp))
     val lineNormal = to.subtract(from).normalize()
 
     for (vertex in listOf(from, to)) {
@@ -222,12 +227,12 @@ object RenderUtils {
           (vertex.y - cameraPos.y).toFloat(),
           (vertex.z - cameraPos.z).toFloat()
         )
-        .setLineWidth(lineWidth)
+        .setLineWidth(style.lineWidth)
         .setColor(color.red, color.green, color.blue, color.alpha)
         .setNormal(poseEntry, lineNormal.x.toFloat(), lineNormal.y.toFloat(), lineNormal.z.toFloat())
     }
 
-    bufferSource.endBatch(Layers.getLines(esp))
+    bufferSource.endBatch(Layers.getLines(style.esp))
   }
 
   private val BOX_QUADS = intArrayOf(

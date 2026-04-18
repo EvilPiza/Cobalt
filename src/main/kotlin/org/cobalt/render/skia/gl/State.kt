@@ -1,3 +1,5 @@
+@file:Suppress("WildcardImport") // Imports 60+ items, so a wildcard import is fine here.
+
 /*
  * This file is part of https://github.com/Lyzev/Skija.
  *
@@ -15,8 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.cobalt.util.skia.gl
+package org.cobalt.render.skia.gl
 
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*
@@ -150,10 +151,30 @@ class State(private val glVersion: Int) {
    * @return this [State] instance after restoration.
    */
   fun pop(): State {
+    restoreProgramAndTexture()
+
+    restoreSamplersAndBindings()
+
+    restoreBlendAndCapabilities()
+
+    restorePolygonViewportAndScissor()
+
+    restorePixelStoresAndBuffers()
+
+    restoreDepthMask()
+
+    return this
+  }
+
+  private fun restoreProgramAndTexture() {
     with(props) {
       glUseProgram(lastProgram[0])
       glBindTexture(GL_TEXTURE_2D, lastTexture[0])
+    }
+  }
 
+  private fun restoreSamplersAndBindings() {
+    with(props) {
       if (glVersion >= GL_VERSION_3_3 || GL.getCapabilities().GL_ARB_sampler_objects) {
         glBindSampler(DEFAULT_SAMPLER_UNIT, lastSampler[0])
       }
@@ -161,7 +182,13 @@ class State(private val glVersion: Int) {
       glActiveTexture(lastActiveTexture[0])
       glBindVertexArray(lastVertexArrayObject[0])
       glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer[0])
+    }
+  }
+
+  private fun restoreBlendAndCapabilities() {
+    with(props) {
       glBlendEquationSeparate(lastBlendEquationRgb[0], lastBlendEquationAlpha[0])
+
       glBlendFuncSeparate(
         lastBlendSrcRgb[0],
         lastBlendDstRgb[0],
@@ -171,12 +198,16 @@ class State(private val glVersion: Int) {
 
       if (lastEnableBlend) glEnable(GL_BLEND)
       else glDisable(GL_BLEND)
+
       if (lastEnableCullFace) glEnable(GL_CULL_FACE)
       else glDisable(GL_CULL_FACE)
+
       if (lastEnableDepthTest) glEnable(GL_DEPTH_TEST)
       else glDisable(GL_DEPTH_TEST)
+
       if (lastEnableStencilTest) glEnable(GL_STENCIL_TEST)
       else glDisable(GL_STENCIL_TEST)
+
       if (lastEnableScissorTest) glEnable(GL_SCISSOR_TEST)
       else glDisable(GL_SCISSOR_TEST)
 
@@ -184,7 +215,11 @@ class State(private val glVersion: Int) {
         if (lastEnablePrimitiveRestart) glEnable(GL_PRIMITIVE_RESTART)
         else glDisable(GL_PRIMITIVE_RESTART)
       }
+    }
+  }
 
+  private fun restorePolygonViewportAndScissor() {
+    with(props) {
       if (glVersion >= GL_VERSION_2_0) {
         glPolygonMode(GL_FRONT_AND_BACK, lastPolygonMode[0])
       }
@@ -195,13 +230,18 @@ class State(private val glVersion: Int) {
         lastViewport[VIEWPORT_W],
         lastViewport[VIEWPORT_H]
       )
+
       glScissor(
         lastScissorBox[SCISSOR_X],
         lastScissorBox[SCISSOR_Y],
         lastScissorBox[SCISSOR_W],
         lastScissorBox[SCISSOR_H]
       )
+    }
+  }
 
+  private fun restorePixelStoresAndBuffers() {
+    with(props) {
       glPixelStorei(GL_PACK_SWAP_BYTES, lastPackSwapBytes[0])
       glPixelStorei(GL_PACK_LSB_FIRST, lastPackLsbFirst[0])
       glPixelStorei(GL_PACK_ROW_LENGTH, lastPackRowLength[0])
@@ -223,11 +263,13 @@ class State(private val glVersion: Int) {
         glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, lastUnpackImageHeight[0])
         glPixelStorei(GL_UNPACK_SKIP_IMAGES, lastUnpackSkipImages[0])
       }
+    }
+  }
 
+  private fun restoreDepthMask() {
+    with(props) {
       glDepthMask(lastDepthMask)
     }
-
-    return this
   }
 
 }

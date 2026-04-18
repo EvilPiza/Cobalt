@@ -3,7 +3,7 @@ package org.cobalt.event.impl
 import io.github.humbleui.skija.Canvas
 import io.github.humbleui.skija.DirectContext
 import org.cobalt.event.Event
-import org.cobalt.util.skia.WrappedBackendRenderTarget
+import org.cobalt.render.skia.WrappedBackendRenderTarget
 
 /** Event fired when Skia drawing is performed for a render pass. */
 class SkiaDrawEvent(

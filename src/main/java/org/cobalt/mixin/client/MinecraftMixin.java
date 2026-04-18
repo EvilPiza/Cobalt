@@ -23,7 +23,7 @@ import net.minecraft.client.main.GameConfig;
 import org.cobalt.Cobalt;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.TickEvent;
-import org.cobalt.util.skia.SkiaContext;
+import org.cobalt.render.skia.SkiaContext;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

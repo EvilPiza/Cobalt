@@ -1,4 +1,4 @@
-package org.cobalt.util.skia
+package org.cobalt.render.skia
 
 import io.github.humbleui.skija.Data
 import io.github.humbleui.skija.Image

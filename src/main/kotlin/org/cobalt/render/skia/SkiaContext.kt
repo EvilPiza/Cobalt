@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cobalt.util.skia
+package org.cobalt.render.skia
 
 import io.github.humbleui.skija.Canvas
 import io.github.humbleui.skija.ColorSpace
@@ -27,7 +27,7 @@ import io.github.humbleui.skija.Surface
 import io.github.humbleui.skija.SurfaceOrigin
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.util.skia.gl.States
+import org.cobalt.render.skia.gl.States
 import org.lwjgl.opengl.GL11
 
 private const val DEFAULT_SAMPLES = 0

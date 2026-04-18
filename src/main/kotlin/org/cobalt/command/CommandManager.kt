@@ -5,13 +5,10 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.ChatUtils
-import org.slf4j.LoggerFactory
-
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 
 /** Central command dispatcher and helpers for registering and executing chat commands. */
 object CommandManager {
-
-  private val logger = LoggerFactory.getLogger(this::class.java)
 
   /** Brigadier dispatcher used to register command trees. */
   @JvmStatic
@@ -39,9 +36,8 @@ object CommandManager {
 
     try {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
-    } catch (exception: Exception) {
-      logger.error("Error while executing command: $commandLine", exception)
-      ChatUtils.sendSystemMessage("${ChatFormatting.RED}Something went wrong when executing the command")
+    } catch (exception: CommandSyntaxException) {
+      ChatUtils.sendSystemMessage("${ChatFormatting.RED}${exception.message}")
     }
   }
 

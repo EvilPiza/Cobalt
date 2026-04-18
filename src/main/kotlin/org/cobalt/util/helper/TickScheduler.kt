@@ -26,7 +26,7 @@ object TickScheduler {
 
   /** Internal event handler invoked at the end of each client tick to flush scheduled tasks. */
   @SubscribeEvent
-  fun onClientTick(event: TickEvent.End) {
+  fun onClientTick(@Suppress("UNUSED_PARAMETER") event: TickEvent.End) {
     currentTick++
     var task: ScheduledTask?
 

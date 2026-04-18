@@ -19,7 +19,7 @@
 package org.cobalt.mixin.platform;
 
 import com.mojang.blaze3d.platform.Window;
-import org.cobalt.util.skia.SkiaContext;
+import org.cobalt.render.skia.SkiaContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
