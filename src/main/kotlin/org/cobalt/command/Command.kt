@@ -27,9 +27,14 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
   /** Build a Brigadier LiteralArgumentBuilder for this command, wiring discovered handlers and subcommands. */
   fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
-    val functions = this::class.declaredFunctions
 
-    for (function in functions) {
+    registerFunctions(mainRoot)
+
+    return listOf(mainRoot) + buildAliases(mainRoot)
+  }
+
+  private fun registerFunctions(mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>) {
+    for (function in this::class.declaredFunctions) {
       function.isAccessible = true
 
       if (function.findAnnotation<DefaultHandler>() != null) {
@@ -44,15 +49,20 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
         mainRoot.then(buildSubCommand(function))
       }
     }
+  }
 
-    val aliasRoots = aliases.filter { it.isNotBlank() }.map { alias ->
+  private fun buildAliases(
+    mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>
+  ): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
+    return aliases.filter { it.isNotBlank() }.map { alias ->
       val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
+
       mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
+
       mainRoot.command?.let { aliasRoot.executes(it) }
+
       aliasRoot
     }
-
-    return listOf(mainRoot) + aliasRoots
   }
 
   /** Construct a subcommand literal from a handler function and its parameters. */
