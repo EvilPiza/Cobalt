@@ -18,18 +18,35 @@
 
 package org.cobalt.util.skia.gl
 
-import org.lwjgl.opengl.GL30.*
-import java.util.*
+import java.util.Stack
+import org.lwjgl.opengl.GL30.GL_MAJOR_VERSION
+import org.lwjgl.opengl.GL30.GL_MINOR_VERSION
+import org.lwjgl.opengl.GL30.glGetIntegerv
 
+private const val GL_MAJOR_MULTIPLIER = 100
+private const val GL_MINOR_MULTIPLIER = 10
+
+/**
+ * Stores and restores OpenGL states.
+ */
 object States {
 
   private val glVersion: Int
   private val states = Stack<State>()
 
+  /**
+   * Pushes the current OpenGL state onto the stack.
+   */
   fun push() {
     states += State(glVersion).push()
   }
 
+  /**
+   * Pops the last OpenGL state from the stack and restores it.
+   *
+   * Throws an [IllegalArgumentException] if there is no saved state to
+   * restore.
+   */
   fun pop() {
     require(states.isNotEmpty()) { "No state to restore." }
     states.pop().pop()
@@ -40,7 +57,7 @@ object States {
     val minor = IntArray(1)
     glGetIntegerv(GL_MAJOR_VERSION, major)
     glGetIntegerv(GL_MINOR_VERSION, minor)
-    glVersion = major[0] * 100 + minor[0] * 10
+    glVersion = major[0] * GL_MAJOR_MULTIPLIER + minor[0] * GL_MINOR_MULTIPLIER
   }
 
 }

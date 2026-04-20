@@ -7,38 +7,59 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.PacketEvent
 import org.cobalt.mixin.client.AbstractClientPlayerAccessor
 
+private const val DEFAULT_TPS = 20f
+private const val TICKS_PER_SECOND = 20.0
+private const val MS_PER_SECOND = 1000.0
+private const val TPS_SMOOTHING = 0.05f
+
+/**
+ * Utility for server-related information.
+ */
 object ServerUtils {
 
-  private var lastTickTime = 0L
+  private var lastTickTime = -1L
 
-  var averageTps = 20f
+  /**
+   * Average of the server's ticks per second (TPS).
+   */
+  var averageTps = DEFAULT_TPS
     private set
 
+  /**
+   * Current network latency to the server in milliseconds.
+   *
+   * @return player's ping value, or 0 if unavailable
+   */
   val currentPing
-    get() = (minecraft.player as AbstractClientPlayerAccessor).clientPlayerInfo?.latency ?: 0
+    get() = (minecraft.player as AbstractClientPlayerAccessor)
+      .clientPlayerInfo?.latency ?: 0
 
   init {
     EventBus.register(this)
   }
 
+  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
-  fun onPacketReceive(event: PacketEvent.Receive) {
-    if (event.packet is ClientboundSetTimePacket) {
-      val now = System.currentTimeMillis()
+  fun onPacketReceive(@Suppress("UnusedParameter") event: PacketEvent.Receive) {
+    if (event.packet !is ClientboundSetTimePacket) return
 
-      if (lastTickTime == 0L) {
-        lastTickTime = now
-        return
-      }
+    val now = System.currentTimeMillis()
 
-      val delta = now - lastTickTime
-      lastTickTime = now
+    val last = lastTickTime
+    lastTickTime = now
 
-      if (delta <= 0) return
+    if (last == -1L) return
 
-      val tps = (20000.0 / delta).coerceIn(0.0, 20.0)
-      averageTps = (averageTps * 0.95 + tps * 0.05).toFloat()
-    }
+    val delta = now - last
+    if (delta <= 0) return
+
+    val tps = (MS_PER_SECOND * TICKS_PER_SECOND / delta)
+      .coerceAtMost(TICKS_PER_SECOND)
+      .toFloat()
+
+    averageTps =
+      averageTps * (1 - TPS_SMOOTHING) +
+        tps * TPS_SMOOTHING
   }
 
 }

@@ -1,11 +1,16 @@
 package org.cobalt.event
 
-import org.cobalt.event.annotation.SubscribeEvent
 import java.lang.invoke.MethodHandles
+import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import org.cobalt.event.annotation.SubscribeEvent
 import org.slf4j.LoggerFactory
 
+/**
+ * Central event bus responsible for registering, unregistering,
+ * and dispatching events to subscribed listeners.
+ */
 object EventBus {
 
   private data class Handler(
@@ -14,100 +19,127 @@ object EventBus {
     val priority: Event.Priority,
     val ignoreCancelled: Boolean,
     val once: Boolean,
-    val invoker: (Event) -> Unit
+    val invoker: (Event) -> Unit,
   )
 
   private val handlers = CopyOnWriteArrayList<Handler>()
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
+  /**
+   * Registers all methods annotated with [SubscribeEvent] from the given listener instance.
+   *
+   * @param listener the object containing event subscriber methods
+   */
   @JvmStatic
   fun register(listener: Any) {
-    if (handlers.any { it.listener === listener }) {
-      return
-    }
+    if (handlers.any { it.listener === listener }) return
 
-    listener.javaClass.declaredMethods.forEach { method ->
-      val annotation = method.getAnnotation(SubscribeEvent::class.java)
-        ?: return@forEach
+    val toAdd = createHandlersForListener(listener)
 
-      val params = method.parameterTypes
-
-      if (params.size != 1 || !Event::class.java.isAssignableFrom(params[0])) {
-        return@forEach
-      }
-
-      if (!method.trySetAccessible()) {
-        logger.error(
-          "EventBus: could not access method ${listener.javaClass.name}#${method.name}, skipping"
-        )
-        return@forEach
-      }
-
-      val eventType = params[0]
-      val lookup = MethodHandles.privateLookupIn(listener.javaClass, MethodHandles.lookup())
-      val handle = lookup.unreflect(method).bindTo(listener)
-
-      val invoker: (Event) -> Unit = { event ->
-        handle.invoke(event)
-      }
-
-      handlers.add(
-        Handler(
-          listener = listener,
-          eventType = eventType,
-          priority = annotation.priority,
-          ignoreCancelled = annotation.ignoreCancelled,
-          once = annotation.once,
-          invoker = invoker
-        )
-      )
-    }
+    if (toAdd.isNotEmpty()) handlers.addAll(toAdd)
 
     cache.clear()
   }
 
+  /**
+   * Unregisters all event handlers associated with the given listener instance.
+   *
+   * @param listener the listener whose event handlers should be removed
+   */
   @JvmStatic
   fun unregister(listener: Any) {
     handlers.removeIf { it.listener === listener }
     cache.clear()
   }
 
+  /**
+   * Posts an event to all registered listeners.
+   *
+   * Event handlers are filtered by type, priority, and cancellation rules.
+   *
+   * @param event the event to dispatch
+   * @return the same event instance after processing
+   */
   @JvmStatic
   fun post(event: Event): Event {
     val eventClass = event.javaClass
-    val matched = cache.computeIfAbsent(eventClass) {
-      handlers
-        .filter { it.eventType.isAssignableFrom(eventClass) }
-        .sortedBy { it.priority.ordinal }
-        .toTypedArray()
-    }
+    val matched = cache.computeIfAbsent(eventClass) { computeMatchedHandlers(eventClass) }
 
-    var toRemove: MutableList<Handler>? = null
+    val toRemove = processMatchedHandlers(matched, event)
 
-    for (handler in matched) {
-      if (
-        event is Event.Cancellable &&
-        event.isCancelled() &&
-        !handler.ignoreCancelled
-      ) {
-        continue
-      }
-
-      handler.invoker(event)
-
-      if (handler.once) {
-        if (toRemove == null) toRemove = mutableListOf()
-        toRemove.add(handler)
-      }
-    }
-
-    if (toRemove != null) {
+    if (toRemove.isNotEmpty()) {
       handlers.removeAll(toRemove.toSet())
       cache.clear()
     }
 
     return event
+  }
+
+  private fun createHandlersForListener(listener: Any): List<Handler> {
+    val result = mutableListOf<Handler>()
+    listener.javaClass.declaredMethods.forEach { method ->
+      createHandlerFromMethod(listener, method)?.let { result.add(it) }
+    }
+    return result
+  }
+
+  private fun createHandlerFromMethod(listener: Any, method: Method): Handler? {
+    val annotation = method.getAnnotation(SubscribeEvent::class.java)
+    val params = method.parameterTypes
+
+    if (annotation == null || params.size != 1 || !Event::class.java.isAssignableFrom(params[0])) return null
+
+    if (!method.trySetAccessible()) {
+      logger.error("EventBus: could not access method ${listener.javaClass.name}#${method.name}, skipping")
+      return null
+    }
+
+    val eventType = params.first()
+    return buildHandler(listener, method, annotation, eventType)
+  }
+
+  private fun buildHandler(listener: Any, method: Method, annotation: SubscribeEvent, eventType: Class<*>): Handler {
+    val lookup = MethodHandles.privateLookupIn(listener.javaClass, MethodHandles.lookup())
+    val handle = lookup.unreflect(method).bindTo(listener)
+
+    val invoker: (Event) -> Unit = { event -> handle.invoke(event) }
+
+    return Handler(
+      listener = listener,
+      eventType = eventType,
+      priority = annotation.priority,
+      ignoreCancelled = annotation.ignoreCancelled,
+      once = annotation.once,
+      invoker = invoker
+    )
+  }
+
+  private fun processMatchedHandlers(matched: Array<Handler>, event: Event): MutableList<Handler> {
+    val toRemove = mutableListOf<Handler>()
+
+    for (handler in matched) {
+      if (shouldSkipHandler(handler, event)) continue
+      invokeHandler(handler, event, toRemove)
+    }
+
+    return toRemove
+  }
+
+  private fun shouldSkipHandler(handler: Handler, event: Event): Boolean {
+    return (event is Event.Cancellable && event.isCancelled() && !handler.ignoreCancelled)
+  }
+
+  private fun invokeHandler(handler: Handler, event: Event, toRemove: MutableList<Handler>) {
+    handler.invoker(event)
+    if (handler.once) toRemove.add(handler)
+  }
+
+  private fun computeMatchedHandlers(eventClass: Class<*>): Array<Handler> {
+    return handlers
+      .filter { it.eventType.isAssignableFrom(eventClass) }
+      .sortedBy { it.priority.ordinal }
+      .toTypedArray()
   }
 
 }

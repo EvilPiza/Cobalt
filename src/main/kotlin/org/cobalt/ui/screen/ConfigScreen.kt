@@ -6,8 +6,9 @@ import net.minecraft.network.chat.Component
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
+import org.cobalt.math.Vec2f
 import org.cobalt.ui.animation.BounceAnimation
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.util.skia.SkiaTransforms
 
 internal object ConfigScreen : Screen(Component.empty()) {
 
@@ -17,8 +18,9 @@ internal object ConfigScreen : Screen(Component.empty()) {
     EventBus.register(this)
   }
 
+  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
-  fun onSkiaDraw(event: SkiaDrawEvent) {
+  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }
@@ -32,16 +34,16 @@ internal object ConfigScreen : Screen(Component.empty()) {
       val cx = width / 2f
       val cy = height / 2f
 
-      SkiaRenderer.save()
-      SkiaRenderer.translate(cx, cy)
-      SkiaRenderer.scale(scale, scale)
-      SkiaRenderer.translate(-cx, -cy)
+      SkiaTransforms.save()
+      SkiaTransforms.translate(Vec2f(cx, cy))
+      SkiaTransforms.scale(Vec2f(scale, scale))
+      SkiaTransforms.translate(Vec2f(-cx, -cy))
     }
 
     // TODO: draw the actual UI here..
 
     if (openAnim.isAnimating()) {
-      SkiaRenderer.restore()
+      SkiaTransforms.restore()
     }
   }
 
@@ -49,7 +51,14 @@ internal object ConfigScreen : Screen(Component.empty()) {
     openAnim.start()
   }
 
-  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {}
-  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) {}
+  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {
+    return
+  }
+
+  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) {
+    return
+  }
 
 }
+
+

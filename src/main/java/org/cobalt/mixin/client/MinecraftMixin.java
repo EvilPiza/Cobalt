@@ -45,7 +45,7 @@ public class MinecraftMixin {
     int finalWidth = Math.max(width[0], 1);
     int finalHeight = Math.max(height[0], 1);
 
-    SkiaContext.INSTANCE.initSkia(finalWidth, finalHeight);
+    SkiaContext.INSTANCE.initSkia$cobalt(finalWidth, finalHeight);
   }
 
   @Inject(
@@ -57,7 +57,7 @@ public class MinecraftMixin {
     require = 1
   )
   private void onBeforeFlipFrame(boolean advanceGameTime, CallbackInfo ci) {
-    SkiaContext.INSTANCE.draw();
+    SkiaContext.INSTANCE.draw$cobalt();
   }
 
   @Inject(method = "tick", at = @At("HEAD"))

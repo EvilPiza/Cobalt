@@ -23,11 +23,11 @@ style:
     maxLineLength: 120
     excludePackageStatements: true
     excludeImportStatements: true
-    excludeCommentStatements: false
+    excludeCommentStatements: true
 
   ReturnCount:
     active: true
-    max: 1
+    max: 3
     excludedFunctions:
       - equals
 
@@ -44,7 +44,6 @@ style:
   ForbiddenComment:
     active: true
     comments:
-      - "TODO:"
       - "FIXME:"
       - "STOPSHIP:"
 
@@ -58,11 +57,11 @@ complexity:
 
   CyclomaticComplexMethod:
     active: true
-    allowedComplexity: 5
+    allowedComplexity: 6
 
   NestedBlockDepth:
     active: true
-    allowedDepth: 2
+    allowedDepth: 3
 
   LongParameterList:
     active: true

@@ -2,6 +2,8 @@ package org.cobalt.mixin.gui;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import org.cobalt.command.CommandManager;
+import org.cobalt.event.EventBus;
+import org.cobalt.event.impl.ChatSendEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,8 +14,10 @@ public class ClientPacketListenerMixin {
 
   @Inject(method = "sendChat", at = @At("HEAD"), cancellable = true)
   public void sendChatMessage(String content, CallbackInfo ci) {
-    if (content.startsWith(String.valueOf(CommandManager.getPrefix()))) {
-      CommandManager.handleCommandExecution(content);
+    ChatSendEvent event = new ChatSendEvent(content);
+    EventBus.post(event);
+
+    if (event.isCancelled()) {
       ci.cancel();
     }
   }

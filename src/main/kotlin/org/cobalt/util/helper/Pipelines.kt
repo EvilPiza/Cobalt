@@ -6,26 +6,49 @@ import java.util.*
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
 
+/**
+ * Collection of custom RenderPipeline definitions used for rendering.
+ */
 object Pipelines {
 
+  private const val NAMESPACE = "cobalt"
+  private const val PIPELINE_DIR = "pipeline"
+  private const val LINES_ESP_PATH = "$PIPELINE_DIR/lines_esp"
+  private const val QUADS_PATH = "$PIPELINE_DIR/quads"
+  private const val QUADS_ESP_PATH = "$PIPELINE_DIR/quads_esp"
+
+  private val NO_DEPTH_STENCIL: Optional<DepthStencilState> = Optional.empty()
+
+  /**
+   * Render pipeline for line rendering with ESP enabled (visible through walls).
+   */
+  @JvmStatic
   val LINES_ESP: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
-      .withLocation(Identifier.fromNamespaceAndPath("cobalt", "pipeline/lines_esp"))
-      .withDepthStencilState(Optional.empty())
+      .withLocation(Identifier.fromNamespaceAndPath(NAMESPACE, LINES_ESP_PATH))
+      .withDepthStencilState(NO_DEPTH_STENCIL)
       .build()
   )
 
+  /**
+   * Render pipeline for standard quad rendering with normal depth testing.
+   */
+  @JvmStatic
   val QUADS: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-      .withLocation(Identifier.fromNamespaceAndPath("cobalt", "pipeline/quads"))
+      .withLocation(Identifier.fromNamespaceAndPath(NAMESPACE, QUADS_PATH))
       .withDepthStencilState(DepthStencilState.DEFAULT)
       .build()
   )
 
+  /**
+   * Render pipeline for quad rendering with ESP enabled (visible through walls).
+   */
+  @JvmStatic
   val QUADS_ESP: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-      .withLocation(Identifier.fromNamespaceAndPath("cobalt", "pipeline/quads_esp"))
-      .withDepthStencilState(Optional.empty())
+      .withLocation(Identifier.fromNamespaceAndPath(NAMESPACE, QUADS_ESP_PATH))
+      .withDepthStencilState(NO_DEPTH_STENCIL)
       .build()
   )
 

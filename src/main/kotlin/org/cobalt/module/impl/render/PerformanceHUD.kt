@@ -2,48 +2,103 @@ package org.cobalt.module.impl.render
 
 import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.math.Dimensions
+import org.cobalt.math.Vec2f
 import org.cobalt.module.ModuleCategory
 import org.cobalt.module.RenderableModule
 import org.cobalt.ui.ColorPalette
 import org.cobalt.util.ServerUtils
-import org.cobalt.util.skia.SkiaRenderer
+import org.cobalt.util.skia.SkiaShapes
+import org.cobalt.util.skia.SkiaText
 
-object PerformanceHUD : RenderableModule(
+private const val DEFAULT_OFFSET = 5.0f
+
+internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
-  xPos = 5.0f,
-  yPos = 5.0f,
+  xPos = DEFAULT_OFFSET,
+  yPos = DEFAULT_OFFSET,
 ) {
 
   private const val PADDING = 25f
+  private const val CORNER_RADIUS = 5f
+  private const val OUTLINE_THICKNESS = 2f
+  private const val FONT_SIZE = 16f
+  private const val TEXT_SPACING = 5f
+  private const val DIVIDER_HALF_HEIGHT = 10f
+  private const val PANEL_HEIGHT = 50f
+  private const val MID_FACTOR = 0.5f
+  private const val DIVIDER_GAP = PADDING / 2 + TEXT_SPACING
 
   override fun renderModule() {
     val width = getWidth()
     val height = getHeight()
+
+    drawBackground(width, height)
+    drawStats(height)
+  }
+
+  private fun drawBackground(width: Float, height: Float) {
+    SkiaShapes.drawRoundedRect(Vec2f(xPos, yPos), Dimensions(width, height), CORNER_RADIUS, ColorPalette.PANEL)
+    SkiaShapes.drawRoundedOutline(
+      Vec2f(xPos, yPos),
+      Dimensions(width, height),
+      CORNER_RADIUS,
+      ColorPalette.BORDER,
+      OUTLINE_THICKNESS
+    )
+  }
+
+  private fun drawStats(height: Float) {
     val centerY = yPos + height / 2
 
-    SkiaRenderer.roundedRect(xPos, yPos, width, height, 5f, ColorPalette.PANEL)
-    SkiaRenderer.roundedOutline(xPos, yPos, width, height, 5f, ColorPalette.BORDER, 2f)
-
     var currentX = xPos + PADDING
-    val textY = centerY - 16f / 2
+    val textY = centerY - FONT_SIZE / 2
 
     for ((index, stat) in getStats().withIndex()) {
       if (index > 0) {
-        currentX += PADDING / 2 + 5f
-
-        val midY = yPos + height * 0.5f
-        SkiaRenderer.line(currentX, currentX, midY - 10f, midY + 10f, ColorPalette.BORDER, 2f)
-
-        currentX += PADDING / 2 + 5f
+        currentX = drawDivider(currentX, height)
       }
 
-      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.value, currentX, textY, 16f, ColorPalette.TEXT_PRIMARY)
-      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, 16f) + 5f
-
-      SkiaRenderer.text(SkiaRenderer.primaryFont, stat.unit, currentX, textY, 16f, ColorPalette.TEXT_DISABLED)
-      currentX += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, 16f)
+      currentX = drawStatText(stat, currentX, textY)
     }
+  }
+
+  private fun drawDivider(startX: Float, height: Float): Float {
+    var x = startX + DIVIDER_GAP
+
+    val midY = yPos + height * MID_FACTOR
+    SkiaShapes.drawLine(
+      Vec2f(x, midY - DIVIDER_HALF_HEIGHT),
+      Vec2f(x, midY + DIVIDER_HALF_HEIGHT),
+      ColorPalette.BORDER,
+      OUTLINE_THICKNESS
+    )
+
+    x += DIVIDER_GAP
+    return x
+  }
+
+  private fun drawStatText(stat: Stat, startX: Float, textY: Float): Float {
+    var x = startX
+
+    SkiaText.drawText(
+      SkiaText.primaryFont,
+      stat.value,
+      Vec2f(x, textY),
+      SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_PRIMARY)
+    )
+    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+
+    SkiaText.drawText(
+      SkiaText.primaryFont,
+      stat.unit,
+      Vec2f(x, textY),
+      SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_DISABLED)
+    )
+    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+
+    return x
   }
 
   override fun getWidth(): Float {
@@ -51,17 +106,17 @@ object PerformanceHUD : RenderableModule(
 
     for ((index, stat) in getStats().withIndex()) {
       if (index > 0) {
-        width += PADDING / 2 + PADDING / 2 + 10f
+        width += PADDING + 2 * TEXT_SPACING
       }
 
-      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.value, 16f) + 5f
-      width += SkiaRenderer.textWidth(SkiaRenderer.primaryFont, stat.unit, 16f)
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
     }
 
     return width
   }
 
-  override fun getHeight(): Float = 50f
+  override fun getHeight(): Float = PANEL_HEIGHT
 
   private fun getStats() = listOf(
     Stat(getFPS(), "FPS"),

@@ -1,36 +1,68 @@
 package org.cobalt.command
 
 import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.ChatFormatting
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.ChatSendEvent
 import org.cobalt.util.ChatUtils
-import org.slf4j.LoggerFactory
 
+/**
+ * Manages the registration of custom commands.
+ */
 object CommandManager {
-  private val logger = LoggerFactory.getLogger(this::class.java)
 
+  /**
+   * Command dispatcher used for registering and executing custom commands.
+   */
   @JvmStatic
-  val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
+  internal val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
 
-  @JvmStatic
-  val prefix: Char = '.'
+  /**
+   * Prefix for custom commands.
+   */
+  internal const val PREFIX: Char = '.'
 
+  init {
+    EventBus.register(this)
+  }
+
+  /**
+   * Registers a command with the dispatcher.
+   *
+   * @param command the command instance to register
+   */
   @JvmStatic
   fun register(command: Command) {
     command.build().forEach { dispatcher.register(it) }
   }
 
-  @JvmStatic
-  fun handleCommandExecution(content: String) {
+  @Suppress("UndocumentedPublicFunction")
+  @SubscribeEvent
+  fun handleCommandExecution(@Suppress("UnusedParameter") event: ChatSendEvent) {
+    val content = event.message
+
+    if (!content.startsWith(PREFIX)) {
+      return
+    }
+
     val player = minecraft.player ?: return
-    val commandLine = content.removePrefix(prefix.toString()).trim()
-    if (commandLine.isEmpty()) return
+    val commandLine = content.removePrefix(PREFIX.toString()).trim()
+
+    if (commandLine.isEmpty()) {
+      return
+    }
+
     try {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
-    } catch (exception: Exception) {
-      logger.error("Error while executing command: $commandLine", exception)
-      ChatUtils.sendMessage("${ChatFormatting.RED}Something went wrong when executing the command")
+    } catch (exception: CommandSyntaxException) {
+      ChatUtils.sendSystemMessage("${ChatFormatting.RED}${exception.message}")
     }
+
+    event.setCancelled(true)
   }
+
 }

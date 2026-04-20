@@ -18,11 +18,25 @@
 
 package org.cobalt.util.skia
 
-import io.github.humbleui.skija.*
+import io.github.humbleui.skija.Canvas
+import io.github.humbleui.skija.ColorSpace
+import io.github.humbleui.skija.ColorType
+import io.github.humbleui.skija.DirectContext
+import io.github.humbleui.skija.FramebufferFormat
+import io.github.humbleui.skija.Surface
+import io.github.humbleui.skija.SurfaceOrigin
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.util.skia.gl.States
 import org.lwjgl.opengl.GL11
+
+private const val DEFAULT_SAMPLES = 0
+private const val DEFAULT_STENCIL_BITS = 8
+private const val DEFAULT_PREFER_SAMPLES = 0
+private const val CLEAR_R = 0f
+private const val CLEAR_G = 0f
+private const val CLEAR_B = 0f
+private const val CLEAR_A_TRANSPARENT = 0f
 
 internal object SkiaContext {
 
@@ -37,15 +51,31 @@ internal object SkiaContext {
     EventBus.register(this)
   }
 
-  fun initSkia(width: Int, height: Int) {
-    if (context == null) {
-      context = DirectContext.makeGL()
-    }
+  internal fun initSkia(width: Int, height: Int) {
+    ensureContext()
 
+    recreateRenderTarget(width, height)
+
+    canvas = surface?.canvas
+  }
+
+  private fun ensureContext() {
+    if (context == null) context = DirectContext.makeGL()
+  }
+
+  private fun recreateRenderTarget(width: Int, height: Int) {
     surface?.close()
     renderTarget?.close()
 
-    renderTarget = WrappedBackendRenderTarget.makeGL(width, height, 0, 8, 0, FramebufferFormat.GR_GL_RGBA8)
+    renderTarget = WrappedBackendRenderTarget.makeGL(
+      width,
+      height,
+      DEFAULT_SAMPLES,
+      DEFAULT_STENCIL_BITS,
+      DEFAULT_PREFER_SAMPLES,
+      FramebufferFormat.GR_GL_RGBA8
+    )
+
     surface = Surface.wrapBackendRenderTarget(
       requireNotNull(context),
       requireNotNull(renderTarget),
@@ -53,28 +83,25 @@ internal object SkiaContext {
       ColorType.RGBA_8888,
       ColorSpace.getSRGB()
     )
-
-    canvas = surface?.canvas
   }
 
-  fun draw() {
-    if (context == null || surface == null) return
+  internal fun draw() {
+    val ctx = context ?: return
+    val srf = surface ?: return
 
     States.push()
     GL11.glDisable(GL11.GL_CULL_FACE)
-    GL11.glClearColor(0f, 0f, 0f, 0f)
+    GL11.glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A_TRANSPARENT)
 
-    context?.resetGLAll()
+    ctx.resetGLAll()
 
-    canvas?.let { canvas ->
-      context?.let { context ->
-        renderTarget?.let { renderTarget ->
-          EventBus.post(SkiaDrawEvent(context, renderTarget, canvas))
-        }
-      }
+    val cvs = canvas
+    val rt = renderTarget
+    if (cvs != null && rt != null) {
+      EventBus.post(SkiaDrawEvent(ctx, rt, cvs))
     }
 
-    context?.flushAndSubmit(surface)
+    ctx.flushAndSubmit(srf)
 
     States.pop()
   }

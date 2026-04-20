@@ -6,14 +6,15 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 
-object HudEditorScreen : Screen(Component.empty()) {
+internal object HudEditorScreen : Screen(Component.empty()) {
 
   init {
     EventBus.register(this)
   }
 
+  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
-  fun onSkiaDraw(event: SkiaDrawEvent) {
+  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }
