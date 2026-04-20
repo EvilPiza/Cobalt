@@ -5,11 +5,6 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.dsl.mouseX
 import org.cobalt.dsl.mouseY
 
-/**
- * Utility for handling mouse input and cursor state within the client.
- *
- * Provides access to mouse position and controls for cursor interaction.
- */
 object WindowUtils {
 
   private const val BASE_WIDTH = 1920f

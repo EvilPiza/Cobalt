@@ -10,9 +10,6 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.ChatSendEvent
 import org.cobalt.util.ChatUtils
 
-/**
- * Manages the registration of custom commands.
- */
 object CommandManager {
 
   /**

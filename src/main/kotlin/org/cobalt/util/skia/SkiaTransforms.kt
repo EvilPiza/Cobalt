@@ -1,11 +1,8 @@
 package org.cobalt.util.skia
 
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaContext.canvas
 
-/**
- * Utility for applying transform and state operations to the current Skia canvas.
- */
 object SkiaTransforms {
 
   /**

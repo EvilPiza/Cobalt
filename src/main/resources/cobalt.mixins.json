@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "client.AbstractClientPlayerAccessor",
+    "client.MinecraftAccessor",
     "client.MinecraftMixin",
+    "client.MouseHandlerMixin",
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
     "gui.GuiRendererMixin",

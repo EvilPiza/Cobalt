@@ -7,9 +7,6 @@ import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
 import org.slf4j.LoggerFactory
 
-/**
- * Utility for sending chat and system messages.
- */
 object ChatUtils {
 
   private val logger = LoggerFactory.getLogger(this::class.java)

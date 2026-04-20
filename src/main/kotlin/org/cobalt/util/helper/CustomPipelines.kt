@@ -6,10 +6,7 @@ import java.util.*
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
 
-/**
- * Collection of custom RenderPipeline definitions used for rendering.
- */
-object Pipelines {
+object CustomPipelines {
 
   private const val NAMESPACE = "cobalt"
   private const val PIPELINE_DIR = "pipeline"

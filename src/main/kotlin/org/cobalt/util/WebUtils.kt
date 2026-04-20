@@ -5,9 +5,6 @@ import java.net.HttpURLConnection
 import java.net.URI
 import org.cobalt.Cobalt
 
-/**
- * Utility for web-related operations.
- */
 object WebUtils {
 
   /**

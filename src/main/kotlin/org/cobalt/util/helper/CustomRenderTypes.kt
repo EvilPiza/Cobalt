@@ -6,10 +6,7 @@ import net.minecraft.client.renderer.rendertype.OutputTarget
 import net.minecraft.client.renderer.rendertype.RenderSetup
 import net.minecraft.client.renderer.rendertype.RenderType
 
-/**
- * Collection of predefined RenderType layers used for custom rendering.
- */
-object Layers {
+object CustomRenderTypes {
 
   private val LINES: RenderType = RenderType.create(
     "cobalt:lines",
@@ -23,7 +20,7 @@ object Layers {
   private val LINES_ESP: RenderType = RenderType.create(
     "cobalt:lines_esp",
     RenderSetup
-      .builder(Pipelines.LINES_ESP)
+      .builder(CustomPipelines.LINES_ESP)
       .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
       .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
       .createRenderSetup()
@@ -32,14 +29,14 @@ object Layers {
   private val QUADS: RenderType = RenderType.create(
     "cobalt:quads",
     RenderSetup
-      .builder(Pipelines.QUADS)
+      .builder(CustomPipelines.QUADS)
       .createRenderSetup()
   )
 
   private val QUADS_ESP: RenderType = RenderType.create(
     "cobalt:quads_esp",
     RenderSetup
-      .builder(Pipelines.QUADS_ESP)
+      .builder(CustomPipelines.QUADS_ESP)
       .createRenderSetup()
   )
 

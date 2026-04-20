@@ -7,10 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 import org.cobalt.event.annotation.SubscribeEvent
 import org.slf4j.LoggerFactory
 
-/**
- * Central event bus responsible for registering, unregistering,
- * and dispatching events to subscribed listeners.
- */
 object EventBus {
 
   private data class Handler(

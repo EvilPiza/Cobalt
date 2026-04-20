@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Vec2f
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.util.skia.SkiaTransforms
 

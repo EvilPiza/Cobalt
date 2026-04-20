@@ -2,11 +2,7 @@ package org.cobalt.ui
 
 import java.awt.Color
 
-/**
- * Global color definitions used across the UI.
- *
- * TODO: Bring to a theme manager
- */
+// TODO: Bring to a theme manager
 @Suppress("UndocumentedPublicProperty")
 object ColorPalette {
 

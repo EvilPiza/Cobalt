@@ -9,13 +9,10 @@ import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.SamplingMode
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
-import org.cobalt.math.Dimensions
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Dimensions
+import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaContext.canvas
 
-/**
- * Utility for loading, caching, and drawing images via Skia.
- */
 object SkiaImages {
 
   private val images = mutableMapOf<ImageCacheKey, SkiaImage>()

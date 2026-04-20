@@ -5,9 +5,6 @@ import net.minecraft.world.phys.AABB
 import org.cobalt.mixin.render.FrustumInvoker
 import org.joml.FrustumIntersection
 
-/**
- * Utility functions for frustum-based visibility checks.
- */
 object FrustumUtils {
 
   /**

@@ -5,13 +5,10 @@ import io.github.humbleui.skija.PaintMode
 import io.github.humbleui.skija.Shader
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
-import org.cobalt.math.Dimensions
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Dimensions
+import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaContext.canvas
 
-/**
- * Utility for drawing basic shape primitives via Skia.
- */
 object SkiaShapes {
 
   /**

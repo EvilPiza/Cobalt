@@ -11,12 +11,9 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt
-import org.cobalt.util.helper.Layers
+import org.cobalt.util.helper.CustomRenderTypes
 import org.joml.Matrix4f
 
-/**
- * Utility rendering helpers for drawing boxes, outlines, tracers and lines in world space.
- */
 object RenderUtils {
 
   private const val ALPHA = 100
@@ -184,7 +181,7 @@ object RenderUtils {
 
     val fillColor = Color(color.red, color.green, color.blue, ALPHA)
 
-    val quadBuffer = bufferSource.getBuffer(Layers.getQuads(esp))
+    val quadBuffer = bufferSource.getBuffer(CustomRenderTypes.getQuads(esp))
 
     for (index in BOX_QUADS) {
       val corner = corners[index]
@@ -196,7 +193,7 @@ object RenderUtils {
       ).setColor(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
     }
 
-    bufferSource.endBatch(Layers.getQuads(esp))
+    bufferSource.endBatch(CustomRenderTypes.getQuads(esp))
   }
 
   private fun drawBoxLines(
@@ -212,7 +209,7 @@ object RenderUtils {
     val matrix = poseStack.last().pose()
     val poseEntry = poseStack.last()
 
-    val lineBuffer = bufferSource.getBuffer(Layers.getLines(esp))
+    val lineBuffer = bufferSource.getBuffer(CustomRenderTypes.getLines(esp))
 
     for (i in BOX_LINES.indices step 2) {
       val lineStart = corners[BOX_LINES[i]]
@@ -222,7 +219,7 @@ object RenderUtils {
       addBlockLineVertices(lineBuffer, matrix, poseEntry, lineStart, lineEnd, lineNormal, color, lineWidth, cameraPos)
     }
 
-    bufferSource.endBatch(Layers.getLines(esp))
+    bufferSource.endBatch(CustomRenderTypes.getLines(esp))
   }
 
   private fun addBlockLineVertices(
@@ -258,11 +255,11 @@ object RenderUtils {
     lineWidth: Float,
   ) {
     val bufferSource = context.bufferSource()
-    val lineBuffer = bufferSource.getBuffer(Layers.getLines(esp))
+    val lineBuffer = bufferSource.getBuffer(CustomRenderTypes.getLines(esp))
 
     addLineVertices(context, lineBuffer, from, to, color, lineWidth)
 
-    bufferSource.endBatch(Layers.getLines(esp))
+    bufferSource.endBatch(CustomRenderTypes.getLines(esp))
   }
 
   private fun addLineVertices(

@@ -2,8 +2,8 @@ package org.cobalt.module.impl.render
 
 import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
-import org.cobalt.math.Dimensions
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Dimensions
+import org.cobalt.util.Vec2f
 import org.cobalt.module.ModuleCategory
 import org.cobalt.module.RenderableModule
 import org.cobalt.ui.ColorPalette

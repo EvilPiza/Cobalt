@@ -10,9 +10,6 @@ import org.cobalt.dsl.blue
 import org.cobalt.dsl.green
 import org.cobalt.dsl.red
 
-/**
- * Utility functions for color manipulation and text styling.
- */
 object ColorUtils {
 
   private const val MIN_TEXT_LENGTH = 1

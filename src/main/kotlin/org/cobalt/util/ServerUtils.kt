@@ -12,9 +12,6 @@ private const val TICKS_PER_SECOND = 20.0
 private const val MS_PER_SECOND = 1000.0
 private const val TPS_SMOOTHING = 0.05f
 
-/**
- * Utility for server-related information.
- */
 object ServerUtils {
 
   private var lastTickTime = -1L

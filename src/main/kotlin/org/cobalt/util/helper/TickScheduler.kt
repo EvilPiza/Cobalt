@@ -5,9 +5,6 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
 
-/**
- * Utility for scheduling delayed tasks based on client tick updates.
- */
 object TickScheduler {
 
   private val taskQueue = PriorityQueue<ScheduledTask>(Comparator.comparingLong(ScheduledTask::executeTick))

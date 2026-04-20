@@ -1,4 +1,4 @@
-package org.cobalt.math
+package org.cobalt.util
 
 /**
  * Simple 2D vector

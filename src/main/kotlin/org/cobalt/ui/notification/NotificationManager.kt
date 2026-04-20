@@ -3,13 +3,10 @@ package org.cobalt.ui.notification
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils
 import org.cobalt.util.skia.SkiaTransforms
 
-/**
- * Central manager for Cobalt notifications.
- */
 object NotificationManager {
 
   private val notificationsList = mutableSetOf<Notification>()

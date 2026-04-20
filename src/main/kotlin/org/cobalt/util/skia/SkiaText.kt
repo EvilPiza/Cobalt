@@ -8,12 +8,9 @@ import io.github.humbleui.skija.FontMgr
 import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.TextLine
 import java.io.IOException
-import org.cobalt.math.Vec2f
+import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaContext.canvas
 
-/**
- * Utility for font loading and text rendering via Skia.
- */
 object SkiaText {
 
   /**
