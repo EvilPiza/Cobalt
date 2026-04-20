@@ -3,17 +3,17 @@ package org.cobalt.module.impl.render
 import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.math.Dimensions
-import org.cobalt.math.SimpleVec3
+import org.cobalt.math.Vec2f
 import org.cobalt.module.ModuleCategory
 import org.cobalt.module.RenderableModule
 import org.cobalt.ui.ColorPalette
 import org.cobalt.util.ServerUtils
-import org.cobalt.render.skia.SkiaShapes
-import org.cobalt.render.skia.SkiaText
+import org.cobalt.util.skia.SkiaShapes
+import org.cobalt.util.skia.SkiaText
 
 private const val DEFAULT_OFFSET = 5.0f
 
-object PerformanceHUD : RenderableModule(
+internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
   xPos = DEFAULT_OFFSET,
@@ -39,9 +39,9 @@ object PerformanceHUD : RenderableModule(
   }
 
   private fun drawBackground(width: Float, height: Float) {
-    SkiaShapes.roundedRect(SimpleVec3(xPos, yPos), Dimensions(width, height), CORNER_RADIUS, ColorPalette.PANEL)
-    SkiaShapes.roundedOutline(
-      SimpleVec3(xPos, yPos),
+    SkiaShapes.drawRoundedRect(Vec2f(xPos, yPos), Dimensions(width, height), CORNER_RADIUS, ColorPalette.PANEL)
+    SkiaShapes.drawRoundedOutline(
+      Vec2f(xPos, yPos),
       Dimensions(width, height),
       CORNER_RADIUS,
       ColorPalette.BORDER,
@@ -68,9 +68,9 @@ object PerformanceHUD : RenderableModule(
     var x = startX + DIVIDER_GAP
 
     val midY = yPos + height * MID_FACTOR
-    SkiaShapes.line(
-      SimpleVec3(x, midY - DIVIDER_HALF_HEIGHT),
-      SimpleVec3(x, midY + DIVIDER_HALF_HEIGHT),
+    SkiaShapes.drawLine(
+      Vec2f(x, midY - DIVIDER_HALF_HEIGHT),
+      Vec2f(x, midY + DIVIDER_HALF_HEIGHT),
       ColorPalette.BORDER,
       OUTLINE_THICKNESS
     )
@@ -82,21 +82,21 @@ object PerformanceHUD : RenderableModule(
   private fun drawStatText(stat: Stat, startX: Float, textY: Float): Float {
     var x = startX
 
-    SkiaText.text(
+    SkiaText.drawText(
       SkiaText.primaryFont,
       stat.value,
-      SimpleVec3(x, textY),
+      Vec2f(x, textY),
       SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_PRIMARY)
     )
-    x += SkiaText.textWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
 
-    SkiaText.text(
+    SkiaText.drawText(
       SkiaText.primaryFont,
       stat.unit,
-      SimpleVec3(x, textY),
+      Vec2f(x, textY),
       SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_DISABLED)
     )
-    x += SkiaText.textWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
 
     return x
   }
@@ -109,8 +109,8 @@ object PerformanceHUD : RenderableModule(
         width += PADDING + 2 * TEXT_SPACING
       }
 
-      width += SkiaText.textWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += SkiaText.textWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
     }
 
     return width

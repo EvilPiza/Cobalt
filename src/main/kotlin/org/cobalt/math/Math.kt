@@ -1,19 +1,23 @@
 package org.cobalt.math
 
-/** Simple 3D vector */
-data class SimpleVec3(
-  /** X property */
+/**
+ * Simple 2D vector
+ *
+ * @property x x property
+ * @property y y property
+ */
+data class Vec2f(
   val x: Float,
-  /** Y property */
   val y: Float,
-  /** Z property */
-  val z: Float = 0f
 )
 
-/** Dimensions wrapper */
+/**
+ * Dimensions wrapper
+ *
+ * @property width width property
+ * @property height height property
+ */
 data class Dimensions(
-  /** Width property */
   val width: Float,
-  /** Height property */
   val height: Float
 )

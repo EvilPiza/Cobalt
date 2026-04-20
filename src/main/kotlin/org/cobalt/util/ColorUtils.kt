@@ -10,20 +10,23 @@ import org.cobalt.dsl.blue
 import org.cobalt.dsl.green
 import org.cobalt.dsl.red
 
-/** Color-related utility helpers for building text gradients and extracting ARGB components. */
+/**
+ * Utility functions for color manipulation and text styling.
+ */
 object ColorUtils {
 
   private const val MIN_TEXT_LENGTH = 1
   private const val SHIFT_RED = 16
   private const val SHIFT_GREEN = 8
 
-  /** Build a MutableComponent where each character of the input text is colored with an interpolated
-   * color between startColor and endColor.
+  /**
+   * Creates a gradient-colored text component where each character
+   * is interpolated between two ARGB colors.
    *
-   * @param text the text to colorize
-   * @param startColor ARGB integer color used at the start of the text
-   * @param endColor ARGB integer color used at the end of the text
-   * @return a MutableComponent with per-character gradient coloring
+   * @param text input text
+   * @param startColor starting ARGB color
+   * @param endColor ending ARGB color
+   * @return gradient-colored [MutableComponent]
    */
   @JvmStatic
   fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
@@ -52,19 +55,39 @@ object ColorUtils {
     return result
   }
 
-  /** Return the red component (0-255) of the supplied ARGB color integer. */
+  /**
+   * Extracts the red channel from an ARGB color value.
+   *
+   * @param color the ARGB color integer
+   * @return the red component (0–255)
+   */
   @JvmStatic
   fun getRed(color: Int) = color.red
 
-  /** Return the green component (0-255) of the supplied ARGB color integer. */
+  /**
+   * Extracts the green channel from an ARGB color value.
+   *
+   * @param color the ARGB color integer
+   * @return the green component (0–255)
+   */
   @JvmStatic
   fun getGreen(color: Int) = color.green
 
-  /** Return the blue component (0-255) of the supplied ARGB color integer. */
+  /**
+   * Extracts the blue channel from an ARGB color value.
+   *
+   * @param color the ARGB color integer
+   * @return the blue component (0–255)
+   */
   @JvmStatic
   fun getBlue(color: Int) = color.blue
 
-  /** Return the alpha component (0-255) of the supplied ARGB color integer. */
+  /**
+   * Extracts the alpha channel from an ARGB color value.
+   *
+   * @param color the ARGB color integer
+   * @return the alpha component (0–255)
+   */
   @JvmStatic
   fun getAlpha(color: Int) = color.alpha
 

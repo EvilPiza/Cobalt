@@ -64,7 +64,7 @@ public abstract class CommandSuggestionsMixin {
       return;
     }
 
-    if (!reader.canRead() || reader.peek() != CommandManager.getPrefix()) {
+    if (!reader.canRead() || reader.peek() != CommandManager.PREFIX) {
       reader.setCursor(0);
       return;
     }

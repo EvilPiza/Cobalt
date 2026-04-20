@@ -1,4 +1,4 @@
-package org.cobalt.render.skia
+package org.cobalt.util.skia
 
 import io.github.humbleui.skija.Data
 import io.github.humbleui.skija.Image
@@ -12,27 +12,22 @@ import kotlinx.coroutines.runBlocking
 import org.cobalt.util.WebUtils
 
 /**
- * Represents a lazily-loaded image resource. Supports both raster images and
- * SVG documents. Raster images are loaded as deferred Skia [Image] objects,
- * while SVGs are parsed into an [SVGDOM] and can be rasterized on demand.
+ * Image wrapper used by [SkiaImages].
  *
- * @property radius optional corner radius to apply when rendering the image
- * @property colorMask optional ARGB color mask applied when drawing
+ * @property isSvg whether the image source is an SVG file
+ * @property image raster image instance (null if SVG)
+ * @property svgDom parsed SVG document (null if raster image)
+ *
+ * @param identifier path or URL to the image resource
+ * @property radius optional corner radius for rendering
+ * @property colorMask optional ARGB color mask applied to the image
+ *
+ * @see SkiaImages
  */
 class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: Int? = null) {
 
-  /** True when the identifier points to an SVG resource (case-insensitive). */
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
-
-  /**
-   * Deferred Skia [Image] used for raster formats (png/jpg/etc.). This will be
-   * null for SVG resources.
-   */
   val image: Image?
-
-  /**
-   * Parsed [SVGDOM] for SVG resources. Null for raster images.
-   */
   val svgDom: SVGDOM?
 
   private var cachedRaster: Image? = null
@@ -52,17 +47,13 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
   }
 
   /**
-   * Return a raster [Image] sized to the requested [width]/[height].
+   * Returns a rasterized image for the given size.
    *
-   * For raster inputs this returns the deferred image (no resizing). For SVG
-   * inputs this will render the SVG to a raster surface, cache the generated
-   * snapshot and return it. Subsequent calls with the same dimensions will
-   * return the cached snapshot.
+   * For SVG sources, the image is generated and cached per size.
    *
-   * @param width desired pixel width of the rasterized image
-   * @param height desired pixel height of the rasterized image
-   * @return a Skia [Image] at the requested dimensions, or null if the image
-   *         could not be loaded or rendered
+   * @param width target width
+   * @param height target height
+   * @return raster image or null if unavailable
    */
   fun getOrGenerateRaster(width: Int, height: Int): Image? {
     if (!isSvg) return image
@@ -79,6 +70,15 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     }
 
     return cachedRaster
+  }
+
+  /**
+   * Releases all underlying Skia resources.
+   */
+  fun delete() {
+    image?.close()
+    svgDom?.close()
+    cachedRaster?.close()
   }
 
   private fun isCachedMatch(width: Int, height: Int): Boolean {
@@ -113,18 +113,8 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     return snapshot
   }
 
-  /**
-   * Release any native resources (Skia images and DOMs) held by this
-   * instance. After calling this method the instance should not be used to
-   * produce images.
-   */
-  fun delete() {
-    image?.close()
-    svgDom?.close()
-    cachedRaster?.close()
-  }
-
   companion object {
+
     private fun getByteArray(path: String): ByteArray {
       val trimmedPath = path.trim()
       return if (trimmedPath.startsWith("http")) runBlocking { WebUtils.getInputStream(trimmedPath).readBytes() }
@@ -134,6 +124,7 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
         else this::class.java.getResourceAsStream(trimmedPath)?.readBytes() ?: throw FileNotFoundException(trimmedPath)
       }
     }
+
   }
 
 }

@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.cobalt.render.skia.gl
+package org.cobalt.util.skia.gl
 
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*
@@ -45,28 +45,19 @@ private const val SCISSOR_W = 2
 private const val SCISSOR_H = 3
 
 /**
- * Represents a snapshot of relevant OpenGL state that can be pushed and
- * restored. The snapshot reads multiple GL bindings and pixel store
- * parameters so rendering code can change GL state and then restore it to
- * the previous values.
+ * Represents the OpenGL state.
  *
- * @param glVersion computed GL version (major * 100 + minor * 10) used to
- * determine which GL features are available when capturing/restoring state.
+ * @property glVersion The current OpenGL version.
  */
 class State(private val glVersion: Int) {
 
   private val props = Properties()
 
   /**
-   * Capture the current GL state into this [State] instance.
+   * Saves the current OpenGL state.
    *
-   * This method queries a wide set of GL bindings (textures, buffers,
-   * vertex arrays), pixel store parameters and enabled/disabled flags and
-   * stores them inside the internal [Properties] object. It also resets a
-   * handful of pixel store parameters (unpack alignment/row/skip) to safe
-   * defaults required by the renderer.
-   *
-   * @return this [State] instance for convenience.
+   * @return this [State] instance for convenience
+   * @see pop
    */
   fun push(): State {
     with(props) {
@@ -158,28 +149,18 @@ class State(private val glVersion: Int) {
   }
 
   /**
-   * Restore GL state previously captured by [push].
-   *
-   * The stored values are applied back to the GL context, including bound
-   * program, textures, samplers, vertex arrays, pixel store parameters and
-   * enabled/disabled capabilities. The method returns this [State]
-   * instance for chaining if desired.
+   * Restores the state that was saved with [push].
    *
    * @return this [State] instance after restoration.
+   * @see push
    */
   fun pop(): State {
     restoreProgramAndTexture()
-
     restoreSamplersAndBindings()
-
     restoreBlendAndCapabilities()
-
     restorePolygonViewportAndScissor()
-
     restorePixelStoresAndBuffers()
-
     restoreDepthMask()
-
     return this
   }
 

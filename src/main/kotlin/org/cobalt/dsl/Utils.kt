@@ -2,27 +2,38 @@ package org.cobalt.dsl
 
 import org.cobalt.Cobalt.minecraft
 
-
-/** Extract the red component (0-255) from an ARGB integer. */
+/**
+ * Extracts the red component from an ARGB color integer.
+ */
 inline val Int.red
   get() = this shr 16 and 0xFF
 
-/** Extract the green component (0-255) from an ARGB integer. */
+/**
+ * Extracts the green component from an ARGB color integer.
+ */
 inline val Int.green
   get() = this shr 8 and 0xFF
 
-/** Extract the blue component (0-255) from an ARGB integer. */
+/**
+ * Extracts the blue component from an ARGB color integer.
+ */
 inline val Int.blue
   get() = this and 0xFF
 
-/** Extract the alpha component (0-255) from an ARGB integer. */
+/**
+ * Extracts the alpha component from an ARGB color integer.
+ */
 inline val Int.alpha
   get() = this shr 24 and 0xFF
 
-/** Current mouse X position in screen coordinates as a Float. */
+/**
+ * The current X position of the mouse cursor.
+ */
 inline val mouseX: Float
   get() = minecraft.mouseHandler.xpos().toFloat()
 
-/** Current mouse Y position in screen coordinates as a Float. */
+/**
+ * The current Y position of the mouse cursor.
+ */
 inline val mouseY: Float
   get() = minecraft.mouseHandler.ypos().toFloat()

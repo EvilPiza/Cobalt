@@ -16,23 +16,18 @@
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cobalt.render.skia.gl
+package org.cobalt.util.skia.gl
 
-import java.util.*
-import org.lwjgl.opengl.GL30.glGetIntegerv
+import java.util.Stack
 import org.lwjgl.opengl.GL30.GL_MAJOR_VERSION
 import org.lwjgl.opengl.GL30.GL_MINOR_VERSION
+import org.lwjgl.opengl.GL30.glGetIntegerv
 
 private const val GL_MAJOR_MULTIPLIER = 100
 private const val GL_MINOR_MULTIPLIER = 10
 
 /**
- * Utility that manages a stack of OpenGL state snapshots.
- *
- * Use [push] to capture the current GL state and [pop] to restore the most
- * recently captured state. The object's initializer reads the OpenGL major
- * and minor version and stores a computed integer representation for use by
- * created [State] instances.
+ * Stores and restores OpenGL states.
  */
 object States {
 
@@ -40,17 +35,14 @@ object States {
   private val states = Stack<State>()
 
   /**
-   * Capture the current GL state and push a snapshot onto the internal stack.
-   *
-   * A new [State] is created using the GL version detected at startup and
-   * its [State.push] method is invoked to record the GL state.
+   * Pushes the current OpenGL state onto the stack.
    */
   fun push() {
     states += State(glVersion).push()
   }
 
   /**
-   * Restore and remove the most recently pushed GL state snapshot.
+   * Pops the last OpenGL state from the stack and restores it.
    *
    * Throws an [IllegalArgumentException] if there is no saved state to
    * restore.

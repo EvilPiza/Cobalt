@@ -1,26 +1,40 @@
 package org.cobalt.event
 
-/** Base event type used by the module event system. */
+/**
+ * Base class for all custom Cobalt events.
+ */
 abstract class Event {
 
-  /** Base class for cancellable events which can be prevented from propagating. */
+  /**
+   * Base class for events that can be canceled.
+   */
   abstract class Cancellable : Event() {
 
     private var cancelled = false
 
-    /** Return true when this event has been cancelled and should not be processed further. */
+    /**
+     * Returns whether this event has been canceled.
+     *
+     * @return true if the event is canceled, false otherwise
+     */
     fun isCancelled(): Boolean {
       return cancelled
     }
 
-    /** Mark this event as cancelled or not. */
+    /**
+     * Sets the canceled state of this event.
+     *
+     * @param cancelled whether the event should be canceled
+     */
     fun setCancelled(cancelled: Boolean) {
       this.cancelled = cancelled
     }
 
   }
 
-  /** Event delivery priority used by subscribers to control ordering. */
+  /**
+   * Priority levels used to determine event listener execution order.
+   */
   enum class Priority {
 
     /** Highest delivery priority; handlers with this priority run before others. */
@@ -38,10 +52,10 @@ abstract class Event {
     /** Lowest delivery priority; runs last. */
     LOWEST;
 
-    /** Numeric weight corresponding to the priority's ordinal. */
-    fun weight(): Int {
-      return ordinal
-    }
+    /**
+     * Numeric weight used for sorting priorities.
+     */
+    fun weight(): Int = ordinal
 
   }
 

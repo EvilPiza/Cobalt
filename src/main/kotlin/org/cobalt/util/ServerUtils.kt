@@ -8,67 +8,58 @@ import org.cobalt.event.impl.PacketEvent
 import org.cobalt.mixin.client.AbstractClientPlayerAccessor
 
 private const val DEFAULT_TPS = 20f
-private const val TPS_ALPHA = 0.05
-private const val TPS_BETA = 0.95
-private const val TPS_SCALE = 20000.0
-private const val TPS_MAX = 20.0
+private const val TICKS_PER_SECOND = 20.0
+private const val MS_PER_SECOND = 1000.0
+private const val TPS_SMOOTHING = 0.05f
 
 /**
- * Utility object for retrieving and tracking server-side metrics such as
- * average TPS (ticks per second) and the current player ping.
- *
- * The object listens for incoming packets and updates an internal smoothed
- * TPS estimate whenever the server time packet is received.
+ * Utility for server-related information.
  */
 object ServerUtils {
-  private var lastTickTime = 0L
+
+  private var lastTickTime = -1L
 
   /**
-   * Smoothed average server ticks per second (TPS).
-   *
-   * This value is updated when a `ClientboundSetTimePacket` is received and is
-   * smoothed over time to avoid rapid fluctuations. The setter is private; the
-   * value should be read-only from callers.
+   * Average of the server's ticks per second (TPS).
    */
   var averageTps = DEFAULT_TPS
     private set
 
   /**
-   * The current player's network latency (ping) in milliseconds.
+   * Current network latency to the server in milliseconds.
    *
-   * Obtained from the Minecraft client player info via an accessor mixin.
-   * Returns 0 when no player info is available.
+   * @return player's ping value, or 0 if unavailable
    */
   val currentPing
-    get() = (minecraft.player as AbstractClientPlayerAccessor).clientPlayerInfo?.latency ?: 0
+    get() = (minecraft.player as AbstractClientPlayerAccessor)
+      .clientPlayerInfo?.latency ?: 0
 
   init {
     EventBus.register(this)
   }
 
-  /**
-   * Event handler for incoming packets. When a `ClientboundSetTimePacket` is
-   * received we use its arrival timestamp to estimate the server tick time and
-   * update [averageTps] with a small smoothing factor.
-   */
+  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
-  fun onPacketReceive(event: PacketEvent.Receive) {
-    if (event.packet is ClientboundSetTimePacket) {
-      val now = System.currentTimeMillis()
+  fun onPacketReceive(@Suppress("UnusedParameter") event: PacketEvent.Receive) {
+    if (event.packet !is ClientboundSetTimePacket) return
 
-      if (lastTickTime == 0L) {
-        lastTickTime = now
-        return
-      }
+    val now = System.currentTimeMillis()
 
-      val delta = now - lastTickTime
-      lastTickTime = now
+    val last = lastTickTime
+    lastTickTime = now
 
-      if (delta <= 0) return
+    if (last == -1L) return
 
-      val tps = (TPS_SCALE / delta).coerceIn(0.0, TPS_MAX)
-      averageTps = (averageTps * TPS_BETA + tps * TPS_ALPHA).toFloat()
-    }
+    val delta = now - last
+    if (delta <= 0) return
+
+    val tps = (MS_PER_SECOND * TICKS_PER_SECOND / delta)
+      .coerceAtMost(TICKS_PER_SECOND)
+      .toFloat()
+
+    averageTps =
+      averageTps * (1 - TPS_SMOOTHING) +
+        tps * TPS_SMOOTHING
   }
 
 }

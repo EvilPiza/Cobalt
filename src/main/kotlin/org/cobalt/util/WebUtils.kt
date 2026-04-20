@@ -5,15 +5,20 @@ import java.net.HttpURLConnection
 import java.net.URI
 import org.cobalt.Cobalt
 
-/** Small HTTP helpers for fetching resources. */
+/**
+ * Utility for web-related operations.
+ */
 object WebUtils {
 
-  /** Open an InputStream for the given URL using a simple GET request.
+  /**
+   * Opens an InputStream for the given URL using an HTTP GET request.
    *
-   * @param url the URL to fetch
-   * @param timeout connect/read timeout in milliseconds
-   * @param cache whether to allow URLConnection caching
-   * @return an InputStream for reading the response body; caller is responsible for closing it
+   * The caller is responsible for closing the returned stream.
+   *
+   * @param url target URL
+   * @param timeout connection and read timeout in milliseconds
+   * @param cache whether URLConnection caching is enabled
+   * @return [InputStream] of the HTTP response body
    */
   @JvmStatic
   fun getInputStream(url: String, timeout: Int = 5000, cache: Boolean = true): InputStream {

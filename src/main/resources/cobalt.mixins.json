@@ -6,7 +6,6 @@
   "client": [
     "client.AbstractClientPlayerAccessor",
     "client.MinecraftMixin",
-    "gui.ChatScreenMixin",
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
     "gui.GuiRendererMixin",

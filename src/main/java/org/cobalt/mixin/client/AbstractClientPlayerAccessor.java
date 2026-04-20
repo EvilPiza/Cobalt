@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AbstractClientPlayerAccessor {
 
   /**
-   * Returns the backing {@link PlayerInfo} instance from {@link AbstractClientPlayer}.
+   * Returns the client-side player info.
    *
-   * @return the current player info for this client player
+   * @return the {@link net.minecraft.client.multiplayer.PlayerInfo} associated with this player
    */
   @Accessor("playerInfo")
   PlayerInfo getClientPlayerInfo();

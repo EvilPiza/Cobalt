@@ -7,8 +7,12 @@ import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
 import org.slf4j.LoggerFactory
 
-  /** Utilities for sending chat/system messages and building message components. */
+/**
+ * Utility for sending chat and system messages.
+ */
 object ChatUtils {
+
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
   private val defaultPrefix = Component.literal("")
     .append(Component.literal("[").withStyle(ChatFormatting.DARK_GRAY))
@@ -20,12 +24,13 @@ object ChatUtils {
     .append(ColorUtils.buildTextGradient("${Cobalt.MOD_NAME} Debug", 0x369876, 0x71FF9E))
     .append(Component.literal("] ").withStyle(ChatFormatting.DARK_GRAY))
 
-  private val logger = LoggerFactory.getLogger(this::class.java)
+  private var lastDebugMessage: String? = null
 
-  /** Send a system chat message to the player using the configured message prefix.
+  /**
+   * Sends a system message to the local player with optional formatting.
    *
-   * @param message the plain text message to send
-   * @param type the MessageType that controls prefixing/formatting
+   * @param message the message content to display
+   * @param type determines how the message is formatted (prefix, debug, or raw)
    */
   @JvmStatic
   fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
@@ -38,22 +43,38 @@ object ChatUtils {
 
     val component = when (type) {
       MessageType.DEFAULT -> defaultPrefix.copy().append(stringToComponent(message))
-      MessageType.DEBUG -> debugPrefix.copy().append(stringToComponent(message))
       MessageType.RAW -> stringToComponent(message)
+      MessageType.DEBUG -> {
+        if (lastDebugMessage == message) {
+          return
+        }
+
+        lastDebugMessage = message
+        debugPrefix.copy().append(stringToComponent(message))
+      }
     }
 
     player.sendSystemMessage(component)
   }
 
-  /** Convert a plain string into a MutableComponent. */
+  /**
+   * Converts a plain string into a Minecraft chat component.
+   *
+   * @param string the raw text to convert
+   * @return a mutable chat component representing the input string
+   */
   @JvmStatic
   fun stringToComponent(string: String): MutableComponent {
     return Component.literal(string)
   }
 
-  /** Send a raw chat message as though typed by the player. */
+  /**
+   * Sends a chat message as the player.
+   *
+   * @param message the message to send in chat
+   */
   @JvmStatic
-  fun sendMessageAsPlayer(message: String) {
+  fun sendPlayerMessage(message: String) {
     val player = minecraft.player
 
     if (player == null) {
@@ -64,7 +85,11 @@ object ChatUtils {
     player.connection.sendChat(message)
   }
 
-  /** Send a client-side command string to the server. */
+  /**
+   * Sends a command as the player to the server.
+   *
+   * @param command the command string without the leading slash
+   */
   @JvmStatic
   fun sendCommand(command: String) {
     val player = minecraft.player
@@ -79,12 +104,25 @@ object ChatUtils {
 
 }
 
-/** Type of message to send via ChatUtils. */
+/**
+ * Type of message formatting used by [ChatUtils].
+ *
+ * Determines whether a prefix is applied or if the message is sent raw.
+ */
 enum class MessageType {
+
   /** Default message includes the mod prefix. */
   DEFAULT,
-  /** Debug messages include the debug prefix. */
-  DEBUG,
+
   /** Raw messages are sent without any prefix. */
-  RAW
+  RAW,
+
+  /**
+   * Debug message includes the debug prefix.
+   *
+   * Additionally, duplicate consecutive messages are ignored to prevent spam.
+   * If the same message is sent twice in a row, it will not be re-displayed.
+   */
+  DEBUG
+
 }

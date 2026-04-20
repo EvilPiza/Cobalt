@@ -16,37 +16,25 @@
  * You should have received a copy of the GNU General Public License along with Skija. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cobalt.render.skia
+package org.cobalt.util.skia
 
 import io.github.humbleui.skija.BackendRenderTarget
+import io.github.humbleui.skija.BackendRenderTarget._nMakeGL
 import io.github.humbleui.skija.impl.Stats
 import org.jetbrains.annotations.Contract
 
-/**
- * A thin wrapper around Skija's [BackendRenderTarget] that carries additional
- * information about the GL framebuffer used to back the render target.
- *
- * @property width framebuffer width in pixels
- * @property height framebuffer height in pixels
- * @property sampleCnt number of samples for multisampling
- * @property stencilBits number of stencil bits in the framebuffer
- * @property fbId OpenGL framebuffer id
- * @property fbFormat OpenGL framebuffer format
- * @param ptr native pointer passed to the Skija BackendRenderTarget base
- */
-class WrappedBackendRenderTarget(
+internal class WrappedBackendRenderTarget(
   val width: Int,
   val height: Int,
   val sampleCnt: Int,
   val stencilBits: Int,
   val fbId: Int,
   val fbFormat: Int,
-  ptr: Long
+  ptr: Long,
 ) : BackendRenderTarget(ptr) {
 
   companion object {
 
-    @Contract("_, _, _, _, _, _ -> new")
     /**
      * Create a new [WrappedBackendRenderTarget] backed by an OpenGL framebuffer.
      *
@@ -60,8 +48,9 @@ class WrappedBackendRenderTarget(
      * @param fbId OpenGL framebuffer id
      * @param fbFormat OpenGL framebuffer format
      */
-    fun makeGL(
-      width: Int, height: Int, sampleCnt: Int, stencilBits: Int, fbId: Int, fbFormat: Int
+    @Contract("_, _, _, _, _, _ -> new")
+    internal fun makeGL(
+      width: Int, height: Int, sampleCnt: Int, stencilBits: Int, fbId: Int, fbFormat: Int,
     ): WrappedBackendRenderTarget {
       Stats.onNativeCall()
       return WrappedBackendRenderTarget(

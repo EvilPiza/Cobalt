@@ -1,74 +1,137 @@
 package org.cobalt.module
 
-/** Base class for all client modules/features. */
+/**
+ * Base class for all client modules/features.
+ *
+ * A module represents a toggleable feature within the client.
+ *
+ * @property name the module name
+ * @property category the category used to group modules in the UI
+ *
+ * @see RenderableModule for modules with rendering capabilities
+ */
 abstract class Module(
-  /** Human-readable module name. */
   val name: String,
-  /** Category used to group modules in UI. */
   val category: ModuleCategory,
 ) {
 
-  /** Whether this module is currently enabled. */
-  var enabled: Boolean = false
+  private var enabled: Boolean = false
 
-  /** Called when the module is registered with the module manager. */
+  /**
+   * Called when the module is registered in the module system.
+   */
   open fun onRegistration() {}
 
-  /** Return true when this module supports render callbacks. */
+  /**
+   * Returns whether this module is currently enabled.
+   *
+   * @return true if the module is enabled, false otherwise
+   */
+  fun isEnabled(): Boolean = enabled
+
+  /**
+   * Sets the enabled state of this module.
+   *
+   * @param enabled whether the module should be enabled or disabled
+   */
+  fun setEnabled(enabled: Boolean) {
+    this.enabled = enabled
+  }
+
+  /**
+   * Returns whether this module supports rendering capabilities.
+   *
+   * @return true if this module is a [RenderableModule], false otherwise
+   */
   fun isRenderable(): Boolean {
     return this is RenderableModule
   }
 
 }
 
-/** Module variant that exposes screen-space rendering hooks and layout properties. */
+/**
+ * Module variant that exposes screen-space rendering hooks and layout properties.
+ *
+ * Extends [Module] with rendering capabilities.
+ *
+ * @property xPos UI X position for rendering the module.
+ * @property yPos UI Y position for rendering the module.
+ */
 abstract class RenderableModule(
   name: String,
   category: ModuleCategory,
-  /** UI X position for rendering the module. */
   var xPos: Float,
-  /** UI Y position for rendering the module. */
   var yPos: Float,
 ) : Module(name, category) {
 
-  /** UI scale factor for rendering the module. */
+  /**
+   * UI scale factor for rendering the module.
+   */
   var scale: Float = 1.0f
 
-  /** Return the current width of the module's rendered area. */
+  /**
+   * Returns the rendered width of this module in screen space.
+   *
+   * @return the module width in pixels
+   */
   abstract fun getWidth(): Float
 
-  /** Return the current height of the module's rendered area. */
+  /**
+   * Returns the rendered height of this module in screen space.
+   *
+   * @return the module height in pixels
+   */
   abstract fun getHeight(): Float
 
-  /** Render the module's UI onto the current canvas/context. */
+  /**
+   * Renders this module to the screen.
+   */
   abstract fun renderModule()
 
 }
 
-/** Logical grouping for modules used by UI and registration. */
+/**
+ * Represents a grouping category for modules used in the UI.
+ *
+ * @property displayName the name shown in the UI
+ */
 class ModuleCategory private constructor(
-  /** Human-friendly display name for this category. */
   val displayName: String
 ) {
+
   companion object {
 
     private val entries = mutableMapOf<String, ModuleCategory>()
 
-    /** Pre-registered render category used for renderable modules. */
+    /**
+     * Predefined category for rendering-related modules.
+     */
     @JvmField
     val RENDER = register(displayName = "Render")
 
-    /** Register or return an existing ModuleCategory for the given display name. */
+    /**
+     * Registers a new module category or returns an existing one.
+     *
+     * Categories are stored case-insensitively.
+     *
+     * @param displayName the name of the category
+     * @return the existing or newly created [ModuleCategory]
+     */
     fun register(displayName: String): ModuleCategory {
       return entries.getOrPut(displayName.lowercase()) {
         ModuleCategory(displayName)
       }
     }
 
-    /** Return all registered module categories. */
+    /**
+     * Returns all registered module categories.
+     *
+     * @return a collection of all [ModuleCategory] instances
+     */
     fun getCategories(): Collection<ModuleCategory> {
       return entries.values
     }
 
   }
+
 }

@@ -5,8 +5,9 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
 
-/** Schedule Runnable tasks to run after a number of client ticks.
- * Tasks are executed on TickEvent.End and are ordered by scheduled tick. */
+/**
+ * Utility for scheduling delayed tasks based on client tick updates.
+ */
 object TickScheduler {
 
   private val taskQueue = PriorityQueue<ScheduledTask>(Comparator.comparingLong(ScheduledTask::executeTick))
@@ -18,15 +19,20 @@ object TickScheduler {
     EventBus.register(this)
   }
 
-  /** Schedule an action to execute after the given number of ticks. */
+  /**
+   * Schedules a task to be executed after a given number of client ticks.
+   *
+   * @param delayTicks number of ticks to wait before executing the task
+   * @param action the task to execute after the delay
+   */
   @JvmStatic
   fun schedule(delayTicks: Long, action: Runnable) {
     taskQueue.offer(ScheduledTask(currentTick + delayTicks, action))
   }
 
-  /** Internal event handler invoked at the end of each client tick to flush scheduled tasks. */
+  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
-  fun onClientTick(@Suppress("UNUSED_PARAMETER") event: TickEvent.End) {
+  fun onClientTick(@Suppress("UnusedParameter") event: TickEvent.End) {
     currentTick++
     var task: ScheduledTask?
 

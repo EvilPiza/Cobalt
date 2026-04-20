@@ -5,7 +5,9 @@
 
 package org.cobalt.ui.animation
 
-/** Generic animation base for interpolating values over a duration in milliseconds. */
+/**
+ * Base class for value animations over a fixed duration.
+ */
 abstract class Animation<T>(private val duration: Long) {
 
   companion object {
@@ -19,15 +21,19 @@ abstract class Animation<T>(private val duration: Long) {
   private var animating = false
   private var reversed = false
 
-  /** Compute the interpolated value between start and end for the current animation progress.
+  /**
+   * Computes the interpolated value between start and end based on progress.
    *
    * @param start starting value
    * @param end ending value
-   * @param reverse whether the animation is reversed
+   * @param reverse whether interpolation direction is reversed
+   * @return the interpolated value at the current animation state
    */
   abstract fun get(start: T, end: T, reverse: Boolean = false): T
 
-  /** Start or toggle the animation; handles reversal when already animating. */
+  /**
+   * Starts the animation, or reverses its direction if already running.
+   */
   fun start() {
     val currentTime = System.currentTimeMillis()
 
@@ -44,7 +50,11 @@ abstract class Animation<T>(private val duration: Long) {
     return
   }
 
-  /** Return animation progress as a percentage between 0 and 100. */
+  /**
+   * Returns the current animation progress as a percentage.
+   *
+   * @return animation progress between 0 and 100
+   */
   fun getPercent(): Float {
     if (!animating) return PERCENT_MAX
     val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * PERCENT_MAX)
@@ -57,7 +67,11 @@ abstract class Animation<T>(private val duration: Long) {
     return percent.coerceAtMost(PERCENT_MAX)
   }
 
-  /** Whether the animation is currently running. */
+  /**
+   * Returns whether the animation is currently running.
+   *
+   * @return true if the animation is in progress, false otherwise
+   */
   fun isAnimating(): Boolean {
     return animating
   }

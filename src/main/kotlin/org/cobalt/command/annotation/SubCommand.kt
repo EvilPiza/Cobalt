@@ -1,10 +1,9 @@
 package org.cobalt.command.annotation
 
 /**
- * Marks a function as a named sub-command for a command handler.
+ * Marks a function as a sub-command.
  *
- * @param name optional sub-command label; when empty the function name is
- *             used by the dispatcher
+ * @param name optional label that defaults to the function name
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)

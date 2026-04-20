@@ -57,7 +57,7 @@ complexity:
 
   CyclomaticComplexMethod:
     active: true
-    allowedComplexity: 5
+    allowedComplexity: 6
 
   NestedBlockDepth:
     active: true

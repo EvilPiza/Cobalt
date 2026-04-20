@@ -17,15 +17,15 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
-/** Base class for defining chat commands; reflection is used to discover handlers and subcommands.
+/**
+ * Base class for chat commands with option for subcommands.
  *
- * @property name the primary literal name of this command
- * @property aliases any secondary names for this command
+ * @property name primary command name
+ * @property aliases alternate command names
  */
 abstract class Command(val name: String, val aliases: List<String> = emptyList<String>()) {
 
-  /** Build a Brigadier LiteralArgumentBuilder for this command, wiring discovered handlers and subcommands. */
-  fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
+  internal fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
 
     registerFunctions(mainRoot)
@@ -56,16 +56,12 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
   ): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     return aliases.filter { it.isNotBlank() }.map { alias ->
       val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
-
       mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
-
       mainRoot.command?.let { aliasRoot.executes(it) }
-
       aliasRoot
     }
   }
 
-  /** Construct a subcommand literal from a handler function and its parameters. */
   private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)
 
@@ -139,7 +135,6 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
     function.callBy(argsMap)
   }
 
-  /** Create a Brigadier RequiredArgumentBuilder for a supported parameter type. */
   private fun createArgument(
     name: String,
     type: Any?,

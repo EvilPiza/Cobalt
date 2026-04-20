@@ -1,21 +1,32 @@
 package org.cobalt.ui
 
-/** Base UI component with position and size used by HUD/editor screens. */
+/**
+ * Base class for all drawable UI components.
+ *
+ * @property xPos X position of the component
+ * @property yPos Y position of the component
+ * @property width component width
+ * @property height component height
+ */
 abstract class UIComponent(
-  /** Screen-space X coordinate. */
   var xPos: Float,
-  /** Screen-space Y coordinate. */
   var yPos: Float,
-  /** Component width in pixels. */
   open val width: Float = 0.0f,
-  /** Component height in pixels. */
   open val height: Float = 0.0f,
 ) {
 
-  /** Render the component's contents onto the current canvas/context. */
+  /**
+   * Render the component's contents.
+   */
   abstract fun renderComponent()
 
-  /** Update the component's screen-space position and return this instance. */
+  /**
+   * Updates the component position.
+   *
+   * @param xPos new X coordinate in screen space
+   * @param yPos new Y coordinate in screen space
+   * @return this component for chaining
+   */
   fun updateBounds(xPos: Float, yPos: Float): UIComponent {
     this.xPos = xPos
     this.yPos = yPos

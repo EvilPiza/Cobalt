@@ -1,13 +1,16 @@
 package org.cobalt.event
 
-import org.cobalt.event.annotation.SubscribeEvent
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import org.cobalt.event.annotation.SubscribeEvent
 import org.slf4j.LoggerFactory
 
-/** Lightweight event bus used to register listeners and post events to handlers with priorities. */
+/**
+ * Central event bus responsible for registering, unregistering,
+ * and dispatching events to subscribed listeners.
+ */
 object EventBus {
 
   private data class Handler(
@@ -23,7 +26,11 @@ object EventBus {
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
-  /** Register all methods annotated with [SubscribeEvent] from the given listener instance. */
+  /**
+   * Registers all methods annotated with [SubscribeEvent] from the given listener instance.
+   *
+   * @param listener the object containing event subscriber methods
+   */
   @JvmStatic
   fun register(listener: Any) {
     if (handlers.any { it.listener === listener }) return
@@ -33,6 +40,40 @@ object EventBus {
     if (toAdd.isNotEmpty()) handlers.addAll(toAdd)
 
     cache.clear()
+  }
+
+  /**
+   * Unregisters all event handlers associated with the given listener instance.
+   *
+   * @param listener the listener whose event handlers should be removed
+   */
+  @JvmStatic
+  fun unregister(listener: Any) {
+    handlers.removeIf { it.listener === listener }
+    cache.clear()
+  }
+
+  /**
+   * Posts an event to all registered listeners.
+   *
+   * Event handlers are filtered by type, priority, and cancellation rules.
+   *
+   * @param event the event to dispatch
+   * @return the same event instance after processing
+   */
+  @JvmStatic
+  fun post(event: Event): Event {
+    val eventClass = event.javaClass
+    val matched = cache.computeIfAbsent(eventClass) { computeMatchedHandlers(eventClass) }
+
+    val toRemove = processMatchedHandlers(matched, event)
+
+    if (toRemove.isNotEmpty()) {
+      handlers.removeAll(toRemove.toSet())
+      cache.clear()
+    }
+
+    return event
   }
 
   private fun createHandlersForListener(listener: Any): List<Handler> {
@@ -74,29 +115,6 @@ object EventBus {
     )
   }
 
-  /** Unregister all handlers for the given listener instance. */
-  @JvmStatic
-  fun unregister(listener: Any) {
-    handlers.removeIf { it.listener === listener }
-    cache.clear()
-  }
-
-  /** Post an event to all matching handlers and return the event. */
-  @JvmStatic
-  fun post(event: Event): Event {
-    val eventClass = event.javaClass
-    val matched = cache.computeIfAbsent(eventClass) { computeMatchedHandlers(eventClass) }
-
-    val toRemove = processMatchedHandlers(matched, event)
-
-    if (toRemove.isNotEmpty()) {
-      handlers.removeAll(toRemove.toSet())
-      cache.clear()
-    }
-
-    return event
-  }
-
   private fun processMatchedHandlers(matched: Array<Handler>, event: Event): MutableList<Handler> {
     val toRemove = mutableListOf<Handler>()
 
@@ -116,7 +134,6 @@ object EventBus {
     handler.invoker(event)
     if (handler.once) toRemove.add(handler)
   }
-
 
   private fun computeMatchedHandlers(eventClass: Class<*>): Array<Handler> {
     return handlers

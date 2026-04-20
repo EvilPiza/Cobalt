@@ -1,4 +1,4 @@
-package org.cobalt.render.skia
+package org.cobalt.util.skia
 
 import io.github.humbleui.skija.BlendMode
 import io.github.humbleui.skija.Canvas
@@ -9,29 +9,26 @@ import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.SamplingMode
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
-import org.cobalt.math.SimpleVec3
 import org.cobalt.math.Dimensions
+import org.cobalt.math.Vec2f
+import org.cobalt.util.skia.SkiaContext.canvas
 
-/** Utilities for loading and drawing cached Skia images.
- * Images may be rounded and color-masked when drawn.
+/**
+ * Utility for loading, caching, and drawing images via Skia.
  */
 object SkiaImages {
-  private data class ImageCacheKey(
-    val identifier: String,
-    val radius: Float?,
-    val colorMask: Int?,
-  )
 
   private val images = mutableMapOf<ImageCacheKey, SkiaImage>()
-  private val canvas get() = SkiaContext.canvas
 
   /**
-   * Load or create a cached image for the given identifier.
+   * Loads an image configuration and caches it by identifier, radius, and color mask.
    *
-   * @param identifier resource identifier for the image
-   * @param radius optional corner radius to apply when rendering
-   * @param colorMask optional ARGB color mask to blend over the image
-   * @return a cached or newly created [SkiaImage]
+   * Radius values <= 0 are normalized to `null` (no rounded clipping).
+   *
+   * @param identifier image/resource identifier
+   * @param radius optional corner radius for rounded clipping
+   * @param colorMask optional ARGB color mask applied during draw
+   * @return cached [SkiaImage] instance for the given configuration
    */
   @JvmStatic
   fun loadImage(
@@ -48,16 +45,18 @@ object SkiaImages {
   }
 
   /**
-   * Draw the provided [SkiaImage] into the destination rectangle.
+   * Draws a configured image to the current Skia canvas.
    *
-   * @param image the cached image to draw
-   * @param pos destination coordinate
-   * @param dim destination dimension
+   * Returns early when dimensions are invalid, the canvas is unavailable,
+   * or raster generation fails.
+   *
+   * @param image configured [SkiaImage] to draw
+   * @param pos target position in screen space
    */
   @JvmStatic
-  fun image(image: SkiaImage, pos: SimpleVec3, dim: Dimensions) {
+  fun drawImage(image: SkiaImage, pos: Vec2f, dim: Dimensions) {
     if (!isValidDimension(dim)) return
-    val canvas = this.canvas ?: return
+    val canvas = canvas ?: return
 
     val sourceImage = image.getOrGenerateRaster(dim.width.toInt(), dim.height.toInt()) ?: return
 
@@ -67,9 +66,9 @@ object SkiaImages {
   private fun drawConfiguredImage(
     canvas: Canvas,
     image: SkiaImage,
-    pos: SimpleVec3,
+    pos: Vec2f,
     dim: Dimensions,
-    sourceImage: Image
+    sourceImage: Image,
   ) {
     Paint().use { paint ->
       configurePaint(paint, image.colorMask)
@@ -77,21 +76,19 @@ object SkiaImages {
     }
   }
 
-  private fun isValidDimension(dim: Dimensions) = dim.width > 0 && dim.height > 0
-
   private fun drawWithOptionalClip(
     canvas: Canvas,
     image: SkiaImage,
-    pos: SimpleVec3,
+    pos: Vec2f,
     dim: Dimensions,
     sourceImage: Image,
-    paint: Paint
+    paint: Paint,
   ) {
-    val rrect = if (image.radius != null && image.radius > 0f) {
+    val roundedRect = if (image.radius != null && image.radius > 0f) {
       RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, image.radius)
     } else null
 
-    withOptionalClip(canvas, rrect) {
+    withOptionalClip(canvas, roundedRect) {
       canvas.drawImageRect(
         sourceImage,
         Rect.makeWH(sourceImage.width.toFloat(), sourceImage.height.toFloat()),
@@ -110,13 +107,13 @@ object SkiaImages {
   }
 
   private inline fun withOptionalClip(
-    canvas: io.github.humbleui.skija.Canvas,
-    rrect: RRect?,
+    canvas: Canvas,
+    roundedRect: RRect?,
     block: () -> Unit,
   ) {
-    if (rrect != null) {
+    if (roundedRect != null) {
       canvas.save()
-      canvas.clipRRect(rrect, ClipMode.INTERSECT, true)
+      canvas.clipRRect(roundedRect, ClipMode.INTERSECT, true)
       try {
         block()
       } finally {
@@ -126,5 +123,14 @@ object SkiaImages {
       block()
     }
   }
+
+  private fun isValidDimension(dim: Dimensions) =
+    dim.width > 0 && dim.height > 0
+
+  private data class ImageCacheKey(
+    val identifier: String,
+    val radius: Float?,
+    val colorMask: Int?,
+  )
 
 }

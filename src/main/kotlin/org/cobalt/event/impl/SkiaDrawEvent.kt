@@ -3,14 +3,20 @@ package org.cobalt.event.impl
 import io.github.humbleui.skija.Canvas
 import io.github.humbleui.skija.DirectContext
 import org.cobalt.event.Event
-import org.cobalt.render.skia.WrappedBackendRenderTarget
+import org.cobalt.util.skia.WrappedBackendRenderTarget
 
-/** Event fired when Skia drawing is performed for a render pass. */
+/**
+ * Custom event fired when Skia performs its draw step for the current frame.
+ *
+ * This is the callback point where custom rendering can be performed on the
+ * Skia canvas before it is submitted.
+ *
+ * @property context the Skia direct rendering context
+ * @property renderTarget the backend render target used for rendering
+ * @property canvas the Skia canvas for drawing operations
+ */
 class SkiaDrawEvent(
-  /** The Skia DirectContext used for GPU operations. */
   val context: DirectContext,
-  /** The wrapped backend render target representing the surface being rendered to. */
   val renderTarget: WrappedBackendRenderTarget,
-  /** The Skia Canvas used to issue draw commands. */
   val canvas: Canvas
 ) : Event()
