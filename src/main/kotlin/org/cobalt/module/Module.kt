@@ -96,7 +96,7 @@ abstract class RenderableModule(
  * @property displayName the name shown in the UI
  */
 class ModuleCategory private constructor(
-  val displayName: String
+  val displayName: String,
 ) {
 
   companion object {

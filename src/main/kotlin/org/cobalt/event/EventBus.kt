@@ -19,7 +19,7 @@ object EventBus {
     val priority: Event.Priority,
     val ignoreCancelled: Boolean,
     val once: Boolean,
-    val invoker: (Event) -> Unit
+    val invoker: (Event) -> Unit,
   )
 
   private val handlers = CopyOnWriteArrayList<Handler>()

@@ -18,5 +18,5 @@ import org.cobalt.util.skia.WrappedBackendRenderTarget
 class SkiaDrawEvent(
   val context: DirectContext,
   val renderTarget: WrappedBackendRenderTarget,
-  val canvas: Canvas
+  val canvas: Canvas,
 ) : Event()

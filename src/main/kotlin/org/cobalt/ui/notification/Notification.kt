@@ -13,7 +13,7 @@ import org.cobalt.ui.UIComponent
 data class Notification(
   val title: String,
   val description: String,
-  val duration: Duration
+  val duration: Duration,
 ) : UIComponent(
   xPos = DEFAULT_X,
   yPos = DEFAULT_Y,

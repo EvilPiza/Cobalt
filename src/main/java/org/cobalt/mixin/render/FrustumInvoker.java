@@ -16,10 +16,9 @@ public interface FrustumInvoker {
    * @param maxX the x-coordinate of the maximum corner
    * @param maxY the y-coordinate of the maximum corner
    * @param maxZ the z-coordinate of the maximum corner
-   *
    * @return {@link org.joml.FrustumIntersection#INSIDE},
-   *         {@link org.joml.FrustumIntersection#INTERSECT},
-   *         or a plane index if outside the frustum
+   * {@link org.joml.FrustumIntersection#INTERSECT},
+   * or a plane index if outside the frustum
    */
   @Invoker
   int invokeCubeInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);

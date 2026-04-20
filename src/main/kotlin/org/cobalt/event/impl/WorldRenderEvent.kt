@@ -11,5 +11,5 @@ import org.cobalt.event.Event
  * @property context the Fabric [LevelRenderContext] for the current render frame
  */
 class WorldRenderEvent(
-  val context: LevelRenderContext
+  val context: LevelRenderContext,
 ) : Event()

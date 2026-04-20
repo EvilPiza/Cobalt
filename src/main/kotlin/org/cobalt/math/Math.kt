@@ -19,5 +19,5 @@ data class Vec2f(
  */
 data class Dimensions(
   val width: Float,
-  val height: Float
+  val height: Float,
 )
