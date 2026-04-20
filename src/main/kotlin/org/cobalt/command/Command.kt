@@ -52,7 +52,7 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
   }
 
   private fun buildAliases(
-    mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>
+    mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>,
   ): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     return aliases.filter { it.isNotBlank() }.map { alias ->
       val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
