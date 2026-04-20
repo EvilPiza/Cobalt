@@ -23,7 +23,19 @@ import io.github.humbleui.skija.BackendRenderTarget._nMakeGL
 import io.github.humbleui.skija.impl.Stats
 import org.jetbrains.annotations.Contract
 
-internal class WrappedBackendRenderTarget(
+/**
+ * [BackendRenderTarget] wrapper that stores the OpenGL framebuffer metadata
+ * used to create and track the native render-target pointer.
+ *
+ * @property width framebuffer width in pixels
+ * @property height framebuffer height in pixels
+ * @property sampleCnt number of samples used for multisampling
+ * @property stencilBits number of stencil bits in the framebuffer
+ * @property fbId OpenGL framebuffer object id
+ * @property fbFormat OpenGL framebuffer format enum value
+ * @param ptr native backend render-target pointer owned by [BackendRenderTarget]
+ */
+class WrappedBackendRenderTarget(
   val width: Int,
   val height: Int,
   val sampleCnt: Int,
@@ -38,8 +50,9 @@ internal class WrappedBackendRenderTarget(
     /**
      * Create a new [WrappedBackendRenderTarget] backed by an OpenGL framebuffer.
      *
-     * The native helper [_nMakeGL] is invoked to allocate the platform-specific
-     * backend render target and its pointer is stored in the created wrapper.
+     * The native helper [_nMakeGL] allocates the underlying backend render target.
+     * The resulting pointer is then passed to [BackendRenderTarget] through the
+     * [WrappedBackendRenderTarget] constructor.
      *
      * @param width framebuffer width in pixels
      * @param height framebuffer height in pixels
@@ -47,6 +60,7 @@ internal class WrappedBackendRenderTarget(
      * @param stencilBits number of stencil bits in the framebuffer
      * @param fbId OpenGL framebuffer id
      * @param fbFormat OpenGL framebuffer format
+     * @return a new [WrappedBackendRenderTarget] instance with native pointer state
      */
     @Contract("_, _, _, _, _, _ -> new")
     internal fun makeGL(

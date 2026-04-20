@@ -4,6 +4,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.math.Vec2f
+import org.cobalt.util.WindowUtils
 import org.cobalt.util.skia.SkiaTransforms
 
 /**
@@ -29,7 +30,7 @@ object NotificationManager {
   @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    val windowScale = SkiaTransforms.getWindowScale()
+    val windowScale = WindowUtils.getWindowScale()
 
     notificationsList
       .forEach { notification ->

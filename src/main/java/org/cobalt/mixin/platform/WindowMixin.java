@@ -33,7 +33,7 @@ public class WindowMixin {
     int finalWidth = Math.max(newWidth, 1);
     int finalHeight = Math.max(newHeight, 1);
 
-    SkiaContext.INSTANCE.initSkia(finalWidth, finalHeight);
+    SkiaContext.INSTANCE.initSkia$cobalt(finalWidth, finalHeight);
   }
 
 }
