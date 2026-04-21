@@ -9,19 +9,29 @@ import org.cobalt.util.skia.SkiaTransforms
 
 object NotificationManager {
 
-  private val notificationsList = mutableSetOf<Notification>()
+  private val notifQueue = mutableListOf<Notification>()
+  private val activeNotifications = mutableListOf<Notification>()
 
   init {
     EventBus.register(this)
   }
 
   /**
-   * Adds a notification to be rendered.
+   * Queue a notification to be rendered.
    *
-   * @param notification the notification instance to display
+   * @param notification the [Notification] instance to be displayed
    */
-  fun pushNotification(notification: Notification) {
-    notificationsList.add(notification)
+  fun queue(notification: Notification) {
+    notifQueue.add(notification)
+  }
+
+
+  /**
+   * Clears all notifications.
+   */
+  fun clear() {
+    notifQueue.clear()
+    activeNotifications.clear()
   }
 
   @Suppress("UndocumentedPublicFunction")
@@ -29,7 +39,7 @@ object NotificationManager {
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     val windowScale = WindowUtils.getWindowScale()
 
-    notificationsList
+    activeNotifications
       .forEach { notification ->
         SkiaTransforms.save()
 

@@ -21,10 +21,30 @@ object WindowUtils {
    */
   @JvmStatic
   fun getWindowScale(): Float {
-    val windowWidth = minecraft.window.width.toFloat()
-    val windowHeight = minecraft.window.height.toFloat()
+    val windowWidth = getWidth()
+    val windowHeight = getHeight()
 
     return min(windowWidth / BASE_WIDTH, windowHeight / BASE_HEIGHT)
+  }
+
+  /**
+   * Returns the current window width in pixels.
+   *
+   * @return the width of the Minecraft window as a Float
+   */
+  @JvmStatic
+  fun getWidth(): Float {
+    return minecraft.window.width.toFloat()
+  }
+
+  /**
+   * Returns the current window height in pixels.
+   *
+   * @return the height of the Minecraft window as a Float
+   */
+  @JvmStatic
+  fun getHeight(): Float {
+    return minecraft.window.height.toFloat()
   }
 
   /**
