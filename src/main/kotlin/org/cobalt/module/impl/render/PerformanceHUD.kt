@@ -10,6 +10,7 @@ import org.cobalt.ui.ColorPalette
 import org.cobalt.util.ServerUtils
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
+import org.cobalt.util.skia.TextStyle
 
 private const val DEFAULT_OFFSET = 5.0f
 
@@ -86,16 +87,18 @@ internal object PerformanceHUD : RenderableModule(
       SkiaText.primaryFont,
       stat.value,
       Vec2f(x, textY),
-      SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_PRIMARY)
+      TextStyle(FONT_SIZE, ColorPalette.TEXT_PRIMARY)
     )
+
     x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
 
     SkiaText.drawText(
       SkiaText.primaryFont,
       stat.unit,
       Vec2f(x, textY),
-      SkiaText.TextStyle(FONT_SIZE, ColorPalette.TEXT_DISABLED)
+      TextStyle(FONT_SIZE, ColorPalette.TEXT_DISABLED)
     )
+
     x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
 
     return x

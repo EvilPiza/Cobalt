@@ -47,7 +47,6 @@ abstract class Animation<T>(private val duration: Long) {
     val percent = ((currentTime - startTime) / duration.toFloat()).coerceIn(MIN_PROGRESS, MAX_PROGRESS)
     reversed = !reversed
     startTime = currentTime - ((MAX_PROGRESS - percent) * duration).toLong()
-    return
   }
 
   /**
