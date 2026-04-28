@@ -16,15 +16,6 @@ object ColorUtils {
   private const val SHIFT_RED = 16
   private const val SHIFT_GREEN = 8
 
-  /**
-   * Creates a gradient-colored text component where each character
-   * is interpolated between two ARGB colors.
-   *
-   * @param text input text
-   * @param startColor starting ARGB color
-   * @param endColor ending ARGB color
-   * @return gradient-colored [MutableComponent]
-   */
   @JvmStatic
   fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
     val result = Component.empty()
@@ -52,39 +43,15 @@ object ColorUtils {
     return result
   }
 
-  /**
-   * Extracts the red channel from an ARGB color value.
-   *
-   * @param color the ARGB color integer
-   * @return the red component (0–255)
-   */
   @JvmStatic
   fun getRed(color: Int) = color.red
 
-  /**
-   * Extracts the green channel from an ARGB color value.
-   *
-   * @param color the ARGB color integer
-   * @return the green component (0–255)
-   */
   @JvmStatic
   fun getGreen(color: Int) = color.green
 
-  /**
-   * Extracts the blue channel from an ARGB color value.
-   *
-   * @param color the ARGB color integer
-   * @return the blue component (0–255)
-   */
   @JvmStatic
   fun getBlue(color: Int) = color.blue
 
-  /**
-   * Extracts the alpha channel from an ARGB color value.
-   *
-   * @param color the ARGB color integer
-   * @return the alpha component (0–255)
-   */
   @JvmStatic
   fun getAlpha(color: Int) = color.alpha
 

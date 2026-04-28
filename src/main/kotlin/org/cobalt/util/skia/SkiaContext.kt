@@ -53,7 +53,6 @@ internal object SkiaContext {
 
   internal fun initSkia(width: Int, height: Int) {
     ensureContext()
-
     recreateRenderTarget(width, height)
 
     canvas = surface?.canvas

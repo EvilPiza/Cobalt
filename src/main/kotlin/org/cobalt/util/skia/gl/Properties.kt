@@ -2,10 +2,6 @@ package org.cobalt.util.skia.gl
 
 import java.util.*
 
-/**
- * Represents the OpenGL state.
- */
-@Suppress("UndocumentedPublicProperty")
 class Properties {
 
   val lastActiveTexture = IntArray(1)

@@ -12,32 +12,20 @@ import org.cobalt.util.ChatUtils
 
 object CommandManager {
 
-  /**
-   * Command dispatcher used for registering and executing custom commands.
-   */
+  internal const val PREFIX: Char = '.'
+
   @JvmStatic
   internal val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
-
-  /**
-   * Prefix for custom commands.
-   */
-  internal const val PREFIX: Char = '.'
 
   init {
     EventBus.register(this)
   }
 
-  /**
-   * Registers a command with the dispatcher.
-   *
-   * @param command the command instance to register
-   */
   @JvmStatic
   fun register(command: Command) {
     command.build().forEach { dispatcher.register(it) }
   }
 
-  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun handleCommandExecution(@Suppress("UnusedParameter") event: ChatSendEvent) {
     val content = event.message

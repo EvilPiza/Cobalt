@@ -16,17 +16,11 @@ object ServerUtils {
 
   private var lastTickTime = -1L
 
-  /**
-   * Average of the server's ticks per second (TPS).
-   */
+  @JvmStatic
   var averageTps = DEFAULT_TPS
     private set
 
-  /**
-   * Current network latency to the server in milliseconds.
-   *
-   * @return player's ping value, or 0 if unavailable
-   */
+  @JvmStatic
   val currentPing
     get() = (minecraft.player as AbstractClientPlayerAccessor)
       .clientPlayerInfo?.latency ?: 0
@@ -35,7 +29,6 @@ object ServerUtils {
     EventBus.register(this)
   }
 
-  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun onPacketReceive(@Suppress("UnusedParameter") event: PacketEvent.Receive) {
     if (event.packet !is ClientboundSetTimePacket) return

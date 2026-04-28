@@ -17,12 +17,6 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
-/**
- * Base class for chat commands with option for subcommands.
- *
- * @property name primary command name
- * @property aliases alternate command names
- */
 abstract class Command(val name: String, val aliases: List<String> = emptyList<String>()) {
 
   internal fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {

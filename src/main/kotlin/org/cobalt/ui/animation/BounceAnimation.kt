@@ -2,9 +2,6 @@ package org.cobalt.ui.animation
 
 import kotlin.math.pow
 
-/**
- * Bounce-style animation that applies an easing function with overshoot.
- */
 class BounceAnimation(duration: Long) : Animation<Float>(duration) {
 
   companion object {

@@ -40,23 +40,11 @@ object CustomRenderTypes {
       .createRenderSetup()
   )
 
-  /**
-   * Returns the appropriate quad RenderType based on ESP mode.
-   *
-   * @param esp whether ESP rendering is enabled
-   * @return the corresponding quad RenderType
-   */
   @JvmStatic
   fun getQuads(esp: Boolean): RenderType {
     return if (esp) QUADS_ESP else QUADS
   }
 
-  /**
-   * Returns the appropriate line RenderType based on ESP mode.
-   *
-   * @param esp whether ESP rendering is enabled
-   * @return the corresponding line RenderType
-   */
   @JvmStatic
   fun getLines(esp: Boolean): RenderType {
     return if (esp) LINES_ESP else LINES

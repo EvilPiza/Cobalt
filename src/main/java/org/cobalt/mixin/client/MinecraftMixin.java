@@ -18,6 +18,7 @@
 
 package org.cobalt.mixin.client;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import org.cobalt.Cobalt;
@@ -81,7 +82,7 @@ public class MinecraftMixin {
     index = 0
   )
   private String modifyTitle(String oldTitle) {
-    return Cobalt.MOD_NAME + " " + Cobalt.MOD_VERSION;
+    return Cobalt.MOD_NAME + " " + SharedConstants.getCurrentVersion().name() + " (v" + Cobalt.MOD_VERSION + ")";
   }
 
 }

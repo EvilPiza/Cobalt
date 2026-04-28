@@ -44,21 +44,10 @@ private const val SCISSOR_Y = 1
 private const val SCISSOR_W = 2
 private const val SCISSOR_H = 3
 
-/**
- * Represents the OpenGL state.
- *
- * @property glVersion The current OpenGL version.
- */
 class State(private val glVersion: Int) {
 
   private val props = Properties()
 
-  /**
-   * Saves the current OpenGL state.
-   *
-   * @return this [State] instance for convenience
-   * @see pop
-   */
   fun push(): State {
     with(props) {
       glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture)
@@ -148,12 +137,6 @@ class State(private val glVersion: Int) {
     glGetIntegerv(GL_UNPACK_SKIP_ROWS, lastUnpackSkipRows)
   }
 
-  /**
-   * Restores the state that was saved with [push].
-   *
-   * @return this [State] instance after restoration.
-   * @see push
-   */
   fun pop(): State {
     restoreProgramAndTexture()
     restoreSamplersAndBindings()

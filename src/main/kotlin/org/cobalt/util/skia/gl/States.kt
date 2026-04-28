@@ -26,27 +26,15 @@ import org.lwjgl.opengl.GL30.glGetIntegerv
 private const val GL_MAJOR_MULTIPLIER = 100
 private const val GL_MINOR_MULTIPLIER = 10
 
-/**
- * Stores and restores OpenGL states.
- */
 object States {
 
   private val glVersion: Int
   private val states = Stack<State>()
 
-  /**
-   * Pushes the current OpenGL state onto the stack.
-   */
   fun push() {
     states += State(glVersion).push()
   }
 
-  /**
-   * Pops the last OpenGL state from the stack and restores it.
-   *
-   * Throws an [IllegalArgumentException] if there is no saved state to
-   * restore.
-   */
   fun pop() {
     require(states.isNotEmpty()) { "No state to restore." }
     states.pop().pop()

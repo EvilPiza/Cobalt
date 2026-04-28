@@ -1,8 +1,5 @@
 package org.cobalt.ui.animation
 
-/**
- * Quadratic ease-out animation.
- */
 class EaseOutAnimation(duration: Long) : Animation<Float>(duration) {
 
   override fun get(start: Float, end: Float, reverse: Boolean): Float {

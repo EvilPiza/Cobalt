@@ -12,7 +12,6 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     EventBus.register(this)
   }
 
-  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {

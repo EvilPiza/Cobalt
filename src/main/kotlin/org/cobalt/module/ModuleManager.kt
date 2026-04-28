@@ -27,11 +27,6 @@ object ModuleManager {
     }
   }
 
-  /**
-   * Adds a module to the registry.
-   *
-   * @throws IllegalStateException if a module with the same name is already registered
-   */
   fun addModule(module: Module) {
     if (!modules.add(module)) {
       error("'${module.name}' is already registered")
@@ -40,38 +35,20 @@ object ModuleManager {
     module.onRegistration()
   }
 
-  /**
-   * Removes a module from the registry.
-   *
-   * @param module the module to remove
-   * @return true if the module was removed, false if it was not registered
-   */
   fun removeModule(module: Module): Boolean {
     return modules.remove(module)
   }
 
-  /**
-   * Returns a module by name (case-insensitive).
-   *
-   * @param moduleName the name of the module
-   * @return the matching module, or null if not found
-   */
   fun getModule(moduleName: String): Module? {
     return modules.find { module ->
       module.name.equals(moduleName, true)
     }
   }
 
-  /**
-   * Returns all registered modules.
-   *
-   * @return a set of all modules in the registry
-   */
   fun getModules(): Set<Module> {
     return modules
   }
 
-  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.level == null) {

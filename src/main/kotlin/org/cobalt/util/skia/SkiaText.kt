@@ -19,9 +19,6 @@ import org.cobalt.util.skia.SkiaContext.canvas
 
 object SkiaText {
 
-  /**
-   * Primary UI font used throughout the client.
-   */
   @JvmStatic
   val primaryFont: Font by lazy {
     loadFont("assets/cobalt/font/ProductSans-Bold.ttf").first
@@ -34,15 +31,6 @@ object SkiaText {
     FontCollection().apply { setDefaultFontManager(FontMgr.getDefault()) }
   }
 
-  /**
-   * Loads a font from classpath resources and caches it by path.
-   *
-   * @param resourcePath classpath path to a font file
-   * @return loaded [Font] instance configured for UI rendering
-   *
-   * @throws IOException if the resource cannot be found
-   * @throws IllegalArgumentException if the font bytes are invalid
-   */
   @JvmStatic
   fun loadFont(resourcePath: String) = fonts.computeIfAbsent(resourcePath) {
     val bytes = javaClass.classLoader
@@ -62,16 +50,6 @@ object SkiaText {
     Pair(font, typeface)
   }
 
-  /**
-   * Draws text at the given position using the provided font and style.
-   *
-   * No-op when no canvas is available.
-   *
-   * @param font font instance to use
-   * @param text text content to render
-   * @param pos target position in screen space
-   * @param style text style containing font size and color
-   */
   @JvmStatic
   fun drawText(font: Font, text: String, pos: Vec2f, style: TextStyle) {
     val canvas = canvas ?: return
@@ -87,14 +65,6 @@ object SkiaText {
     }
   }
 
-  /**
-   * Measures the rendered width of text for the given font size.
-   *
-   * @param font font instance to measure with
-   * @param text text content to measure
-   * @param fontSize font size used for measurement
-   * @return text width in pixels
-   */
   @JvmStatic
   fun getTextWidth(font: Font, text: String, fontSize: Float): Float {
     font.size = fontSize
@@ -104,15 +74,6 @@ object SkiaText {
     }
   }
 
-  /**
-   * Draws word-wrapped text within the given max width.
-   *
-   * @param font font instance to use
-   * @param text text content to render
-   * @param pos top-left position in screen space
-   * @param maxWidth maximum line width before wrapping
-   * @param style text style containing font size and color
-   */
   @JvmStatic
   fun drawWrappedText(font: Font, text: String, pos: Vec2f, maxWidth: Float, style: TextStyle) {
     val canvas = canvas ?: return
@@ -123,15 +84,6 @@ object SkiaText {
     }
   }
 
-  /**
-   * Measures the total height of word-wrapped text within the given max width.
-   *
-   * @param font font instance to measure with
-   * @param text text content to measure
-   * @param maxWidth maximum line width before wrapping
-   * @param fontSize font size used for measurement
-   * @return total wrapped text height in pixels
-   */
   @JvmStatic
   fun getWrappedTextHeight(font: Font, text: String, maxWidth: Float, fontSize: Float): Float {
     val typeface = fonts.values.find { it.first == font }?.second ?: return 0f
@@ -157,10 +109,4 @@ object SkiaText {
 
 }
 
-/**
- * Immutable text rendering style.
- *
- * @property fontSize font size in pixels
- * @property color ARGB color value
- */
 data class TextStyle(val fontSize: Float, val color: Int)

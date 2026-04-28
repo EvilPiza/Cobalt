@@ -16,9 +16,6 @@ object CustomPipelines {
 
   private val NO_DEPTH_STENCIL: Optional<DepthStencilState> = Optional.empty()
 
-  /**
-   * Render pipeline for line rendering with ESP enabled (visible through walls).
-   */
   @JvmStatic
   val LINES_ESP: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
@@ -27,9 +24,6 @@ object CustomPipelines {
       .build()
   )
 
-  /**
-   * Render pipeline for standard quad rendering with normal depth testing.
-   */
   @JvmStatic
   val QUADS: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
@@ -38,9 +32,6 @@ object CustomPipelines {
       .build()
   )
 
-  /**
-   * Render pipeline for quad rendering with ESP enabled (visible through walls).
-   */
   @JvmStatic
   val QUADS_ESP: RenderPipeline = RenderPipelines.register(
     RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)

@@ -17,13 +17,6 @@ object NotificationManager {
     EventBus.register(this)
   }
 
-  /**
-   * Queue a notification to be rendered.
-   *
-   * @param title short headline text shown prominently
-   * @param description body text shown below the title
-   * @param duration how long the notification remains visible
-   */
   fun queue(title: String, description: String, duration: Duration) {
     val notification = Notification(
       title,
@@ -34,15 +27,11 @@ object NotificationManager {
     notifQueue.add(notification)
   }
 
-  /**
-   * Clears all notifications.
-   */
   fun clear() {
     notifQueue.clear()
     activeNotifications.clear()
   }
 
-  @Suppress("UndocumentedPublicFunction")
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     val windowScale = WindowUtils.getWindowScale()

@@ -11,16 +11,6 @@ import org.cobalt.util.skia.SkiaContext.canvas
 
 object SkiaShapes {
 
-  /**
-   * Draws a line segment between two points.
-   *
-   * No-op when no canvas is available.
-   *
-   * @param start line start position
-   * @param end line end position
-   * @param color ARGB line color
-   * @param thickness stroke width in pixels (clamped to >= 0)
-   */
   @JvmStatic
   fun drawLine(start: Vec2f, end: Vec2f, color: Int, thickness: Float = 1f) {
     val canvas = canvas ?: return
@@ -35,15 +25,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a filled rectangle.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position of the rectangle
-   * @param dim width and height of the rectangle
-   * @param color ARGB fill color
-   */
   @JvmStatic
   fun drawRect(pos: Vec2f, dim: Dimensions, color: Int) {
     if (!isValid(dim)) {
@@ -57,17 +38,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a rectangle filled with a linear gradient.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param colorStart starting ARGB color of the gradient
-   * @param colorEnd ending ARGB color of the gradient
-   * @param direction direction of the gradient flow
-   */
   @JvmStatic
   fun drawGradientRect(pos: Vec2f, dim: Dimensions, colorStart: Int, colorEnd: Int, direction: SkiaGradient) {
     if (!isValid(dim)) {
@@ -89,16 +59,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a rectangle outline.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param color ARGB stroke color
-   * @param thickness stroke width in pixels (clamped to >= 0)
-   */
   @JvmStatic
   fun drawOutline(pos: Vec2f, dim: Dimensions, color: Int, thickness: Float = 1f) {
     if (!isValid(dim)) {
@@ -123,16 +83,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a filled rounded rectangle.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param radius corner radius in pixels (clamped to >= 0)
-   * @param color ARGB fill color
-   */
   @JvmStatic
   fun drawRoundedRect(pos: Vec2f, dim: Dimensions, radius: Float, color: Int) {
     if (!isValid(dim)) {
@@ -146,18 +96,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a rounded rectangle filled with a linear gradient.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param radius corner radius in pixels
-   * @param colorStart starting ARGB color of the gradient
-   * @param colorEnd ending ARGB color of the gradient
-   * @param direction direction of the gradient flow
-   */
   @JvmStatic
   fun drawGradientRoundedRect(
     pos: Vec2f, dim: Dimensions,
@@ -182,17 +120,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a rounded rectangle outline.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param radius outer corner radius in pixels
-   * @param color ARGB stroke color
-   * @param thickness outline width in pixels (clamped to >= 1)
-   */
   @JvmStatic
   fun drawRoundedOutline(
     pos: Vec2f, dim: Dimensions,
@@ -220,17 +147,6 @@ object SkiaShapes {
     }
   }
 
-  /**
-   * Draws a rectangle with selectively rounded corners on one side.
-   *
-   * Returns early when dimensions are invalid or no canvas is available.
-   *
-   * @param pos top-left position
-   * @param dim rectangle size
-   * @param radius corner radius in pixels
-   * @param color ARGB fill color
-   * @param side which side(s) should be rounded
-   */
   @JvmStatic
   fun drawHalfRoundedRect(
     pos: Vec2f, dim: Dimensions,

@@ -17,16 +17,6 @@ object SkiaImages {
 
   private val images = mutableMapOf<ImageCacheKey, SkiaImage>()
 
-  /**
-   * Loads an image configuration and caches it by identifier, radius, and color mask.
-   *
-   * Radius values <= 0 are normalized to `null` (no rounded clipping).
-   *
-   * @param identifier image/resource identifier
-   * @param radius optional corner radius for rounded clipping
-   * @param colorMask optional ARGB color mask applied during draw
-   * @return cached [SkiaImage] instance for the given configuration
-   */
   @JvmStatic
   fun loadImage(
     identifier: String,
@@ -41,15 +31,6 @@ object SkiaImages {
     }
   }
 
-  /**
-   * Draws a configured image to the current Skia canvas.
-   *
-   * Returns early when dimensions are invalid, the canvas is unavailable,
-   * or raster generation fails.
-   *
-   * @param image configured [SkiaImage] to draw
-   * @param pos target position in screen space
-   */
   @JvmStatic
   fun drawImage(image: SkiaImage, pos: Vec2f, dim: Dimensions) {
     if (!isValidDimension(dim)) return

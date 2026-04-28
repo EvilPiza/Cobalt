@@ -11,19 +11,6 @@ import java.nio.file.Files
 import kotlinx.coroutines.runBlocking
 import org.cobalt.util.WebUtils
 
-/**
- * Image wrapper used by [SkiaImages].
- *
- * @property isSvg whether the image source is an SVG file
- * @property image raster image instance (null if SVG)
- * @property svgDom parsed SVG document (null if raster image)
- *
- * @param identifier path or URL to the image resource
- * @property radius optional corner radius for rendering
- * @property colorMask optional ARGB color mask applied to the image
- *
- * @see SkiaImages
- */
 class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: Int? = null) {
 
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
@@ -46,15 +33,6 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     }
   }
 
-  /**
-   * Returns a rasterized image for the given size.
-   *
-   * For SVG sources, the image is generated and cached per size.
-   *
-   * @param width target width
-   * @param height target height
-   * @return raster image or null if unavailable
-   */
   fun getOrGenerateRaster(width: Int, height: Int): Image? {
     if (!isSvg) return image
     val dom = svgDom ?: return null
@@ -72,9 +50,6 @@ class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: In
     return cachedRaster
   }
 
-  /**
-   * Releases all underlying Skia resources.
-   */
   fun delete() {
     image?.close()
     svgDom?.close()

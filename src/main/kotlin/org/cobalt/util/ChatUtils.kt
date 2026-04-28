@@ -23,12 +23,6 @@ object ChatUtils {
 
   private var lastDebugMessage: String? = null
 
-  /**
-   * Sends a system message to the local player with optional formatting.
-   *
-   * @param message the message content to display
-   * @param type determines how the message is formatted (prefix, debug, or raw)
-   */
   @JvmStatic
   fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
     val player = minecraft.player
@@ -54,22 +48,11 @@ object ChatUtils {
     player.sendSystemMessage(component)
   }
 
-  /**
-   * Converts a plain string into a Minecraft chat component.
-   *
-   * @param string the raw text to convert
-   * @return a mutable chat component representing the input string
-   */
   @JvmStatic
   fun stringToComponent(string: String): MutableComponent {
     return Component.literal(string)
   }
 
-  /**
-   * Sends a chat message as the player.
-   *
-   * @param message the message to send in chat
-   */
   @JvmStatic
   fun sendPlayerMessage(message: String) {
     val player = minecraft.player
@@ -82,11 +65,6 @@ object ChatUtils {
     player.connection.sendChat(message)
   }
 
-  /**
-   * Sends a command as the player to the server.
-   *
-   * @param command the command string without the leading slash
-   */
   @JvmStatic
   fun sendCommand(command: String) {
     val player = minecraft.player
@@ -101,25 +79,8 @@ object ChatUtils {
 
 }
 
-/**
- * Type of message formatting used by [ChatUtils].
- *
- * Determines whether a prefix is applied or if the message is sent raw.
- */
 enum class MessageType {
-
-  /** Default message includes the mod prefix. */
   DEFAULT,
-
-  /** Raw messages are sent without any prefix. */
   RAW,
-
-  /**
-   * Debug message includes the debug prefix.
-   *
-   * Additionally, duplicate consecutive messages are ignored to prevent spam.
-   * If the same message is sent twice in a row, it will not be re-displayed.
-   */
   DEBUG
-
 }

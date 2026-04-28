@@ -22,11 +22,6 @@ object EventBus {
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
-  /**
-   * Registers all methods annotated with [SubscribeEvent] from the given listener instance.
-   *
-   * @param listener the object containing event subscriber methods
-   */
   @JvmStatic
   fun register(listener: Any) {
     if (handlers.any { it.listener === listener }) return
@@ -38,25 +33,12 @@ object EventBus {
     cache.clear()
   }
 
-  /**
-   * Unregisters all event handlers associated with the given listener instance.
-   *
-   * @param listener the listener whose event handlers should be removed
-   */
   @JvmStatic
   fun unregister(listener: Any) {
     handlers.removeIf { it.listener === listener }
     cache.clear()
   }
 
-  /**
-   * Posts an event to all registered listeners.
-   *
-   * Event handlers are filtered by type, priority, and cancellation rules.
-   *
-   * @param event the event to dispatch
-   * @return the same event instance after processing
-   */
   @JvmStatic
   fun post(event: Event): Event {
     val eventClass = event.javaClass
