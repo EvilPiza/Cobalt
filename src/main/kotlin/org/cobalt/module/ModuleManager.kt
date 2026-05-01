@@ -4,8 +4,8 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.util.Vec2f
 import org.cobalt.module.impl.render.PerformanceHUD
+import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils
 import org.cobalt.util.skia.SkiaTransforms
 
@@ -51,16 +51,21 @@ object ModuleManager {
 
   @SubscribeEvent
   fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    if (minecraft.level == null) {
+    if (
+      minecraft.level == null ||
+      minecraft.player == null ||
+      minecraft.options.hideGui ||
+      minecraft.debugOverlay.showDebugScreen()
+    ) {
       return
     }
 
     val windowScale = WindowUtils.getWindowScale()
 
     modules
-      .filter { module -> module.isEnabled() && module.isRenderable() }
+      .filter { module -> module.isEnabled() && module is Renderable }
       .forEach { module ->
-        val renderable = module as RenderableModule
+        val renderable = module as Renderable
 
         SkiaTransforms.save()
 
@@ -72,7 +77,7 @@ object ModuleManager {
         SkiaTransforms.scale(Vec2f(moduleScale, moduleScale))
         SkiaTransforms.translate(Vec2f(-originX, -originY))
 
-        renderable.renderModule()
+        renderable.renderComponent()
 
         SkiaTransforms.restore()
       }

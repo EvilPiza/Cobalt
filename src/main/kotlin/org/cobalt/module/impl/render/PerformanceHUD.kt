@@ -2,24 +2,24 @@ package org.cobalt.module.impl.render
 
 import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
-import org.cobalt.util.Dimensions
-import org.cobalt.util.Vec2f
+import org.cobalt.module.Module
 import org.cobalt.module.ModuleCategory
-import org.cobalt.module.RenderableModule
+import org.cobalt.module.RenderProperties
+import org.cobalt.module.Renderable
 import org.cobalt.ui.ColorPalette
+import org.cobalt.util.Dimensions
 import org.cobalt.util.ServerUtils
+import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
-private const val DEFAULT_OFFSET = 5.0f
-
-internal object PerformanceHUD : RenderableModule(
+internal object PerformanceHUD : Module(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
-  xPos = DEFAULT_OFFSET,
-  yPos = DEFAULT_OFFSET,
-) {
+), Renderable {
+
+  override var renderProps = RenderProperties()
 
   private const val PADDING = 25f
   private const val CORNER_RADIUS = 5f
@@ -31,7 +31,26 @@ internal object PerformanceHUD : RenderableModule(
   private const val MID_FACTOR = 0.5f
   private const val DIVIDER_GAP = PADDING / 2 + TEXT_SPACING
 
-  override fun renderModule() {
+  override fun getWidth(): Float {
+    var width = PADDING * 2
+
+    for ((index, stat) in getStats().withIndex()) {
+      if (index > 0) {
+        width += PADDING + 2 * TEXT_SPACING
+      }
+
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+    }
+
+    return width
+  }
+
+  override fun getHeight(): Float {
+    return PANEL_HEIGHT
+  }
+
+  override fun renderComponent() {
     val width = getWidth()
     val height = getHeight()
 
@@ -103,23 +122,6 @@ internal object PerformanceHUD : RenderableModule(
 
     return x
   }
-
-  override fun getWidth(): Float {
-    var width = PADDING * 2
-
-    for ((index, stat) in getStats().withIndex()) {
-      if (index > 0) {
-        width += PADDING + 2 * TEXT_SPACING
-      }
-
-      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
-    }
-
-    return width
-  }
-
-  override fun getHeight(): Float = PANEL_HEIGHT
 
   private fun getStats() = listOf(
     Stat(getFPS(), "FPS"),
