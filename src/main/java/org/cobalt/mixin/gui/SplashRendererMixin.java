@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import org.cobalt.Cobalt;
+import org.cobalt.ui.theme.ThemeManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,11 +16,6 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(SplashRenderer.class)
 public class SplashRendererMixin {
 
-  @Final
-  @Unique
-  public Component cobalt$splash = Component.literal(Cobalt.MOD_NAME + " on top!")
-    .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x4F8CFF)));
-
   @ModifyArgs(
     method = "extractRenderState",
     at = @At(
@@ -28,7 +24,15 @@ public class SplashRendererMixin {
     )
   )
   private void modifySplash(Args args) {
-    args.set(4, cobalt$splash);
+    args.set(4, cobalt$createSplash());
+  }
+
+  @Unique
+  private Component cobalt$createSplash() {
+    int color = ThemeManager.getActiveTheme().getAccentPrimary();
+
+    return Component.literal(Cobalt.MOD_NAME + " on top!")
+      .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
   }
 
 }

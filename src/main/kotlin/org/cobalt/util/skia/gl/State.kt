@@ -1,4 +1,4 @@
-@file:Suppress("WildcardImport") // Imports 60+ items, so a wildcard import is fine here.
+@file:Suppress("WildcardImport")
 
 /*
  * This file is part of https://github.com/Lyzev/Skija.

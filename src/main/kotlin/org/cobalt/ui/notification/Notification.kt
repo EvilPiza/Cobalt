@@ -1,13 +1,11 @@
 package org.cobalt.ui.notification
 
 import kotlin.time.Duration
-import org.cobalt.ui.ColorPalette
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils
 import org.cobalt.util.WindowUtils.scaledWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
@@ -72,7 +70,7 @@ internal class Notification(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       CORNER_RADIUS,
-      ColorPalette.BACKGROUND_PRIMARY
+      theme.backgroundPrimary
     )
 
     drawText()
@@ -87,7 +85,7 @@ internal class Notification(
       title,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING),
       contentWidth,
-      TextStyle(TITLE_FONT_SIZE, ColorPalette.TEXT_PRIMARY)
+      TextStyle(TITLE_FONT_SIZE, theme.textPrimary)
     )
 
     val titleHeight = SkiaText.getWrappedTextHeight(
@@ -99,7 +97,7 @@ internal class Notification(
       description,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP),
       contentWidth,
-      TextStyle(DESCRIPTION_FONT_SIZE, ColorPalette.TEXT_SECONDARY)
+      TextStyle(DESCRIPTION_FONT_SIZE, theme.textSecondary)
     )
   }
 
@@ -111,7 +109,7 @@ internal class Notification(
       Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
       Dimensions(width, PROGRESS_BAR_HEIGHT),
       CORNER_RADIUS,
-      ColorPalette.PANEL,
+      theme.panel,
       SkiaSide.BOTTOM
     )
 
@@ -120,7 +118,7 @@ internal class Notification(
         Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
         Dimensions(fillWidth, PROGRESS_BAR_HEIGHT),
         CORNER_RADIUS,
-        ColorPalette.ACCENT_PRIMARY,
+        theme.accentPrimary,
         SkiaSide.BOTTOM
       )
     }

@@ -1,6 +1,8 @@
 package org.cobalt.module
 
 import net.minecraft.ChatFormatting
+import org.cobalt.ui.theme.Theme
+import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.ChatUtils
 
 abstract class Module(
@@ -57,6 +59,9 @@ abstract class Script(
 interface Renderable {
 
   val renderProps: RenderProperties
+
+  val theme: Theme
+    get() = ThemeManager.getActiveTheme()
 
   var xPos: Float
     get() = renderProps.xPos;

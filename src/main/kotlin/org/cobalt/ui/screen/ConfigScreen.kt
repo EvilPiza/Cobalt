@@ -8,7 +8,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
-import org.cobalt.ui.page.TestPage
+import org.cobalt.ui.page.ModulesPage
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.scaledHeight
 import org.cobalt.util.WindowUtils.scaledWidth
@@ -18,12 +18,11 @@ import org.cobalt.util.skia.SkiaTransforms
 internal object ConfigScreen : Screen(Component.empty()) {
 
   private val openAnim = BounceAnimation(400L)
-  private var currentPage: UIComponent = TestPage
+  private var currentPage: UIComponent = ModulesPage
 
   init {
     EventBus.register(this)
   }
-
 
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
