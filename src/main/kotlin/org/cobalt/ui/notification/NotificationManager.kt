@@ -6,6 +6,8 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils
+import org.cobalt.util.WindowUtils.scaledHeight
+import org.cobalt.util.WindowUtils.windowScale
 import org.cobalt.util.skia.SkiaTransforms
 
 object NotificationManager {
@@ -34,9 +36,7 @@ object NotificationManager {
 
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    val windowScale = WindowUtils.getWindowScale()
-
-    updateNotifications(windowScale)
+    updateNotifications()
 
     activeNotifications.forEach { notification ->
       SkiaTransforms.save()
@@ -46,8 +46,7 @@ object NotificationManager {
     }
   }
 
-  private fun updateNotifications(windowScale: Float) {
-    val screenHeight = WindowUtils.getHeight() / windowScale
+  private fun updateNotifications() {
     val currentTime = System.currentTimeMillis()
 
     activeNotifications.forEach { it.checkExpiry(currentTime) }
@@ -55,7 +54,7 @@ object NotificationManager {
 
     while (activeNotifications.size < MAX_ACTIVE_NOTIFICATIONS && notifQueue.isNotEmpty()) {
       val notif = notifQueue.removeAt(0)
-      val targetY = computeTargetY(screenHeight, activeNotifications.size, notif.height)
+      val targetY = computeTargetY(scaledHeight, activeNotifications.size, notif.height)
 
       notif.targetY = targetY
       notif.previousY = targetY
@@ -65,7 +64,7 @@ object NotificationManager {
     }
 
     activeNotifications.forEachIndexed { index, notif ->
-      notif.moveTo(computeTargetY(screenHeight, index, notif.height))
+      notif.moveTo(computeTargetY(scaledHeight, index, notif.height))
     }
   }
 

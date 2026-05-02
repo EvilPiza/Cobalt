@@ -8,6 +8,7 @@ import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils
+import org.cobalt.util.WindowUtils.scaledWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
 import org.cobalt.util.skia.SkiaText
@@ -58,13 +59,10 @@ internal class Notification(
   }
 
   override fun renderComponent() {
-    val windowScale = WindowUtils.getWindowScale()
-    val screenWidth = WindowUtils.getWidth() / windowScale
-
     val resolvedX = if (isExpired) {
-      slideOutAnim.get(screenWidth - width - SCREEN_MARGIN - CONTENT_PADDING, screenWidth, false)
+      slideOutAnim.get(scaledWidth - width - SCREEN_MARGIN - CONTENT_PADDING, scaledWidth, false)
     } else {
-      slideInAnim.get(screenWidth, screenWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
+      slideInAnim.get(scaledWidth, scaledWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
     }
 
     val resolvedY = targetY + slideDownAnim.get(previousY - targetY, 0f, false)
