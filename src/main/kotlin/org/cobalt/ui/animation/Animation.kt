@@ -5,7 +5,7 @@
 
 package org.cobalt.ui.animation
 
-abstract class Animation<T>(private val duration: Long) {
+abstract class Animation<T>(val duration: Long) {
 
   companion object {
     private const val PERCENT_MAX: Float = 100f

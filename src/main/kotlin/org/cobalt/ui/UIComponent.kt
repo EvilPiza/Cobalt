@@ -4,8 +4,8 @@ import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 
 abstract class UIComponent(
-  var xPos: Float,
-  var yPos: Float,
+  var xPos: Float = 0f,
+  var yPos: Float = 0f,
   open val width: Float = 0.0f,
   open val height: Float = 0.0f,
 ) {

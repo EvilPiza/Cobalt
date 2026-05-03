@@ -1,12 +1,12 @@
-package org.cobalt.ui.page
+package org.cobalt.ui.component
 
 import org.cobalt.ui.UIComponent
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaShapes
 
-internal object ModulesPage : UIComponent(
-  width = 1000f,
+class SidebarComponent : UIComponent(
+  width = 75f,
   height = 600f
 ) {
 
@@ -19,6 +19,8 @@ internal object ModulesPage : UIComponent(
     )
   }
 
-  private const val CORNER_RADIUS: Float = 10f
+  companion object {
+    private const val CORNER_RADIUS: Float = 5f
+  }
 
 }

@@ -17,15 +17,13 @@ internal class Notification(
   private val description: String,
   private val duration: Duration,
 ) : UIComponent(
-  xPos = DEFAULT_X,
-  yPos = DEFAULT_Y,
   width = DEFAULT_WIDTH,
   height = calculateHeight(title, description)
 ) {
 
-  private val slideInAnim = BounceAnimation(SLIDE_IN_DURATION_MS)
-  private val slideDownAnim = EaseOutAnimation(SLIDE_DOWN_DURATION_MS)
-  private val slideOutAnim = EaseOutAnimation(SLIDE_OUT_DURATION_MS)
+  private val slideInAnim = BounceAnimation(duration = 300L)
+  private val slideDownAnim = EaseOutAnimation(duration = 200L)
+  private val slideOutAnim = EaseOutAnimation(duration = 400L)
 
   private var isExpired: Boolean = false
   private var startTime: Long = 0L
@@ -37,7 +35,7 @@ internal class Notification(
   fun start(currentTime: Long) {
     slideInAnim.start()
     startTime = System.currentTimeMillis()
-    expiryTime = currentTime + SLIDE_IN_DURATION_MS + duration.inWholeMilliseconds
+    expiryTime = currentTime + slideInAnim.duration + duration.inWholeMilliseconds
     isExpired = false
   }
 
@@ -127,7 +125,7 @@ internal class Notification(
   private fun calculateProgress(currentTime: Long): Float {
     if (isExpired) return 0f
     val totalDuration = duration.inWholeMilliseconds.toFloat()
-    val elapsed = (currentTime - startTime - SLIDE_IN_DURATION_MS).toFloat()
+    val elapsed = (currentTime - startTime - slideInAnim.duration).toFloat()
     return (1f - (elapsed / totalDuration)).coerceIn(0f, 1f)
   }
 
@@ -136,8 +134,6 @@ internal class Notification(
   }
 
   companion object {
-    private const val DEFAULT_X: Float = 0f
-    private const val DEFAULT_Y: Float = 0f
     private const val DEFAULT_WIDTH: Float = 350f
     private const val MIN_HEIGHT: Float = 100f
 
@@ -148,10 +144,6 @@ internal class Notification(
 
     private const val TITLE_FONT_SIZE: Float = 16f
     private const val DESCRIPTION_FONT_SIZE: Float = 14f
-
-    private const val SLIDE_IN_DURATION_MS: Long = 300L
-    private const val SLIDE_DOWN_DURATION_MS: Long = 200L
-    private const val SLIDE_OUT_DURATION_MS: Long = 400L
 
     private const val PROGRESS_BAR_HEIGHT: Float = 5f
 

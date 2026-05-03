@@ -8,6 +8,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
+import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.page.ModulesPage
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.scaledHeight
@@ -17,8 +18,10 @@ import org.cobalt.util.skia.SkiaTransforms
 
 internal object ConfigScreen : Screen(Component.empty()) {
 
-  private val openAnim = BounceAnimation(400L)
+  private val openAnim = BounceAnimation(duration = 400L)
   private var currentPage: UIComponent = ModulesPage
+
+  private val sidebar = SidebarComponent()
 
   init {
     EventBus.register(this)
@@ -42,8 +45,19 @@ internal object ConfigScreen : Screen(Component.empty()) {
       SkiaTransforms.translate(Vec2f(-centerX, -centerY))
     }
 
+    val totalWidth = sidebar.width + SIDEBAR_GAP + currentPage.width
+    val sidebarX = centerX - (totalWidth / 2f)
+    val sidebarY = centerY - (sidebar.height / 2f)
+
+    sidebar
+      .updateBounds(sidebarX, sidebarY)
+      .renderComponent()
+
+    val pageX = sidebarX + sidebar.width + SIDEBAR_GAP
+    val pageY = centerY - (currentPage.height / 2f)
+
     currentPage
-      .updateBounds(centerX - (currentPage.width / 2f), centerY - (currentPage.height / 2f))
+      .updateBounds(pageX, pageY)
       .renderComponent()
 
     SkiaTransforms.restore()
@@ -55,6 +69,8 @@ internal object ConfigScreen : Screen(Component.empty()) {
 
   override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit
   override fun extractMenuBackground(graphics: GuiGraphicsExtractor) = Unit
+
+  private const val SIDEBAR_GAP = 16f
 
 }
 
