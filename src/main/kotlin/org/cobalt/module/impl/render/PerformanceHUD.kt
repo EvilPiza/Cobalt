@@ -2,10 +2,8 @@ package org.cobalt.module.impl.render
 
 import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
-import org.cobalt.module.Module
 import org.cobalt.module.ModuleCategory
-import org.cobalt.module.RenderProperties
-import org.cobalt.module.Renderable
+import org.cobalt.module.RenderableModule
 import org.cobalt.util.Dimensions
 import org.cobalt.util.ServerUtils
 import org.cobalt.util.Vec2f
@@ -13,12 +11,10 @@ import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
-internal object PerformanceHUD : Module(
+internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
-), Renderable {
-
-  override var renderProps = RenderProperties()
+) {
 
   override fun getWidth(): Float {
     var width = PADDING * 2

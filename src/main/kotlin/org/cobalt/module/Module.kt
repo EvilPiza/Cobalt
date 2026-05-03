@@ -56,36 +56,20 @@ abstract class Script(
 
 }
 
-interface Renderable {
-
-  val renderProps: RenderProperties
+abstract class RenderableModule(
+  name: String,
+  category: ModuleCategory,
+) : Module(name, category) {
 
   val theme: Theme
     get() = ThemeManager.getActiveTheme()
 
-  var xPos: Float
-    get() = renderProps.xPos;
-    set(value) { renderProps.xPos = value }
+  var xPos: Float = 5.0f
+  var yPos: Float = 5.0f
+  var scale: Float = 1.0f
 
-  var yPos: Float
-    get() = renderProps.yPos;
-    set(value) { renderProps.yPos = value }
-
-  var scale: Float
-    get() = renderProps.scale;
-    set(value) { renderProps.scale = value }
-
-  fun getWidth(): Float
-  fun getHeight(): Float
-  fun renderComponent()
+  abstract fun getWidth(): Float
+  abstract fun getHeight(): Float
+  abstract fun renderComponent()
 
 }
-
-private const val DEFAULT_OFFSET = 5.0f
-private const val DEFAULT_SCALE = 1.0f
-
-data class RenderProperties(
-  var xPos: Float = DEFAULT_OFFSET,
-  var yPos: Float = DEFAULT_OFFSET,
-  var scale: Float = DEFAULT_SCALE,
-)

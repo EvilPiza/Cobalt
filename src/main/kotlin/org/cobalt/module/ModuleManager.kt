@@ -61,9 +61,9 @@ object ModuleManager {
     }
 
     modules
-      .filter { module -> module.isEnabled() && module is Renderable }
+      .filter { module -> module.isEnabled() && module is RenderableModule }
       .forEach { module ->
-        val renderable = module as Renderable
+        val renderable = module as RenderableModule
 
         SkiaTransforms.save()
 
