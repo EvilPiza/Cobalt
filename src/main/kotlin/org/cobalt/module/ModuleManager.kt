@@ -5,6 +5,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
+import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils
 import org.cobalt.util.WindowUtils.windowScale
@@ -60,22 +61,24 @@ object ModuleManager {
       return
     }
 
-    modules
-      .filter { module -> module.isEnabled() && module is RenderableModule }
-      .forEach { module ->
-        val renderable = module as RenderableModule
+    if (minecraft.screen is HudEditorScreen) {
+      return
+    }
 
+    modules.filterIsInstance<RenderableModule>()
+      .filter { module -> module.isEnabled() }
+      .forEach { module ->
         SkiaTransforms.save()
 
-        val originX = renderable.xPos
-        val originY = renderable.yPos
-        val moduleScale = renderable.scale * windowScale
+        val originX = module.xPos
+        val originY = module.yPos
+        val moduleScale = module.scale * windowScale
 
         SkiaTransforms.translate(Vec2f(originX, originY))
         SkiaTransforms.scale(Vec2f(moduleScale, moduleScale))
         SkiaTransforms.translate(Vec2f(-originX, -originY))
 
-        renderable.renderComponent()
+        module.renderComponent()
 
         SkiaTransforms.restore()
       }
