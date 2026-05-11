@@ -6,7 +6,7 @@ import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils.scaledWidth
+import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
 import org.cobalt.util.skia.SkiaText
@@ -56,9 +56,9 @@ internal class Notification(
 
   override fun renderComponent() {
     val resolvedX = if (isExpired) {
-      slideOutAnim.get(scaledWidth - width - SCREEN_MARGIN - CONTENT_PADDING, scaledWidth, false)
+      slideOutAnim.get(windowWidth - width - SCREEN_MARGIN - CONTENT_PADDING, windowWidth, false)
     } else {
-      slideInAnim.get(scaledWidth, scaledWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
+      slideInAnim.get(windowWidth, windowWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
     }
 
     val resolvedY = targetY + slideDownAnim.get(previousY - targetY, 0f, false)

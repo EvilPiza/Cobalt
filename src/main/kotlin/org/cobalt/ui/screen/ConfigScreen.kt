@@ -11,9 +11,8 @@ import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.page.ModulesPage
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils.scaledHeight
-import org.cobalt.util.WindowUtils.scaledWidth
-import org.cobalt.util.WindowUtils.windowScale
+import org.cobalt.util.WindowUtils.windowHeight
+import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.SkiaTransforms
 
 internal object ConfigScreen : Screen(Component.empty()) {
@@ -31,11 +30,10 @@ internal object ConfigScreen : Screen(Component.empty()) {
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) return
 
-    val centerX = scaledWidth / 2f
-    val centerY = scaledHeight / 2f
+    val centerX = windowWidth / 2f
+    val centerY = windowHeight / 2f
 
     SkiaTransforms.save()
-    SkiaTransforms.scale(Vec2f(windowScale, windowScale))
 
     if (openAnim.isAnimating()) {
       val scale = openAnim.get(0f, 1f)

@@ -7,8 +7,6 @@ import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
 import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils
-import org.cobalt.util.WindowUtils.windowScale
 import org.cobalt.util.skia.SkiaTransforms
 
 object ModuleManager {
@@ -70,13 +68,12 @@ object ModuleManager {
       .forEach { module ->
         SkiaTransforms.save()
 
-        val originX = module.xPos
-        val originY = module.yPos
-        val moduleScale = module.scale * windowScale
+        val (x, y) = module.screenPosition
+        val scale = module.scale
 
-        SkiaTransforms.translate(Vec2f(originX, originY))
-        SkiaTransforms.scale(Vec2f(moduleScale, moduleScale))
-        SkiaTransforms.translate(Vec2f(-originX, -originY))
+        SkiaTransforms.translate(Vec2f(x, y))
+        SkiaTransforms.scale(Vec2f(scale, scale))
+        SkiaTransforms.translate(Vec2f(-x, -y))
 
         module.renderComponent()
 

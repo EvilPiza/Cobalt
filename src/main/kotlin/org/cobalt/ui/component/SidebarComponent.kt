@@ -6,7 +6,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaShapes
 
 class SidebarComponent : UIComponent(
-  width = 75f,
+  width = 70f,
   height = 600f
 ) {
 

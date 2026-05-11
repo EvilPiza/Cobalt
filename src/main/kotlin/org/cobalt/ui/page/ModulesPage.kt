@@ -6,7 +6,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaShapes
 
 internal object ModulesPage : UIComponent(
-  width = 1000f,
+  width = 900f,
   height = 600f
 ) {
 
@@ -19,6 +19,6 @@ internal object ModulesPage : UIComponent(
     )
   }
 
-  private const val CORNER_RADIUS: Float = 10f
+  private const val CORNER_RADIUS: Float = 5f
 
 }
