@@ -2,6 +2,7 @@ package org.cobalt.ui.screen
 
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -43,15 +44,7 @@ internal object ConfigScreen : Screen(Component.empty()) {
       SkiaTransforms.translate(Vec2f(-centerX, -centerY))
     }
 
-    val totalWidth = sidebar.width + SIDEBAR_GAP + currentPage.width
-    val sidebarX = centerX - (totalWidth / 2f)
-    val sidebarY = centerY - (sidebar.height / 2f)
-
-    sidebar
-      .updateBounds(sidebarX, sidebarY)
-      .renderComponent()
-
-    val pageX = sidebarX + sidebar.width + SIDEBAR_GAP
+    val pageX = centerX - (currentPage.width / 2f)
     val pageY = centerY - (currentPage.height / 2f)
 
     currentPage
@@ -65,10 +58,12 @@ internal object ConfigScreen : Screen(Component.empty()) {
     openAnim.start()
   }
 
+  override fun mouseReleased(event: MouseButtonEvent): Boolean {
+    return currentPage.mouseReleased(event.button()) ||  super.mouseReleased(event)
+  }
+
   override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit
   override fun extractMenuBackground(graphics: GuiGraphicsExtractor) = Unit
-
-  private const val SIDEBAR_GAP = 16f
 
 }
 

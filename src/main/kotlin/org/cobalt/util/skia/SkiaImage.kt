@@ -11,7 +11,11 @@ import java.nio.file.Files
 import kotlinx.coroutines.runBlocking
 import org.cobalt.util.WebUtils
 
-class SkiaImage(identifier: String, val radius: Float? = null, val colorMask: Int? = null) {
+class SkiaImage(
+  identifier: String,
+  var radius: Float? = null,
+  var colorMask: Int? = null
+) {
 
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
   val image: Image?

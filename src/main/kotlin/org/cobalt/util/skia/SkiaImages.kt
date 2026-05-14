@@ -62,8 +62,9 @@ object SkiaImages {
     sourceImage: Image,
     paint: Paint,
   ) {
-    val roundedRect = if (image.radius != null && image.radius > 0f) {
-      RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, image.radius)
+    val radius = image.radius
+    val roundedRect = if (radius != null && radius > 0f) {
+      RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, radius)
     } else null
 
     withOptionalClip(canvas, roundedRect) {

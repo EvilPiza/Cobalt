@@ -8,6 +8,7 @@ import org.cobalt.command.annotation.SubCommand
 import org.cobalt.ui.notification.NotificationManager
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
+import org.cobalt.util.MouseUtils
 import org.cobalt.util.helper.TickScheduler
 
 internal object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {

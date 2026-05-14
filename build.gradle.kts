@@ -25,6 +25,10 @@ val shadowImpl: Configuration by configurations.creating {
   configurations.implementation.get().extendsFrom(this)
 }
 
+loom {
+  accessWidenerPath = rootProject.file("src/main/resources/cobalt.accesswidener")
+}
+
 dependencies {
   minecraft(libs.minecraft)
   implementation(libs.bundles.fabric)

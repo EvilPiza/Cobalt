@@ -1,5 +1,7 @@
 package org.cobalt.ui
 
+import net.minecraft.client.input.CharacterEvent
+import net.minecraft.client.input.KeyEvent
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 
@@ -13,7 +15,46 @@ abstract class UIComponent(
   protected val theme: Theme
     get() = ThemeManager.getActiveTheme()
 
+  private val children =
+    mutableListOf<UIComponent>()
+
   abstract fun renderComponent()
+
+  fun addChild(component: UIComponent) {
+    if (children.contains(component) || component == this) {
+      throw IllegalArgumentException("Cannot add component as a child: ${component::class.simpleName}")
+    }
+
+    children.add(component)
+  }
+
+  open fun mouseClicked(button: Int): Boolean {
+    return children.any { it.mouseClicked(button) }
+  }
+
+  open fun mouseReleased(button: Int): Boolean {
+    return children.any { it.mouseReleased(button) }
+  }
+
+  open fun mouseDragged(button: Int, offsetX: Double, offsetY: Double): Boolean {
+    return children.any { it.mouseDragged(button, offsetX, offsetY) }
+  }
+
+  open fun mouseScrolled(horizontalAmount: Double, verticalAmount: Double): Boolean {
+    return children.any { it.mouseScrolled(horizontalAmount, verticalAmount) }
+  }
+
+  open fun charTyped(input: CharacterEvent): Boolean {
+    return children.any { it.charTyped(input) }
+  }
+
+  open fun keyPressed(input: KeyEvent): Boolean {
+    return children.any { it.keyPressed(input) }
+  }
+
+  open fun keyReleased(input: KeyEvent): Boolean {
+    return children.any { it.keyReleased(input) }
+  }
 
   fun updateBounds(xPos: Float, yPos: Float): UIComponent {
     this.xPos = xPos

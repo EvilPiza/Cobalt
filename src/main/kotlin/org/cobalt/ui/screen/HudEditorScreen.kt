@@ -52,8 +52,6 @@ internal object HudEditorScreen : Screen(Component.empty()) {
       return
     }
 
-    drawGrid()
-
     modules.forEach { module ->
       val (x, y) = module.screenPosition
       val scale = module.scale
@@ -70,40 +68,6 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     }
 
     drawSnapGuides()
-  }
-
-  private fun drawGrid() {
-    val centerX = windowWidth / 2f
-    val centerY = windowHeight / 2f
-    val gridColor = theme.border
-
-    var x = centerX
-
-    while (x <= windowWidth) {
-      SkiaShapes.drawLine(Vec2f(x, 0f), Vec2f(x, windowHeight), gridColor, thickness = 1f)
-      x += GRID_SIZE
-    }
-
-    x = centerX - GRID_SIZE
-
-    while (x >= 0f) {
-      SkiaShapes.drawLine(Vec2f(x, 0f), Vec2f(x, windowHeight), gridColor, thickness = 1f)
-      x -= GRID_SIZE
-    }
-
-    var y = centerY
-
-    while (y <= windowHeight) {
-      SkiaShapes.drawLine(Vec2f(0f, y), Vec2f(windowWidth, y), gridColor, thickness = 1f)
-      y += GRID_SIZE
-    }
-
-    y = centerY - GRID_SIZE
-
-    while (y >= 0f) {
-      SkiaShapes.drawLine(Vec2f(0f, y), Vec2f(windowWidth, y), gridColor, thickness = 1f)
-      y -= GRID_SIZE
-    }
   }
 
   private fun drawSnapGuides() {
