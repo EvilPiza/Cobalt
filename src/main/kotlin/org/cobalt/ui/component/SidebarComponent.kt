@@ -7,7 +7,7 @@ import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
 
 class SidebarComponent : UIComponent(
-  width = 200f,
+  width = 250f,
   height = 600f
 ) {
 

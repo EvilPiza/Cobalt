@@ -107,7 +107,7 @@ internal class Notification(
       Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
       Dimensions(width, PROGRESS_BAR_HEIGHT),
       CORNER_RADIUS,
-      theme.panel,
+      theme.backgroundSecondary,
       SkiaSide.BOTTOM
     )
 
