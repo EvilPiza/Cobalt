@@ -1,7 +1,6 @@
 package org.cobalt.script
 
 import org.cobalt.event.EventBus
-import org.cobalt.module.impl.render.PerformanceHUD
 
 object ScriptManager {
 
@@ -23,6 +22,8 @@ object ScriptManager {
     if (!scripts.add(script)) {
       error("'${script.name}' is already registered")
     }
+
+    script.loadConfig()
   }
 
   fun removeScript(script: Script): Boolean {

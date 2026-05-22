@@ -32,6 +32,7 @@ object ModuleManager {
       error("'${module.name}' is already registered")
     }
 
+    module.loadConfig()
     module.onRegistration()
   }
 

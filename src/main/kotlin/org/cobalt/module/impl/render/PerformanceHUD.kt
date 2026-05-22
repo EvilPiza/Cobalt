@@ -15,7 +15,7 @@ internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
 ) {
-
+  
   override fun getWidth(): Float {
     var width = PADDING * 2
 

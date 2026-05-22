@@ -6,22 +6,37 @@ import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
+import org.cobalt.util.setting.Setting
+import org.cobalt.util.setting.SettingsContainer
 
 abstract class Module(
   val name: String,
   val category: ModuleCategory,
-) {
+) : SettingsContainer {
+
+  private val settingsList = mutableListOf<Setting<*>>()
 
   var enabled: Boolean = false
 
+  override val identifier: String = name.replace(" ", "")
+  override val directoryPath: String = "modules"
+
   open fun onRegistration() {}
+
+  override fun addSettings(vararg settings: Setting<*>) {
+    settingsList += settings
+  }
+
+  override fun getSettings(): List<Setting<*>> {
+    return settingsList
+  }
 
 }
 
 abstract class RenderableModule(
   name: String,
   category: ModuleCategory,
-  var anchor: Anchor = Anchor.TOP_LEFT,
+  val anchor: Anchor = Anchor.TOP_LEFT,
   var offsetX: Float = 5.0f,
   var offsetY: Float = 5.0f,
   var scale: Float = 1.0f,
