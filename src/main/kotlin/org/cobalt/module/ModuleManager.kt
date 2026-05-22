@@ -11,7 +11,7 @@ import org.cobalt.util.skia.SkiaTransforms
 
 object ModuleManager {
 
-  private val modules = mutableSetOf<Module>()
+  val modules = mutableSetOf<Module>()
 
   init {
     EventBus.register(this)
@@ -45,10 +45,6 @@ object ModuleManager {
     }
   }
 
-  fun getModules(): Set<Module> {
-    return modules
-  }
-
   @SubscribeEvent
   fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.level == null || minecraft.player == null) {
@@ -64,7 +60,7 @@ object ModuleManager {
     }
 
     modules.filterIsInstance<RenderableModule>()
-      .filter { module -> module.isEnabled() }
+      .filter { module -> module.enabled }
       .forEach { module ->
         SkiaTransforms.save()
 

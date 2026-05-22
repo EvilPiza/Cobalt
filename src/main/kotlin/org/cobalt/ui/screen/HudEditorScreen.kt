@@ -24,9 +24,9 @@ import org.cobalt.util.skia.SkiaTransforms
 internal object HudEditorScreen : Screen(Component.empty()) {
 
   private val modules: List<RenderableModule>
-    get() = ModuleManager.getModules()
+    get() = ModuleManager.modules
       .filterIsInstance<RenderableModule>()
-      .filter { it.isEnabled() }
+      .filter { it.enabled }
 
   private var selectedModule: RenderableModule? = null
   private val snapHelper = SnapHelper()

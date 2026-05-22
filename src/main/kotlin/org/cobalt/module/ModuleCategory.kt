@@ -9,9 +9,6 @@ class ModuleCategory private constructor(
     private val entries = mutableMapOf<String, ModuleCategory>()
 
     @JvmField
-    val SCRIPTS = register(displayName = "Scripts")
-
-    @JvmField
     val RENDER = register(displayName = "Render")
 
     fun register(displayName: String): ModuleCategory {

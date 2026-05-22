@@ -4,11 +4,14 @@ import org.cobalt.Cobalt.minecraft
 
 object MouseUtils {
 
-  private var mode: MouseMode = MouseMode.NORMAL
+  @JvmStatic
+  var mouseMode: MouseMode = MouseMode.DEFAULT
 
+  @JvmStatic
   val mouseX: Float
     get() = minecraft.mouseHandler.xpos().toFloat()
 
+  @JvmStatic
   val mouseY: Float
     get() = minecraft.mouseHandler.ypos().toFloat()
 
@@ -21,16 +24,6 @@ object MouseUtils {
   }
 
   @JvmStatic
-  fun getMouseMode(): MouseMode {
-    return mode
-  }
-
-  @JvmStatic
-  fun setMouseMode(mode: MouseMode) {
-    this.mode = mode
-  }
-
-  @JvmStatic
   fun leftClick() {
     minecraft.startAttack()
   }
@@ -40,20 +33,10 @@ object MouseUtils {
     minecraft.startUseItem()
   }
 
-  @JvmStatic
-  fun isForceUngrabbed(): Boolean {
-    return mode == MouseMode.FORCE_UNGRAB
-  }
-
-  @JvmStatic
-  fun shouldBlockRotation(): Boolean {
-    return mode == MouseMode.LOCKED
-  }
-
 }
 
 enum class MouseMode {
-  NORMAL,
-  FORCE_UNGRAB,
-  LOCKED
+  DEFAULT,
+  UNGRAB_MOUSE,
+  LOCK_MOUSE
 }
