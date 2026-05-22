@@ -168,6 +168,32 @@ object SkiaShapes {
     }
   }
 
+  @JvmStatic
+  fun drawCircle(centerPos: Vec2f, radius: Float, color: Int) {
+    val canvas = canvas ?: return
+
+    Paint().setColor(color).use { paint ->
+      paint.isAntiAlias = true
+      canvas.drawCircle(centerPos.x, centerPos.y, radius.coerceAtLeast(0f), paint)
+    }
+  }
+
+  @JvmStatic
+  fun drawCircleOutline(centerPos: Vec2f, radius: Float, color: Int, thickness: Float = 1f) {
+    val canvas = canvas ?: return
+
+    val thickness = thickness.coerceAtLeast(0f)
+
+    Paint().apply {
+      setColor(color)
+      mode = PaintMode.STROKE
+      strokeWidth = thickness
+      isAntiAlias = true
+    }.use { paint ->
+      canvas.drawCircle(centerPos.x, centerPos.y, radius.coerceAtLeast(0f), paint)
+    }
+  }
+
   private fun createLinearGradientShader(
     pos: Vec2f,
     dim: Dimensions,

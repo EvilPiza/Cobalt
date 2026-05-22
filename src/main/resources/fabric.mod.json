@@ -20,9 +20,8 @@
       }
     ]
   },
-  "mixins": [
-    "cobalt.mixins.json"
-  ],
+  "mixins": ["cobalt.mixins.json"],
+  "accessWidener": "cobalt.accesswidener",
   "depends": {
     "java": ">=25",
     "fabric-api": "*",

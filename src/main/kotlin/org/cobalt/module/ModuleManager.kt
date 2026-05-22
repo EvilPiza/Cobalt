@@ -5,13 +5,13 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.impl.render.PerformanceHUD
+import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils
 import org.cobalt.util.skia.SkiaTransforms
 
 object ModuleManager {
 
-  private val modules = mutableSetOf<Module>()
+  val modules = mutableSetOf<Module>()
 
   init {
     EventBus.register(this)
@@ -45,39 +45,33 @@ object ModuleManager {
     }
   }
 
-  fun getModules(): Set<Module> {
-    return modules
-  }
-
   @SubscribeEvent
   fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    if (
-      minecraft.level == null ||
-      minecraft.player == null ||
-      minecraft.options.hideGui ||
-      minecraft.debugOverlay.showDebugScreen()
-    ) {
+    if (minecraft.level == null || minecraft.player == null) {
       return
     }
 
-    val windowScale = WindowUtils.getWindowScale()
+    if (minecraft.options.hideGui || minecraft.debugOverlay.showDebugScreen()) {
+      return
+    }
 
-    modules
-      .filter { module -> module.isEnabled() && module is Renderable }
+    if (minecraft.screen is HudEditorScreen) {
+      return
+    }
+
+    modules.filterIsInstance<RenderableModule>()
+      .filter { module -> module.enabled }
       .forEach { module ->
-        val renderable = module as Renderable
-
         SkiaTransforms.save()
 
-        val originX = renderable.xPos
-        val originY = renderable.yPos
-        val moduleScale = renderable.scale * windowScale
+        val (x, y) = module.screenPosition
+        val scale = module.scale
 
-        SkiaTransforms.translate(Vec2f(originX, originY))
-        SkiaTransforms.scale(Vec2f(moduleScale, moduleScale))
-        SkiaTransforms.translate(Vec2f(-originX, -originY))
+        SkiaTransforms.translate(Vec2f(x, y))
+        SkiaTransforms.scale(Vec2f(scale, scale))
+        SkiaTransforms.translate(Vec2f(-x, -y))
 
-        renderable.renderComponent()
+        module.renderComponent()
 
         SkiaTransforms.restore()
       }

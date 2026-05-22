@@ -1,13 +1,12 @@
 package org.cobalt.ui.notification
 
 import kotlin.time.Duration
-import org.cobalt.ui.ColorPalette
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
-import org.cobalt.util.WindowUtils
+import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
 import org.cobalt.util.skia.SkiaText
@@ -18,15 +17,13 @@ internal class Notification(
   private val description: String,
   private val duration: Duration,
 ) : UIComponent(
-  xPos = DEFAULT_X,
-  yPos = DEFAULT_Y,
   width = DEFAULT_WIDTH,
   height = calculateHeight(title, description)
 ) {
 
-  private val slideInAnim = BounceAnimation(SLIDE_IN_DURATION_MS)
-  private val slideDownAnim = EaseOutAnimation(SLIDE_DOWN_DURATION_MS)
-  private val slideOutAnim = EaseOutAnimation(SLIDE_OUT_DURATION_MS)
+  private val slideInAnim = BounceAnimation(duration = 300L)
+  private val slideDownAnim = EaseOutAnimation(duration = 200L)
+  private val slideOutAnim = EaseOutAnimation(duration = 400L)
 
   private var isExpired: Boolean = false
   private var startTime: Long = 0L
@@ -38,7 +35,7 @@ internal class Notification(
   fun start(currentTime: Long) {
     slideInAnim.start()
     startTime = System.currentTimeMillis()
-    expiryTime = currentTime + SLIDE_IN_DURATION_MS + duration.inWholeMilliseconds
+    expiryTime = currentTime + slideInAnim.duration + duration.inWholeMilliseconds
     isExpired = false
   }
 
@@ -58,13 +55,10 @@ internal class Notification(
   }
 
   override fun renderComponent() {
-    val windowScale = WindowUtils.getWindowScale()
-    val screenWidth = WindowUtils.getWidth() / windowScale
-
     val resolvedX = if (isExpired) {
-      slideOutAnim.get(screenWidth - width - SCREEN_MARGIN - CONTENT_PADDING, screenWidth, false)
+      slideOutAnim.get(windowWidth - width - SCREEN_MARGIN - CONTENT_PADDING, windowWidth, false)
     } else {
-      slideInAnim.get(screenWidth, screenWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
+      slideInAnim.get(windowWidth, windowWidth - width - SCREEN_MARGIN - CONTENT_PADDING, false)
     }
 
     val resolvedY = targetY + slideDownAnim.get(previousY - targetY, 0f, false)
@@ -74,7 +68,7 @@ internal class Notification(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       CORNER_RADIUS,
-      ColorPalette.BACKGROUND_PRIMARY
+      theme.backgroundPrimary
     )
 
     drawText()
@@ -89,7 +83,7 @@ internal class Notification(
       title,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING),
       contentWidth,
-      TextStyle(TITLE_FONT_SIZE, ColorPalette.TEXT_PRIMARY)
+      TextStyle(TITLE_FONT_SIZE, theme.textPrimary)
     )
 
     val titleHeight = SkiaText.getWrappedTextHeight(
@@ -101,7 +95,7 @@ internal class Notification(
       description,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP),
       contentWidth,
-      TextStyle(DESCRIPTION_FONT_SIZE, ColorPalette.TEXT_SECONDARY)
+      TextStyle(DESCRIPTION_FONT_SIZE, theme.textSecondary)
     )
   }
 
@@ -113,7 +107,7 @@ internal class Notification(
       Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
       Dimensions(width, PROGRESS_BAR_HEIGHT),
       CORNER_RADIUS,
-      ColorPalette.PANEL,
+      theme.backgroundSecondary,
       SkiaSide.BOTTOM
     )
 
@@ -122,7 +116,7 @@ internal class Notification(
         Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
         Dimensions(fillWidth, PROGRESS_BAR_HEIGHT),
         CORNER_RADIUS,
-        ColorPalette.ACCENT_PRIMARY,
+        theme.accentPrimary,
         SkiaSide.BOTTOM
       )
     }
@@ -131,7 +125,7 @@ internal class Notification(
   private fun calculateProgress(currentTime: Long): Float {
     if (isExpired) return 0f
     val totalDuration = duration.inWholeMilliseconds.toFloat()
-    val elapsed = (currentTime - startTime - SLIDE_IN_DURATION_MS).toFloat()
+    val elapsed = (currentTime - startTime - slideInAnim.duration).toFloat()
     return (1f - (elapsed / totalDuration)).coerceIn(0f, 1f)
   }
 
@@ -140,8 +134,6 @@ internal class Notification(
   }
 
   companion object {
-    private const val DEFAULT_X: Float = 0f
-    private const val DEFAULT_Y: Float = 0f
     private const val DEFAULT_WIDTH: Float = 350f
     private const val MIN_HEIGHT: Float = 100f
 
@@ -152,10 +144,6 @@ internal class Notification(
 
     private const val TITLE_FONT_SIZE: Float = 16f
     private const val DESCRIPTION_FONT_SIZE: Float = 14f
-
-    private const val SLIDE_IN_DURATION_MS: Long = 300L
-    private const val SLIDE_DOWN_DURATION_MS: Long = 200L
-    private const val SLIDE_OUT_DURATION_MS: Long = 400L
 
     private const val PROGRESS_BAR_HEIGHT: Float = 5f
 

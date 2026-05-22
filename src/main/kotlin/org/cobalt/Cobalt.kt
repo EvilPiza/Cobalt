@@ -11,6 +11,7 @@ import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
+import org.cobalt.script.ScriptManager
 import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
@@ -33,6 +34,7 @@ object Cobalt : ClientModInitializer {
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME ${SharedConstants.getCurrentVersion().name()} (v$MOD_VERSION)")
 
+    ScriptManager.registerScripts()
     ModuleManager.registerModules()
     CommandManager.register(MainCommand)
 

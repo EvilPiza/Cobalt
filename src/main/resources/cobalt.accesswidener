@@ -1,0 +1,8 @@
+accessWidener v1 official
+
+accessible field net/minecraft/client/player/AbstractClientPlayer playerInfo Lnet/minecraft/client/multiplayer/PlayerInfo;
+
+accessible method net/minecraft/client/Minecraft startAttack ()Z
+accessible method net/minecraft/client/Minecraft startUseItem ()V
+
+accessible method net/minecraft/client/renderer/culling/Frustum cubeInFrustum (DDDDDD)I

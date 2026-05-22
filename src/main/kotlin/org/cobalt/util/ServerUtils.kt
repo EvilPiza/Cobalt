@@ -5,7 +5,6 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.PacketEvent
-import org.cobalt.mixin.client.AbstractClientPlayerAccessor
 
 private const val DEFAULT_TPS = 20f
 private const val TICKS_PER_SECOND = 20.0
@@ -22,8 +21,7 @@ object ServerUtils {
 
   @JvmStatic
   val currentPing
-    get() = (minecraft.player as AbstractClientPlayerAccessor)
-      .clientPlayerInfo?.latency ?: 0
+    get() = minecraft.player?.playerInfo?.latency ?: 0
 
   init {
     EventBus.register(this)
