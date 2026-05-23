@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.ChatFormatting
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.ChatSendEvent
@@ -22,7 +23,18 @@ object CommandManager {
   }
 
   @JvmStatic
-  fun register(command: Command) {
+  internal fun registerCommands() {
+    val builtIn = arrayOf(
+      MainCommand
+    )
+
+    builtIn.forEach { command ->
+      registerCommand(command)
+    }
+  }
+
+  @JvmStatic
+  fun registerCommand(command: Command) {
     command.build().forEach { dispatcher.register(it) }
   }
 

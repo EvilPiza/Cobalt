@@ -18,10 +18,14 @@
 
 package org.cobalt.mixin.client;
 
+import kotlin.Pair;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import org.cobalt.Cobalt;
+import org.cobalt.addon.Addon;
+import org.cobalt.addon.AddonManager;
+import org.cobalt.addon.AddonMetadata;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.TickEvent;
 import org.cobalt.util.skia.SkiaContext;
@@ -31,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.List;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
@@ -85,4 +90,13 @@ public class MinecraftMixin {
     return Cobalt.MOD_NAME + " " + SharedConstants.getCurrentVersion().name() + " (v" + Cobalt.MOD_VERSION + ")";
   }
 
+  @Inject(method = "close", at = @At("HEAD"))
+  public void onClose(CallbackInfo callbackInfo) {
+    List<Pair<AddonMetadata, Addon>> addonsList = AddonManager.getAddons();
+
+    addonsList.forEach((addon) -> {
+      addon.getSecond().onUnload();
+    });
+  }
+  
 }

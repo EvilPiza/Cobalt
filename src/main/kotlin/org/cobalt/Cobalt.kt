@@ -1,7 +1,5 @@
 package org.cobalt
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import java.nio.file.Path
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
@@ -9,8 +7,8 @@ import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
 import net.minecraft.SharedConstants
 import net.minecraft.client.Minecraft
+import org.cobalt.addon.AddonManager
 import org.cobalt.command.CommandManager
-import org.cobalt.command.impl.MainCommand
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
@@ -44,11 +42,12 @@ object Cobalt : ClientModInitializer {
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME ${SharedConstants.getCurrentVersion().name()} (v$MOD_VERSION)")
 
+    AddonManager.loadAddons()
     ThemeManager.loadThemes()
+
     ScriptManager.registerScripts()
     ModuleManager.registerModules()
-
-    CommandManager.register(MainCommand)
+    CommandManager.registerCommands()
 
     LevelRenderEvents.END_MAIN.register { context ->
       EventBus.post(WorldRenderEvent(context))
