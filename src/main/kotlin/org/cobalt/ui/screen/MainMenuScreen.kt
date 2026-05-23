@@ -25,6 +25,8 @@ object MainMenuScreen : Screen(Component.empty()) {
 
   private var runtimeEffect: RuntimeEffect? = null
   private val buttons = mutableListOf<MainMenuButton>()
+  private var fading = false
+  private var fadeStart = 0L
 
   init {
     buttons.add(
@@ -54,6 +56,10 @@ object MainMenuScreen : Screen(Component.empty()) {
 
   override fun added() {
     runtimeEffect = SkiaShaders.loadShader("/assets/cobalt/shader/blur.sksl")
+
+    fading = minecraft.overlay != null
+    fadeStart = 0L
+
     EventBus.register(this)
   }
 
@@ -65,6 +71,21 @@ object MainMenuScreen : Screen(Component.empty()) {
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
+    }
+
+    if (minecraft.overlay != null) {
+      return
+    }
+
+    val canvas = event.canvas
+
+    if (fading && fadeStart == 0L && minecraft.overlay == null) {
+      fadeStart = System.currentTimeMillis()
+    }
+
+    if (fading) {
+      val alpha = ((System.currentTimeMillis() - fadeStart) / 1000f).coerceIn(0f, 1f)
+      canvas.saveLayerAlpha(null, (alpha * 255).toInt())
     }
 
     runtimeEffect?.let { effect ->
@@ -95,6 +116,10 @@ object MainMenuScreen : Screen(Component.empty()) {
         .renderComponent()
 
       currentY += MainMenuButton.HEIGHT + BUTTON_SPACING
+    }
+
+    if (fading) {
+      canvas.restore()
     }
   }
 
