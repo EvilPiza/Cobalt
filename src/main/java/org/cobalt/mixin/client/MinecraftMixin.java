@@ -98,5 +98,5 @@ public class MinecraftMixin {
       addon.getSecond().onUnload();
     });
   }
-  
+
 }

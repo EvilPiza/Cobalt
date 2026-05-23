@@ -1,8 +1,11 @@
 package org.cobalt.addon
 
 import net.fabricmc.loader.api.FabricLoader
+import org.slf4j.LoggerFactory
 
 object AddonManager {
+
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
   @JvmStatic
   val addons = mutableListOf<Pair<AddonMetadata, Addon>>()
@@ -22,8 +25,9 @@ object AddonManager {
 
       val addonInstance: Addon = try {
         entry.entrypoint
-      } catch (e: Throwable) {
-        throw RuntimeException("Failed to initialize ${metadata.name} (${metadata.id})", e)
+      } catch (exception: Exception) {
+        logger.error("Failed to initialize ${metadata.name} (${metadata.id})", exception)
+        continue
       }
 
       addons.add(addonMetadata to addonInstance)
