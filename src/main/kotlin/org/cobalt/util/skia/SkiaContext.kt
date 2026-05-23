@@ -42,10 +42,6 @@ internal object SkiaContext {
   val canvas: Canvas?
     get() = surface?.canvas
 
-  init {
-    EventBus.register(this)
-  }
-
   internal fun initSkia(width: Int, height: Int) {
     if (context == null) {
       context = DirectContext.makeGL()

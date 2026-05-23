@@ -8,6 +8,7 @@ import java.nio.file.Path
 import kotlin.io.path.bufferedWriter
 import kotlin.io.path.exists
 import kotlin.io.path.readText
+import org.cobalt.Cobalt.configDir
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.module.Module
 import org.cobalt.module.RenderableModule
@@ -18,14 +19,10 @@ import org.slf4j.LoggerFactory
 object ConfigManager {
 
   private val logger = LoggerFactory.getLogger(ConfigManager::class.java)
-
   private val gson: Gson = GsonBuilder()
     .setPrettyPrinting()
     .create()
 
-  private val configDir: Path
-    get() = minecraft.gameDirectory.toPath()
-      .resolve("config/cobalt")
 
   private fun getConfigFile(container: SettingsContainer): Path =
     configDir

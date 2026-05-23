@@ -21,15 +21,19 @@ internal object ConfigScreen : Screen(Component.empty()) {
   private val openAnim = BounceAnimation(duration = 400L)
   private var currentPage: UIComponent = ModulesPage
 
-  private val sidebar = SidebarComponent()
-
   init {
     EventBus.register(this)
   }
 
+  override fun added() {
+    openAnim.start()
+  }
+
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    if (minecraft.screen != this) return
+    if (minecraft.screen != this) {
+      return
+    }
 
     val centerX = windowWidth / 2f
     val centerY = windowHeight / 2f
@@ -52,10 +56,6 @@ internal object ConfigScreen : Screen(Component.empty()) {
       .renderComponent()
 
     SkiaTransforms.restore()
-  }
-
-  override fun added() {
-    openAnim.start()
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {

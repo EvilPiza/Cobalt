@@ -32,7 +32,7 @@ internal object HudEditorScreen : Screen(Component.empty()) {
   private val snapHelper = SnapHelper()
 
   private val theme: Theme
-    get() = ThemeManager.getActiveTheme()
+    get() = ThemeManager.activeTheme
 
   private var isDraggingMove = false
   private var dragOffsetX: Float = 0.0f
@@ -78,14 +78,14 @@ internal object HudEditorScreen : Screen(Component.empty()) {
         SkiaShapes.drawLine(
           Vec2f(guide.position, 0f),
           Vec2f(guide.position, windowHeight),
-          theme.accentPrimary,
+          theme.accentPrimary.rgb,
           thickness = 1f
         )
       } else {
         SkiaShapes.drawLine(
           Vec2f(0f, guide.position),
           Vec2f(windowWidth, guide.position),
-          theme.accentPrimary,
+          theme.accentPrimary.rgb,
           thickness = 1f
         )
       }
@@ -103,7 +103,7 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     SkiaShapes.drawOutline(
       module.screenPosition,
       module.dimensions,
-      if (isSelected) theme.accentPrimary else theme.border,
+      (if (isSelected) theme.accentPrimary else theme.border).rgb,
       thickness = 2f
     )
 
@@ -115,7 +115,7 @@ internal object HudEditorScreen : Screen(Component.empty()) {
       SkiaShapes.drawRect(
         Vec2f(squareX, squareY),
         Dimensions(SQUARE_SIZE, SQUARE_SIZE),
-        theme.accentPrimary
+        theme.accentPrimary.rgb
       )
     }
   }
@@ -264,7 +264,6 @@ internal object HudEditorScreen : Screen(Component.empty()) {
   }
 
   private const val SQUARE_SIZE = 10.0f
-  private const val GRID_SIZE = 20.0f
   private const val MIN_SCALE = 0.75f
   private const val MAX_SCALE = 2.0f
 

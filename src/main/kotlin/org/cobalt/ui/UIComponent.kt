@@ -13,7 +13,7 @@ abstract class UIComponent(
 ) {
 
   protected val theme: Theme
-    get() = ThemeManager.getActiveTheme()
+    get() = ThemeManager.activeTheme
 
   private val children =
     mutableListOf<UIComponent>()

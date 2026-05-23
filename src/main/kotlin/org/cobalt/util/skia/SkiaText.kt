@@ -19,22 +19,24 @@ import org.cobalt.util.skia.SkiaContext.canvas
 
 object SkiaText {
 
-  @JvmStatic
-  val primaryFont: Font by lazy {
-    loadFont("assets/cobalt/font/ProductSans-Bold.ttf").first
-  }
-
-
   private val fonts = mutableMapOf<String, Pair<Font, Typeface>>()
-
   private val fontCollection: FontCollection by lazy {
     FontCollection().apply { setDefaultFontManager(FontMgr.getDefault()) }
   }
 
   @JvmStatic
+  val regularFont: Font by lazy {
+    loadFont("/assets/cobalt/font/ProductSans-Regular.ttf").first
+  }
+
+  @JvmStatic
+  val boldFont: Font by lazy {
+    loadFont("/assets/cobalt/font/ProductSans-Bold.ttf").first
+  }
+
+  @JvmStatic
   fun loadFont(resourcePath: String) = fonts.computeIfAbsent(resourcePath) {
-    val bytes = javaClass.classLoader
-      ?.getResourceAsStream(resourcePath)
+    val bytes = javaClass.getResourceAsStream(resourcePath)
       ?.use { it.readAllBytes() }
       ?: throw IOException("Font resource not found: $resourcePath")
 

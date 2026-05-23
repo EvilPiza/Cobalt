@@ -19,7 +19,7 @@ object SkiaShaders {
 
   fun loadShader(resourcePath: String): RuntimeEffect {
     try {
-      SkiaShaders.javaClass.getResourceAsStream(resourcePath).use { inputStream ->
+      javaClass.getResourceAsStream(resourcePath).use { inputStream ->
         checkNotNull(inputStream) { "Missing shader resource" }
 
         val sksl = String(inputStream.readAllBytes(), StandardCharsets.UTF_8)

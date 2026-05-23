@@ -1,14 +1,8 @@
 package org.cobalt.script
 
-import org.cobalt.event.EventBus
-
 object ScriptManager {
 
   val scripts = mutableSetOf<Script>()
-
-  init {
-    EventBus.register(this)
-  }
 
   internal fun registerScripts() {
     val builtIn = arrayOf<Script>()

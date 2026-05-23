@@ -15,7 +15,7 @@ internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
   category = ModuleCategory.RENDER,
 ) {
-  
+
   override fun getWidth(): Float {
     var width = PADDING * 2
 
@@ -24,8 +24,8 @@ internal object PerformanceHUD : RenderableModule(
         width += PADDING + 2 * TEXT_SPACING
       }
 
-      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+      width += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
     }
 
     return width
@@ -48,7 +48,7 @@ internal object PerformanceHUD : RenderableModule(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       CORNER_RADIUS,
-      theme.backgroundPrimary
+      theme.backgroundPrimary.rgb
     )
   }
 
@@ -74,7 +74,7 @@ internal object PerformanceHUD : RenderableModule(
     SkiaShapes.drawLine(
       Vec2f(x, midY - DIVIDER_HALF_HEIGHT),
       Vec2f(x, midY + DIVIDER_HALF_HEIGHT),
-      theme.border,
+      theme.border.rgb,
       OUTLINE_THICKNESS
     )
 
@@ -87,22 +87,22 @@ internal object PerformanceHUD : RenderableModule(
     var x = startX
 
     SkiaText.drawText(
-      SkiaText.primaryFont,
+      SkiaText.boldFont,
       stat.value,
       Vec2f(x, textY),
-      TextStyle(FONT_SIZE, theme.textPrimary)
+      TextStyle(FONT_SIZE, theme.textPrimary.rgb)
     )
 
-    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.value, FONT_SIZE) + TEXT_SPACING
+    x += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
 
     SkiaText.drawText(
-      SkiaText.primaryFont,
+      SkiaText.boldFont,
       stat.unit,
       Vec2f(x, textY),
-      TextStyle(FONT_SIZE, theme.textDisabled)
+      TextStyle(FONT_SIZE, theme.textDisabled.rgb)
     )
 
-    x += SkiaText.getTextWidth(SkiaText.primaryFont, stat.unit, FONT_SIZE)
+    x += SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
 
     return x
   }

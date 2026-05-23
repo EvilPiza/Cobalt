@@ -68,7 +68,7 @@ internal class Notification(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       CORNER_RADIUS,
-      theme.backgroundPrimary
+      theme.backgroundPrimary.rgb
     )
 
     drawText()
@@ -79,23 +79,23 @@ internal class Notification(
     val contentWidth = width - CONTENT_PADDING * 2
 
     SkiaText.drawWrappedText(
-      SkiaText.primaryFont,
+      SkiaText.boldFont,
       title,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING),
       contentWidth,
-      TextStyle(TITLE_FONT_SIZE, theme.textPrimary)
+      TextStyle(TITLE_FONT_SIZE, theme.textPrimary.rgb)
     )
 
     val titleHeight = SkiaText.getWrappedTextHeight(
-      SkiaText.primaryFont, title, contentWidth, TITLE_FONT_SIZE
+      SkiaText.boldFont, title, contentWidth, TITLE_FONT_SIZE
     )
 
     SkiaText.drawWrappedText(
-      SkiaText.primaryFont,
+      SkiaText.boldFont,
       description,
       Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP),
       contentWidth,
-      TextStyle(DESCRIPTION_FONT_SIZE, theme.textSecondary)
+      TextStyle(DESCRIPTION_FONT_SIZE, theme.textSecondary.rgb)
     )
   }
 
@@ -107,7 +107,7 @@ internal class Notification(
       Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
       Dimensions(width, PROGRESS_BAR_HEIGHT),
       CORNER_RADIUS,
-      theme.backgroundSecondary,
+      theme.backgroundSecondary.rgb,
       SkiaSide.BOTTOM
     )
 
@@ -116,7 +116,7 @@ internal class Notification(
         Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
         Dimensions(fillWidth, PROGRESS_BAR_HEIGHT),
         CORNER_RADIUS,
-        theme.accentPrimary,
+        theme.accentPrimary.rgb,
         SkiaSide.BOTTOM
       )
     }
@@ -149,14 +149,14 @@ internal class Notification(
 
     private fun calculateHeight(title: String, description: String): Float {
       val titleHeight = SkiaText.getWrappedTextHeight(
-        SkiaText.primaryFont,
+        SkiaText.boldFont,
         title,
         DEFAULT_WIDTH - CONTENT_PADDING * 2,
         TITLE_FONT_SIZE
       )
 
       val descHeight = SkiaText.getWrappedTextHeight(
-        SkiaText.primaryFont,
+        SkiaText.boldFont,
         description,
         DEFAULT_WIDTH - CONTENT_PADDING * 2,
         DESCRIPTION_FONT_SIZE

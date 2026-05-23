@@ -43,7 +43,7 @@ abstract class RenderableModule(
 ) : Module(name, category) {
 
   val theme: Theme
-    get() = ThemeManager.getActiveTheme()
+    get() = ThemeManager.activeTheme
 
   val screenPosition: Vec2f
     get() = anchor.computePosition(

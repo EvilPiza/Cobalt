@@ -25,7 +25,7 @@ internal object ModulesPage : UIComponent(
       Vec2f(xPos + sidebar.width, yPos),
       Dimensions(BODY_WIDTH, height),
       radius = CORNER_RADIUS,
-      color = theme.backgroundPrimary,
+      color = theme.backgroundPrimary.rgb,
       side = SkiaSide.RIGHT
     )
 
@@ -44,14 +44,14 @@ internal object ModulesPage : UIComponent(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       radius = CORNER_RADIUS,
-      color = theme.border,
+      color = theme.border.rgb,
       thickness = 2f
     )
 
     SkiaShapes.drawLine(
       Vec2f(xPos + sidebar.width, yPos),
       Vec2f(xPos + sidebar.width, yPos + height),
-      color = theme.border,
+      color = theme.border.rgb,
       thickness = 2f
     )
   }

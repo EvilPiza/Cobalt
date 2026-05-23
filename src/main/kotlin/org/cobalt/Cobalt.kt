@@ -1,5 +1,8 @@
 package org.cobalt
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.nio.file.Path
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 import net.fabricmc.loader.api.FabricLoader
@@ -12,6 +15,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.script.ScriptManager
+import org.cobalt.ui.theme.ThemeManager
 import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
@@ -20,7 +24,10 @@ object Cobalt : ClientModInitializer {
   val minecraft: Minecraft
     get() = Minecraft.getInstance()
 
-  private val logger = LoggerFactory.getLogger(this::class.java)
+  @JvmStatic
+  val configDir: Path
+    get() = minecraft.gameDirectory.toPath()
+      .resolve("config/cobalt")
 
   @JvmField
   val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer("cobalt").orElseThrow()
@@ -31,11 +38,16 @@ object Cobalt : ClientModInitializer {
   @JvmField
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
 
+  private val logger =
+    LoggerFactory.getLogger(this::class.java)
+
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME ${SharedConstants.getCurrentVersion().name()} (v$MOD_VERSION)")
 
+    ThemeManager.loadThemes()
     ScriptManager.registerScripts()
     ModuleManager.registerModules()
+
     CommandManager.register(MainCommand)
 
     LevelRenderEvents.END_MAIN.register { context ->

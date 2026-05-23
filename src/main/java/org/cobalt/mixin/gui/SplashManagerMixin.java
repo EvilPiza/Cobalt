@@ -32,7 +32,7 @@ public class SplashManagerMixin {
 
   @Unique
   private Component cobalt$createSplash() {
-    int color = ThemeManager.getActiveTheme().getAccentPrimary();
+    int color = ThemeManager.getActiveTheme().getAccentPrimary().getRGB();
 
     return Component.literal(Cobalt.MOD_NAME + " on top!")
       .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));

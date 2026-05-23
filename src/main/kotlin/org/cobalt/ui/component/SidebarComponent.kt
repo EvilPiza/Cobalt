@@ -16,7 +16,7 @@ class SidebarComponent : UIComponent(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       radius = CORNER_RADIUS,
-      color = theme.backgroundSecondary,
+      color = theme.backgroundSecondary.rgb,
       side = SkiaSide.LEFT
     )
   }
