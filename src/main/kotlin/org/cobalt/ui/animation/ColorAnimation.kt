@@ -28,7 +28,7 @@ internal class ColorAnimation(duration: Long) {
     val blue = interpolate(startColor.blue, endColor.blue, reverse)
     val alpha = interpolate(startColor.alpha, endColor.alpha, reverse)
 
-    return (alpha shl 24) or (red shl 16) or (green shl 8) or blue
+    return (alpha shl ALPHA_SHIFT) or (red shl RED_SHIFT) or (green shl GREEN_SHIFT) or blue
   }
 
   private fun interpolate(start: Int, end: Int, reverse: Boolean): Int {
@@ -46,6 +46,10 @@ internal class ColorAnimation(duration: Long) {
     private const val MIN_VALUE = 0
     private const val MAX_VALUE = 255
     private const val MAX_VALUE_FLOAT = 255f
+
+    private const val ALPHA_SHIFT = 24
+    private const val RED_SHIFT = 16
+    private const val GREEN_SHIFT = 8
   }
 
 }

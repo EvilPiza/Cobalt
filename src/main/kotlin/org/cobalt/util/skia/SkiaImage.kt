@@ -38,7 +38,10 @@ class SkiaImage(
   }
 
   fun getOrGenerateRaster(width: Int, height: Int): Image? {
-    if (!isSvg) return image
+    if (!isSvg) {
+      return image
+    }
+
     val dom = svgDom ?: return null
 
     if (!isCachedMatch(width, height)) {

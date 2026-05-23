@@ -9,7 +9,6 @@ import kotlin.io.path.bufferedWriter
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import org.cobalt.Cobalt.configDir
-import org.cobalt.Cobalt.minecraft
 import org.cobalt.module.Module
 import org.cobalt.module.RenderableModule
 import org.cobalt.util.setting.SettingsContainer
@@ -44,37 +43,56 @@ object ConfigManager {
         JsonObject::class.java
       )
     }.onSuccess { json ->
-      (container as? Module)?.let { module ->
-        json.get("enabled")?.asBoolean?.let {
-          module.enabled = it
-        }
-      }
-
-      (container as? RenderableModule)?.let { renderableModule ->
-        json.get("offsetX")?.asFloat?.let {
-          renderableModule.offsetX = it
-        }
-
-        json.get("offsetY")?.asFloat?.let {
-          renderableModule.offsetY = it
-        }
-
-        json.get("scale")?.asFloat?.let {
-          renderableModule.scale = it
-        }
-      }
-
-      container.getSettings()
-        .filterNot { it is InfoSetting }
-        .forEach { setting ->
-          json.get(setting.name)?.let(setting::read)
-        }
+      loadModuleState(container, json)
+      loadRenderableState(container, json)
+      loadSettings(container, json)
     }.onFailure { exception ->
       logger.error(
         "Failed to load config: ${container.directoryPath}/${container.identifier}",
         exception
       )
     }
+  }
+
+  private fun loadModuleState(
+    container: SettingsContainer,
+    json: JsonObject
+  ) {
+    (container as? Module)?.let { module ->
+      json.get("enabled")?.asBoolean?.let {
+        module.enabled = it
+      }
+    }
+  }
+
+  private fun loadRenderableState(
+    container: SettingsContainer,
+    json: JsonObject
+  ) {
+    (container as? RenderableModule)?.let { renderableModule ->
+      json.get("offsetX")?.asFloat?.let {
+        renderableModule.offsetX = it
+      }
+
+      json.get("offsetY")?.asFloat?.let {
+        renderableModule.offsetY = it
+      }
+
+      json.get("scale")?.asFloat?.let {
+        renderableModule.scale = it
+      }
+    }
+  }
+
+  private fun loadSettings(
+    container: SettingsContainer,
+    json: JsonObject
+  ) {
+    container.getSettings()
+      .filterNot { it is InfoSetting }
+      .forEach { setting ->
+        json.get(setting.name)?.let(setting::read)
+      }
   }
 
   fun saveConfig(container: SettingsContainer) {

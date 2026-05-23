@@ -15,7 +15,10 @@ class BounceAnimation(duration: Long) : Animation<Float>(duration) {
   }
 
   override fun get(start: Float, end: Float, reverse: Boolean): Float {
-    if (!isAnimating()) return if (reverse) start else end
+    if (!isAnimating()) {
+      return if (reverse) start else end
+    }
+
     return if (reverse) end + (start - end) * ease() else start + (end - start) * ease()
   }
 

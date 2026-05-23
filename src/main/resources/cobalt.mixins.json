@@ -9,7 +9,9 @@
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
     "gui.GuiRendererMixin",
+    "gui.ScreenMixin",
     "gui.SplashManagerMixin",
+    "gui.TitleScreenMixin",
     "platform.WindowMixin"
   ],
   "mixins": [

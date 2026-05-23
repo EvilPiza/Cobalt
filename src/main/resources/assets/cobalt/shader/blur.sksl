@@ -1,0 +1,25 @@
+uniform shader image;
+
+uniform float time;
+uniform float2 resolution;
+
+half4 main(float2 fragCoord) {
+    float blur = 2.0;
+    float2 uv = fragCoord / resolution;
+    float2 texel = float2(1.0 / resolution.x, 0.0);
+    half4 color = half4(0.0);
+
+    color += image.eval((uv + texel * -4.0 * blur) * resolution) * 0.05;
+    color += image.eval((uv + texel * -3.0 * blur) * resolution) * 0.09;
+    color += image.eval((uv + texel * -2.0 * blur) * resolution) * 0.12;
+    color += image.eval((uv + texel * -1.0 * blur) * resolution) * 0.15;
+
+    color += image.eval(uv * resolution) * 0.18;
+
+    color += image.eval((uv + texel * 1.0 * blur) * resolution) * 0.15;
+    color += image.eval((uv + texel * 2.0 * blur) * resolution) * 0.12;
+    color += image.eval((uv + texel * 3.0 * blur) * resolution) * 0.09;
+    color += image.eval((uv + texel * 4.0 * blur) * resolution) * 0.05;
+
+    return color;
+}

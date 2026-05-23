@@ -33,9 +33,11 @@ object SkiaImages {
 
   @JvmStatic
   fun drawImage(image: SkiaImage, pos: Vec2f, dim: Dimensions) {
-    if (!isValidDimension(dim)) return
-    val canvas = canvas ?: return
+    if (!isValidDimension(dim)) {
+      return
+    }
 
+    val canvas = canvas ?: return
     val sourceImage = image.getOrGenerateRaster(dim.width.toInt(), dim.height.toInt()) ?: return
 
     drawConfiguredImage(canvas, image, pos, dim, sourceImage)

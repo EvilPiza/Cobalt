@@ -29,17 +29,24 @@ object ServerUtils {
 
   @SubscribeEvent
   fun onPacketReceive(@Suppress("UnusedParameter") event: PacketEvent.Receive) {
-    if (event.packet !is ClientboundSetTimePacket) return
+    if (event.packet !is ClientboundSetTimePacket) {
+      return
+    }
 
     val now = System.currentTimeMillis()
-
     val last = lastTickTime
+
     lastTickTime = now
 
-    if (last == -1L) return
+    if (last == -1L) {
+      return
+    }
 
     val delta = now - last
-    if (delta <= 0) return
+
+    if (delta <= 0) {
+      return
+    }
 
     val tps = (MS_PER_SECOND * TICKS_PER_SECOND / delta)
       .coerceAtMost(TICKS_PER_SECOND)

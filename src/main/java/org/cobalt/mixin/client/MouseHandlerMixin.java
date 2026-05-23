@@ -3,6 +3,8 @@ package org.cobalt.mixin.client;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.cobalt.event.EventBus;
+import org.cobalt.event.impl.MouseAction;
+import org.cobalt.event.impl.MouseButton;
 import org.cobalt.event.impl.MouseEvent;
 import org.cobalt.util.MouseMode;
 import org.cobalt.util.MouseUtils;
@@ -24,7 +26,7 @@ public abstract class MouseHandlerMixin {
   public abstract void releaseMouse();
 
   @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
-  private void onMouseButton(long handle, MouseButtonInfo rawButtonInfo, int action, CallbackInfo ci) {
+  private void onMouseButton(long handle, MouseButtonInfo rawButtonInfo, int action, CallbackInfo callbackInfo) {
     MouseEvent event = cobalt$createMouseEvent(rawButtonInfo.button(), action);
 
     if (event == null) {
@@ -34,16 +36,16 @@ public abstract class MouseHandlerMixin {
     EventBus.post(event);
 
     if (event.isCancelled()) {
-      ci.cancel();
+      callbackInfo.cancel();
     }
   }
 
   @Unique
   private MouseEvent cobalt$createMouseEvent(int button, int action) {
-    MouseEvent.Button mappedButton = switch (button) {
-      case 0 -> MouseEvent.Button.LEFT;
-      case 1 -> MouseEvent.Button.RIGHT;
-      case 2 -> MouseEvent.Button.MIDDLE;
+    MouseButton mappedButton = switch (button) {
+      case 0 -> MouseButton.LEFT;
+      case 1 -> MouseButton.RIGHT;
+      case 2 -> MouseButton.MIDDLE;
       default -> null;
     };
 
@@ -51,9 +53,9 @@ public abstract class MouseHandlerMixin {
       return null;
     }
 
-    MouseEvent.Action mappedAction = switch (action) {
-      case 1 -> MouseEvent.Action.PRESS;
-      case 0 -> MouseEvent.Action.RELEASE;
+    MouseAction mappedAction = switch (action) {
+      case 1 -> MouseAction.PRESS;
+      case 0 -> MouseAction.RELEASE;
       default -> null;
     };
 

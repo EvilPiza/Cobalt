@@ -81,7 +81,9 @@ object RenderUtils {
     esp: Boolean = false,
     lineWidth: Float = 1f,
   ) {
-    if (color.alpha == 0) return
+    if (color.alpha == 0) {
+      return
+    }
 
     val frustum = context.levelState().cameraRenderState.cullFrustum
 
@@ -111,16 +113,24 @@ object RenderUtils {
     esp: Boolean = false,
     lineWidth: Float = 1f,
   ) {
-    if (color.alpha == 0) return
+    if (color.alpha == 0) {
+      return
+    }
 
     val frustum = context.levelState().cameraRenderState.cullFrustum
 
     if (!FrustumUtils.isVisible(
         frustum,
-        min(from.x, to.x), min(from.y, to.y), min(from.z, to.z),
-        max(from.x, to.x), max(from.y, to.y), max(from.z, to.z)
+        min(from.x, to.x),
+        min(from.y, to.y),
+        min(from.z, to.z),
+        max(from.x, to.x),
+        max(from.y, to.y),
+        max(from.z, to.z)
       )
-    ) return
+    ) {
+      return
+    }
 
     drawVisibleLine(context, from, to, color, esp, lineWidth)
   }

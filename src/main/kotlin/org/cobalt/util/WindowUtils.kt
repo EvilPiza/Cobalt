@@ -15,7 +15,7 @@ object WindowUtils {
   fun isKeyDown(key: InputConstants.Key): Boolean {
     val window = minecraft.window
 
-    return if (key.value > 7) {
+    return if (key.value > GLFW.GLFW_MOUSE_BUTTON_LAST) {
       InputConstants.isKeyDown(window, key.value)
     } else {
       GLFW.glfwGetMouseButton(window.handle(), key.value) == GLFW.GLFW_PRESS

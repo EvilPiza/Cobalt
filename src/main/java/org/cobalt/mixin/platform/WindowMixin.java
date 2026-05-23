@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class WindowMixin {
 
   @Inject(method = "onFramebufferResize", at = @At("RETURN"))
-  private void onFramebufferResize(long handle, int newWidth, int newHeight, CallbackInfo ci) {
+  private void onFramebufferResize(long handle, int newWidth, int newHeight, CallbackInfo callbackInfo) {
     int finalWidth = Math.max(newWidth, 1);
     int finalHeight = Math.max(newHeight, 1);
 

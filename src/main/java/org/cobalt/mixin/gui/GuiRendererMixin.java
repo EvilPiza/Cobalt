@@ -32,12 +32,12 @@ public class GuiRendererMixin {
   }
 
   @Inject(method = "registerPanoramaTextures", at = @At("HEAD"))
-  private void registerCustomCubeMapTextures(TextureManager textureManager, CallbackInfo ci) {
+  private void registerCustomCubeMapTextures(TextureManager textureManager, CallbackInfo callbackInfo) {
     cobalt$cubeMap.registerTextures(textureManager);
   }
 
   @Inject(method = "close", at = @At("RETURN"))
-  private void onClose(CallbackInfo ci) {
+  private void onClose(CallbackInfo callbackInfo) {
     cobalt$cubeMap.close();
   }
 

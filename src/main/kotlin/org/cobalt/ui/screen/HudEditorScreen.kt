@@ -42,8 +42,12 @@ internal object HudEditorScreen : Screen(Component.empty()) {
   private var initialMouseX = 0f
   private var initialWidth = 0f
 
-  init {
+  override fun added() {
     EventBus.register(this)
+  }
+
+  override fun removed() {
+    EventBus.unregister(this)
   }
 
   @SubscribeEvent
@@ -71,7 +75,9 @@ internal object HudEditorScreen : Screen(Component.empty()) {
   }
 
   private fun drawSnapGuides() {
-    if (!isDraggingMove) return
+    if (!isDraggingMove) {
+      return
+    }
 
     snapHelper.activeGuides.forEach { guide ->
       if (guide.isVertical) {
@@ -185,7 +191,10 @@ internal object HudEditorScreen : Screen(Component.empty()) {
 
   private fun handleResize(module: RenderableModule): Boolean {
     val baseWidth = module.getWidth()
-    if (baseWidth <= 0f) return false
+
+    if (baseWidth <= 0f) {
+      return false
+    }
 
     val newWidth = initialWidth + (mouseX - initialMouseX)
     module.scale = (newWidth / baseWidth).coerceIn(MIN_SCALE, MAX_SCALE)

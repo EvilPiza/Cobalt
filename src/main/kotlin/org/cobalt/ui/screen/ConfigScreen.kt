@@ -21,12 +21,13 @@ internal object ConfigScreen : Screen(Component.empty()) {
   private val openAnim = BounceAnimation(duration = 400L)
   private var currentPage: UIComponent = ModulesPage
 
-  init {
+  override fun added() {
     EventBus.register(this)
+    openAnim.start()
   }
 
-  override fun added() {
-    openAnim.start()
+  override fun removed() {
+    EventBus.unregister(this)
   }
 
   @SubscribeEvent

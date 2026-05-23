@@ -123,9 +123,13 @@ internal class Notification(
   }
 
   private fun calculateProgress(currentTime: Long): Float {
-    if (isExpired) return 0f
+    if (isExpired) {
+      return 0f
+    }
+
     val totalDuration = duration.inWholeMilliseconds.toFloat()
     val elapsed = (currentTime - startTime - slideInAnim.duration).toFloat()
+
     return (1f - (elapsed / totalDuration)).coerceIn(0f, 1f)
   }
 

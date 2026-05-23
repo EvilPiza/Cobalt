@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
 
   @Inject(method = "<init>", at = @At("TAIL"))
-  private void registerSkia(GameConfig gameConfig, CallbackInfo ci) {
+  private void registerSkia(GameConfig gameConfig, CallbackInfo callbackInfo) {
     int[] width = new int[1];
     int[] height = new int[1];
 
@@ -57,7 +57,7 @@ public class MinecraftMixin {
     ),
     require = 1
   )
-  private void onBeforeFlipFrame(boolean advanceGameTime, CallbackInfo ci) {
+  private void onBeforeFlipFrame(boolean advanceGameTime, CallbackInfo callbackInfo) {
     SkiaContext.INSTANCE.draw$cobalt();
   }
 

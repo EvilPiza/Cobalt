@@ -36,7 +36,10 @@ abstract class Animation<T>(val duration: Long) {
   }
 
   fun getPercent(): Float {
-    if (!animating) return PERCENT_MAX
+    if (!animating) {
+      return PERCENT_MAX
+    }
+
     val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * PERCENT_MAX)
 
     if (percent >= PERCENT_MAX) {

@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientPacketListenerMixin {
 
   @Inject(method = "sendChat", at = @At("HEAD"), cancellable = true)
-  public void sendChatMessage(String content, CallbackInfo ci) {
+  public void sendChatMessage(String content, CallbackInfo callbackInfo) {
     ChatSendEvent event = new ChatSendEvent(content);
     EventBus.post(event);
 
     if (event.isCancelled()) {
-      ci.cancel();
+      callbackInfo.cancel();
     }
   }
 

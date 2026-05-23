@@ -24,7 +24,9 @@ object EventBus {
 
   @JvmStatic
   fun register(listener: Any) {
-    if (handlers.any { it.listener === listener }) return
+    if (handlers.any { it.listener === listener }) {
+      return
+    }
 
     val toAdd = createHandlersForListener(listener)
 
@@ -66,7 +68,9 @@ object EventBus {
     val annotation = method.getAnnotation(SubscribeEvent::class.java)
     val params = method.parameterTypes
 
-    if (annotation == null || params.size != 1 || !Event::class.java.isAssignableFrom(params[0])) return null
+    if (annotation == null || params.size != 1 || !Event::class.java.isAssignableFrom(params[0])) {
+      return null
+    }
 
     if (!method.trySetAccessible()) {
       logger.error("EventBus: could not access method ${listener.javaClass.name}#${method.name}, skipping")

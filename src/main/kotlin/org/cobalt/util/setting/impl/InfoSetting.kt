@@ -9,7 +9,7 @@ class InfoSetting(
   val type: InfoType = InfoType.INFO,
 ) : Setting<String>("", "", "") {
 
-  override fun read(element: JsonElement) {}
+  override fun read(element: JsonElement) = Unit
   override fun write(): JsonElement = JsonPrimitive("")
 
 }

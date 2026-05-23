@@ -59,7 +59,7 @@ public abstract class CommandSuggestionsMixin {
     ),
     cancellable = true
   )
-  public void refresh(CallbackInfo ci, @Local(name = "reader") StringReader reader) {
+  public void refresh(CallbackInfo callbackInfo, @Local(name = "reader") StringReader reader) {
     if (!(this.screen instanceof ChatScreen) || this.minecraft.player == null) {
       return;
     }
@@ -86,7 +86,7 @@ public abstract class CommandSuggestionsMixin {
       });
     }
 
-    ci.cancel();
+    callbackInfo.cancel();
   }
 
   @Shadow

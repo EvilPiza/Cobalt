@@ -5,7 +5,11 @@ class EaseOutAnimation(duration: Long) : Animation<Float>(duration) {
   override fun get(start: Float, end: Float, reverse: Boolean): Float {
     val startVal = if (reverse) end else start
     val endVal = if (reverse) start else end
-    if (!isAnimating()) return endVal
+
+    if (!isAnimating()) {
+      return endVal
+    }
+
     return startVal + (endVal - startVal) * easeOutQuad()
   }
 
