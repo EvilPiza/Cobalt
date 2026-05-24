@@ -33,7 +33,6 @@ object ConfigManager {
     val configFile = getConfigFile(container)
 
     if (!configFile.exists()) {
-      saveConfig(container)
       return
     }
 

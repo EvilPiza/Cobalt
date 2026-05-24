@@ -262,6 +262,10 @@ internal object HudEditorScreen : Screen(Component.empty()) {
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {
+    if (isDraggingResize || isDraggingMove) {
+      selectedModule?.saveConfig()
+    }
+
     isDraggingResize = false
     isDraggingMove = false
     dragOffsetX = 0.0f
