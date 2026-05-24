@@ -36,11 +36,14 @@ object Cobalt : ClientModInitializer {
   @JvmField
   val MOD_VERSION: String = MOD_CONTAINER.metadata.version.friendlyString
 
+  @JvmField
+  val MINECRAFT_VERSION: String = SharedConstants.getCurrentVersion().name()
+
   private val logger =
     LoggerFactory.getLogger(this::class.java)
 
   override fun onInitializeClient() {
-    logger.info("Initializing $MOD_NAME ${SharedConstants.getCurrentVersion().name()} (v$MOD_VERSION)")
+    logger.info("Initializing $MOD_NAME $MINECRAFT_VERSION (v$MOD_VERSION)")
 
     AddonManager.loadAddons()
     ThemeManager.loadThemes()

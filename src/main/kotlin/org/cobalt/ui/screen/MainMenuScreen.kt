@@ -125,7 +125,7 @@ object MainMenuScreen : Screen(Component.empty()) {
   }
 
   private fun drawInfoText() {
-    val leftText = "${Cobalt.MOD_NAME} ${SharedConstants.getCurrentVersion().name()} (v${Cobalt.MOD_VERSION})"
+    val leftText = "${Cobalt.MOD_NAME} ${Cobalt.MINECRAFT_VERSION} (v${Cobalt.MOD_VERSION})"
     val rightText = "Not affiliated with Mojang or Microsoft"
     val textY = windowHeight - INFO_TEXT_PADDING - INFO_TEXT_SIZE
 
