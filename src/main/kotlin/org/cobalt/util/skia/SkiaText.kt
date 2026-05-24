@@ -26,12 +26,12 @@ object SkiaText {
 
   @JvmStatic
   val regularFont: Font by lazy {
-    loadFont("/assets/cobalt/font/ProductSans-Regular.ttf").first
+    loadFont("/assets/cobalt/fonts/ProductSans-Regular.ttf").first
   }
 
   @JvmStatic
   val boldFont: Font by lazy {
-    loadFont("/assets/cobalt/font/ProductSans-Bold.ttf").first
+    loadFont("/assets/cobalt/fonts/ProductSans-Bold.ttf").first
   }
 
   @JvmStatic

@@ -28,7 +28,7 @@ object ThemeManager {
       folder.resolve("default.json")
 
     if (defaultPath.notExists()) {
-      val default = javaClass.getResourceAsStream("/assets/cobalt/theme/default.json")
+      val default = javaClass.getResourceAsStream("/assets/cobalt/themes/default.json")
         ?: error("Default theme resource not found")
 
       Files.copy(default, defaultPath)
