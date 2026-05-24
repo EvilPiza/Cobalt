@@ -1,4 +1,4 @@
-package org.cobalt.ui.component
+package org.cobalt.ui.component.button
 
 import java.awt.Color
 import org.cobalt.event.impl.MouseButton

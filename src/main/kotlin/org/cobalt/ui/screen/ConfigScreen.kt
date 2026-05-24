@@ -9,7 +9,6 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
-import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.page.ModulesPage
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight

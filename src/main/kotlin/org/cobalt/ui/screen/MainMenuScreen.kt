@@ -1,32 +1,34 @@
 package org.cobalt.ui.screen
 
-import io.github.humbleui.skija.RuntimeEffect
-import java.awt.Color
+import net.minecraft.SharedConstants
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.options.OptionsScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
+import org.cobalt.Cobalt
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
-import org.cobalt.ui.component.MainMenuButton
-import org.cobalt.util.Dimensions
+import org.cobalt.ui.component.button.MainMenuButton
+import org.cobalt.ui.theme.Theme
+import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.helper.TickScheduler
-import org.cobalt.util.skia.SkiaShaders
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
 object MainMenuScreen : Screen(Component.empty()) {
 
-  private var runtimeEffect: RuntimeEffect? = null
   private val buttons = mutableListOf<MainMenuButton>()
   private var fading = false
   private var fadeStart = 0L
+
+  private val theme: Theme
+    get() = ThemeManager.activeTheme
 
   init {
     buttons.add(
@@ -55,8 +57,6 @@ object MainMenuScreen : Screen(Component.empty()) {
   }
 
   override fun added() {
-    runtimeEffect = SkiaShaders.loadShader("/assets/cobalt/shader/blur.sksl")
-
     fading = minecraft.overlay != null
     fadeStart = 0L
 
@@ -84,14 +84,19 @@ object MainMenuScreen : Screen(Component.empty()) {
     }
 
     if (fading) {
-      val alpha = ((System.currentTimeMillis() - fadeStart) / 1000f).coerceIn(0f, 1f)
-      canvas.saveLayerAlpha(null, (alpha * 255).toInt())
+      val alpha = ((System.currentTimeMillis() - fadeStart) / MS_PER_SECOND).coerceIn(0f, 1f)
+      canvas.saveLayerAlpha(null, (alpha * MAX_VALUE).toInt())
     }
 
-    runtimeEffect?.let { effect ->
-      SkiaShaders.renderShader(Vec2f(0f, 0f), Dimensions(windowWidth, windowHeight), effect)
-    }
+    drawElements()
+    drawInfoText()
 
+    if (fading) {
+      canvas.restore()
+    }
+  }
+
+  private fun drawElements() {
     val buttonColumnHeight = (MainMenuButton.HEIGHT + BUTTON_SPACING) * (buttons.size - 1) + MainMenuButton.HEIGHT
     val totalGroupHeight = TITLE_FONT_SIZE + TEXT_TO_BUTTONS_SPACING + buttonColumnHeight
 
@@ -105,7 +110,7 @@ object MainMenuScreen : Screen(Component.empty()) {
       SkiaText.boldFont,
       TITLE_TEXT,
       Vec2f(textX, currentY),
-      TextStyle(fontSize = TITLE_FONT_SIZE, color = Color.WHITE.rgb)
+      TextStyle(fontSize = TITLE_FONT_SIZE, color = theme.textPrimary.rgb)
     )
 
     currentY += TITLE_FONT_SIZE + TEXT_TO_BUTTONS_SPACING
@@ -117,10 +122,29 @@ object MainMenuScreen : Screen(Component.empty()) {
 
       currentY += MainMenuButton.HEIGHT + BUTTON_SPACING
     }
+  }
 
-    if (fading) {
-      canvas.restore()
-    }
+  private fun drawInfoText() {
+    val leftText = "${Cobalt.MOD_NAME} ${SharedConstants.getCurrentVersion().name()} (v${Cobalt.MOD_VERSION})"
+    val rightText = "Not affiliated with Mojang or Microsoft"
+    val textY = windowHeight - INFO_TEXT_PADDING - INFO_TEXT_SIZE
+
+    SkiaText.drawText(
+      SkiaText.regularFont,
+      leftText,
+      Vec2f(INFO_TEXT_PADDING, textY),
+      TextStyle(fontSize = INFO_TEXT_SIZE, color = theme.textSecondary.rgb)
+    )
+
+    val textWidth = SkiaText.getTextWidth(SkiaText.regularFont, rightText, INFO_TEXT_SIZE)
+    val textX = windowWidth - textWidth - INFO_TEXT_PADDING
+
+    SkiaText.drawText(
+      SkiaText.regularFont,
+      rightText,
+      Vec2f(textX, textY),
+      TextStyle(fontSize = INFO_TEXT_SIZE, color = theme.textSecondary.rgb)
+    )
   }
 
   override fun shouldCloseOnEsc(): Boolean = false
@@ -133,9 +157,13 @@ object MainMenuScreen : Screen(Component.empty()) {
     return super.mouseClicked(event, doubleClick)
   }
 
-  private const val TITLE_TEXT = "cobalt"
+  private val TITLE_TEXT = Cobalt.MOD_NAME.lowercase()
   private const val TITLE_FONT_SIZE = 50f
   private const val TEXT_TO_BUTTONS_SPACING = 30f
   private const val BUTTON_SPACING = 10f
+  private const val MAX_VALUE = 255f
+  private const val MS_PER_SECOND = 1000f
+  private const val INFO_TEXT_SIZE = 12f
+  private const val INFO_TEXT_PADDING = 15f
 
 }

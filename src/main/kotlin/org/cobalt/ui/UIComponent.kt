@@ -12,6 +12,8 @@ abstract class UIComponent(
   open val height: Float = 0.0f,
 ) {
 
+  var parent: UIComponent? = null
+
   protected val theme: Theme
     get() = ThemeManager.activeTheme
 
@@ -26,6 +28,7 @@ abstract class UIComponent(
     }
 
     children.add(component)
+    component.parent = this
   }
 
   open fun mouseClicked(button: Int): Boolean {

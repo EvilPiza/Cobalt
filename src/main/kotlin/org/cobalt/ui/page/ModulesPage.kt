@@ -11,7 +11,7 @@ internal object ModulesPage : UIComponent(
   height = 600f
 ) {
 
-  private val sidebar = SidebarComponent()
+  private val sidebar = SidebarComponent(currentPage = this)
 
   override val width: Float
     get() = BODY_WIDTH + sidebar.width
