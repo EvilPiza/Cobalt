@@ -6,12 +6,15 @@ import org.lwjgl.glfw.GLFW
 
 object WindowUtils {
 
+  @JvmStatic
   val windowWidth: Float
     get() = minecraft.window.width.toFloat()
 
+  @JvmStatic
   val windowHeight: Float
     get() = minecraft.window.height.toFloat()
 
+  @JvmStatic
   fun isKeyDown(key: InputConstants.Key): Boolean {
     val window = minecraft.window
 

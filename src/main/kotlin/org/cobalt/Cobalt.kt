@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
 
+  const val NAMESPACE = "cobalt"
+
   @JvmStatic
   val minecraft: Minecraft
     get() = Minecraft.getInstance()
@@ -25,10 +27,10 @@ object Cobalt : ClientModInitializer {
   @JvmStatic
   val configDir: Path
     get() = minecraft.gameDirectory.toPath()
-      .resolve("config/cobalt")
+      .resolve("config/$NAMESPACE")
 
   @JvmField
-  val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer("cobalt").orElseThrow()
+  val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow()
 
   @JvmField
   val MOD_NAME: String = MOD_CONTAINER.metadata.name

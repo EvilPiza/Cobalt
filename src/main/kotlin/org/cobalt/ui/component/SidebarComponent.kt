@@ -117,7 +117,7 @@ class SidebarComponent(val currentPage: UIComponent) : UIComponent(
       )
     }
 
-    private val TITLE_TEXT = Cobalt.MOD_NAME.lowercase()
+    private const val TITLE_TEXT = Cobalt.NAMESPACE
     private const val TITLE_FONT_SIZE = 28f
     private const val TITLE_PADDING = 50f
 

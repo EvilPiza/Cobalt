@@ -157,7 +157,7 @@ object MainMenuScreen : Screen(Component.empty()) {
     return super.mouseClicked(event, doubleClick)
   }
 
-  private val TITLE_TEXT = Cobalt.MOD_NAME.lowercase()
+  private const val TITLE_TEXT = Cobalt.NAMESPACE
   private const val TITLE_FONT_SIZE = 50f
   private const val TEXT_TO_BUTTONS_SPACING = 30f
   private const val BUTTON_SPACING = 10f
