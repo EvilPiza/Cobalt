@@ -243,22 +243,18 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     screenWidth: Float,
     screenHeight: Float,
   ): Vec2f {
-    val centerX = screenWidth / 2f - width / 2f
-    val centerY = screenHeight / 2f - height / 2f
-    val rightX = screenWidth - width - x
-    val bottomY = screenHeight - height - y
-
-    return when (anchor) {
-      RenderableModule.Anchor.TOP_LEFT -> Vec2f(x, y)
-      RenderableModule.Anchor.TOP_CENTER -> Vec2f(x - centerX, y)
-      RenderableModule.Anchor.TOP_RIGHT -> Vec2f(rightX, y)
-      RenderableModule.Anchor.CENTER_LEFT -> Vec2f(x, y - centerY)
-      RenderableModule.Anchor.CENTER -> Vec2f(x - centerX, y - centerY)
-      RenderableModule.Anchor.CENTER_RIGHT -> Vec2f(rightX, y - centerY)
-      RenderableModule.Anchor.BOTTOM_LEFT -> Vec2f(x, bottomY)
-      RenderableModule.Anchor.BOTTOM_CENTER -> Vec2f(x - centerX, bottomY)
-      RenderableModule.Anchor.BOTTOM_RIGHT -> Vec2f(rightX, bottomY)
+    val anchorX = when (anchor) {
+      RenderableModule.Anchor.TOP_LEFT, RenderableModule.Anchor.CENTER_LEFT, RenderableModule.Anchor.BOTTOM_LEFT -> x
+      RenderableModule.Anchor.TOP_CENTER, RenderableModule.Anchor.CENTER, RenderableModule.Anchor.BOTTOM_CENTER -> x + width / 2f
+      RenderableModule.Anchor.TOP_RIGHT, RenderableModule.Anchor.CENTER_RIGHT, RenderableModule.Anchor.BOTTOM_RIGHT -> x + width
     }
+    val anchorY = when (anchor) {
+      RenderableModule.Anchor.TOP_LEFT, RenderableModule.Anchor.TOP_CENTER, RenderableModule.Anchor.TOP_RIGHT -> y
+      RenderableModule.Anchor.CENTER_LEFT, RenderableModule.Anchor.CENTER, RenderableModule.Anchor.CENTER_RIGHT -> y + height / 2f
+      RenderableModule.Anchor.BOTTOM_LEFT, RenderableModule.Anchor.BOTTOM_CENTER, RenderableModule.Anchor.BOTTOM_RIGHT -> y + height
+    }
+
+    return Vec2f(anchorX / screenWidth, anchorY / screenHeight)
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {

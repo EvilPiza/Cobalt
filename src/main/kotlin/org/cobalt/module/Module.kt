@@ -37,8 +37,8 @@ abstract class RenderableModule(
   name: String,
   category: ModuleCategory,
   val anchor: Anchor = Anchor.TOP_LEFT,
-  var offsetX: Float = 5.0f,
-  var offsetY: Float = 5.0f,
+  var offsetX: Float = 0.01f,
+  var offsetY: Float = 0.01f,
   var scale: Float = 1.0f,
 ) : Module(name, category) {
 
@@ -88,16 +88,18 @@ abstract class RenderableModule(
       screenWidth: Float,
       screenHeight: Float,
     ): Vec2f {
-      val x = when (this) {
-        TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> offsetX
-        TOP_CENTER, CENTER, BOTTOM_CENTER -> screenWidth / 2f - moduleWidth / 2f + offsetX
-        TOP_RIGHT, CENTER_RIGHT, BOTTOM_RIGHT -> screenWidth - moduleWidth - offsetX
-      }
+      val absX = offsetX * screenWidth
+      val absY = offsetY * screenHeight
 
+      val x = when (this) {
+        TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> absX
+        TOP_CENTER, CENTER, BOTTOM_CENTER -> absX - moduleWidth / 2f
+        TOP_RIGHT, CENTER_RIGHT, BOTTOM_RIGHT -> absX - moduleWidth
+      }
       val y = when (this) {
-        TOP_LEFT, TOP_CENTER, TOP_RIGHT -> offsetY
-        CENTER_LEFT, CENTER, CENTER_RIGHT -> screenHeight / 2f - moduleHeight / 2f + offsetY
-        BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> screenHeight - moduleHeight - offsetY
+        TOP_LEFT, TOP_CENTER, TOP_RIGHT -> absY
+        CENTER_LEFT, CENTER, CENTER_RIGHT -> absY - moduleHeight / 2f
+        BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> absY - moduleHeight
       }
 
       return Vec2f(
