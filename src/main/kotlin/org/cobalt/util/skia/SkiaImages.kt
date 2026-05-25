@@ -51,7 +51,10 @@ object SkiaImages {
     sourceImage: Image,
   ) {
     Paint().use { paint ->
-      configurePaint(paint, image.colorMask)
+      image.color?.let { color ->
+        paint.colorFilter = ColorFilter.makeBlend(color, BlendMode.MODULATE)
+      }
+
       drawWithOptionalClip(canvas, image, pos, dim, sourceImage, paint)
     }
   }
@@ -81,12 +84,6 @@ object SkiaImages {
     }
   }
 
-  private fun configurePaint(paint: Paint, colorMask: Int?) {
-    if (colorMask != null) {
-      paint.colorFilter = ColorFilter.makeBlend(colorMask, BlendMode.SRC_ATOP)
-    }
-  }
-
   private inline fun withOptionalClip(
     canvas: Canvas,
     roundedRect: RRect?,
@@ -95,6 +92,7 @@ object SkiaImages {
     if (roundedRect != null) {
       canvas.save()
       canvas.clipRRect(roundedRect, ClipMode.INTERSECT, true)
+
       try {
         block()
       } finally {

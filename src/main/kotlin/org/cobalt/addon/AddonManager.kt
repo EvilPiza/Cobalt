@@ -46,46 +46,55 @@ object AddonManager {
 
   private fun loadAddon(jarPath: Path) {
     ZipFile(jarPath.toFile()).use { zip ->
-      val jsonEntry = checkNotNull(zip.getEntry("cobalt.addon.json")) {
-        "Missing cobalt.addon.json in $jarPath"
-      }
-
-      val metadata = zip.getInputStream(jsonEntry).use {
-        gson.fromJson(it.reader(), AddonMetadata::class.java)
-      }
-
-      require(metadata.entrypoints.isNotEmpty()) {
-        "Addon ${metadata.id} has no entry points defined"
-      }
+      val metadata = loadAddonMetadata(zip, jarPath)
 
       synchronized(Mixins::class.java) {
         metadata.mixins.forEach(Mixins::addConfiguration)
       }
 
-      for (entrypoint in metadata.entrypoints) {
-        val classPath = "${entrypoint.replace('.', '/')}.class"
+      loadAddonEntryPoints(zip, jarPath, metadata)
+    }
+  }
 
-        check(zip.getEntry(classPath) != null) {
-          "Entrypoint class '$entrypoint' does not exist inside ${jarPath.fileName}"
-        }
+  private fun loadAddonMetadata(zip: ZipFile, jarPath: Path): AddonMetadata {
+    val jsonEntry = checkNotNull(zip.getEntry("cobalt.addon.json")) {
+      "Missing cobalt.addon.json in $jarPath"
+    }
 
-        val clazz = Class.forName(entrypoint)
+    val metadata = zip.getInputStream(jsonEntry).use {
+      gson.fromJson(it.reader(), AddonMetadata::class.java)
+    }
 
-        val instance = runCatching {
-          clazz.getField("INSTANCE").get(null)
-        }.getOrElse {
-          clazz
-            .getDeclaredConstructor()
-            .apply { isAccessible = true }
-            .newInstance()
-        }
+    require(metadata.entrypoints.isNotEmpty()) {
+      "Addon ${metadata.id} has no entry points defined"
+    }
 
-        require(instance is Addon) {
-          "Entrypoint '$entrypoint' must implement Addon"
-        }
+    return metadata
+  }
 
-        addons.add(metadata to instance)
+  private fun loadAddonEntryPoints(zip: ZipFile, jarPath: Path, metadata: AddonMetadata) {
+    for (entrypoint in metadata.entrypoints) {
+      val classPath = "${entrypoint.replace('.', '/')}.class"
+
+      check(zip.getEntry(classPath) != null) {
+        "Entrypoint class '$entrypoint' does not exist inside ${jarPath.fileName}"
       }
+
+      val clazz = Class.forName(entrypoint)
+      val instance = runCatching {
+        clazz.getField("INSTANCE").get(null)
+      }.getOrElse {
+        clazz
+          .getDeclaredConstructor()
+          .apply { isAccessible = true }
+          .newInstance()
+      }
+
+      require(instance is Addon) {
+        "Entrypoint '$entrypoint' must implement Addon"
+      }
+
+      addons.add(metadata to instance)
     }
   }
 

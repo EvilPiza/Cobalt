@@ -1,13 +1,9 @@
 package org.cobalt.ui.helper
 
 import kotlin.math.abs
-import kotlin.math.round
 import org.cobalt.util.Vec2f
 
-internal class SnapHelper(
-  private val gridSize: Float = 10f,
-  private val snapThreshold: Float = 5f,
-) {
+internal class SnapHelper(private val snapThreshold: Float = 5f) {
 
   var activeGuides: List<GuideLine> = emptyList()
     private set

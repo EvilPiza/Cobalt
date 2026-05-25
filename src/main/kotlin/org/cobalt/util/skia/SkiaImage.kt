@@ -14,7 +14,7 @@ import org.cobalt.util.WebUtils
 class SkiaImage(
   identifier: String,
   var radius: Float? = null,
-  var colorMask: Int? = null
+  var color: Int? = null,
 ) {
 
   val isSvg = identifier.endsWith(".svg", ignoreCase = true)
@@ -55,6 +55,11 @@ class SkiaImage(
     }
 
     return cachedRaster
+  }
+
+  fun updateColor(color: Int): SkiaImage {
+    this.color = color
+    return this
   }
 
   fun delete() {

@@ -16,5 +16,9 @@ data class Theme(
   val success: Color,
   val warning: Color,
   val error: Color,
-  val info: Color
-)
+  val info: Color,
+) {
+
+  val transparent = Color(0, 0, 0, 0)
+
+}

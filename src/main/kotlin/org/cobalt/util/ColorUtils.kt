@@ -1,5 +1,6 @@
 package org.cobalt.util
 
+import java.awt.Color
 import kotlin.math.roundToInt
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -55,4 +56,8 @@ object ColorUtils {
   @JvmStatic
   fun getAlpha(color: Int) = color.alpha
 
+}
+
+fun Color.updateAlpha(alpha: Int): Color {
+  return Color(red, green, blue, alpha)
 }

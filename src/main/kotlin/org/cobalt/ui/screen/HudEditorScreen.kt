@@ -109,8 +109,7 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     SkiaShapes.drawOutline(
       module.screenPosition,
       module.dimensions,
-      (if (isSelected) theme.accentPrimary else theme.border).rgb,
-      thickness = 2f
+      (if (isSelected) theme.accentPrimary else theme.border).rgb
     )
 
     if (isSelected) {
@@ -244,14 +243,30 @@ internal object HudEditorScreen : Screen(Component.empty()) {
     screenHeight: Float,
   ): Vec2f {
     val anchorX = when (anchor) {
-      RenderableModule.Anchor.TOP_LEFT, RenderableModule.Anchor.CENTER_LEFT, RenderableModule.Anchor.BOTTOM_LEFT -> x
-      RenderableModule.Anchor.TOP_CENTER, RenderableModule.Anchor.CENTER, RenderableModule.Anchor.BOTTOM_CENTER -> x + width / 2f
-      RenderableModule.Anchor.TOP_RIGHT, RenderableModule.Anchor.CENTER_RIGHT, RenderableModule.Anchor.BOTTOM_RIGHT -> x + width
+      RenderableModule.Anchor.TOP_LEFT,
+      RenderableModule.Anchor.CENTER_LEFT,
+      RenderableModule.Anchor.BOTTOM_LEFT -> x
+
+      RenderableModule.Anchor.TOP_CENTER,
+      RenderableModule.Anchor.CENTER,
+      RenderableModule.Anchor.BOTTOM_CENTER -> x + width / 2f
+
+      RenderableModule.Anchor.TOP_RIGHT,
+      RenderableModule.Anchor.CENTER_RIGHT,
+      RenderableModule.Anchor.BOTTOM_RIGHT -> x + width
     }
     val anchorY = when (anchor) {
-      RenderableModule.Anchor.TOP_LEFT, RenderableModule.Anchor.TOP_CENTER, RenderableModule.Anchor.TOP_RIGHT -> y
-      RenderableModule.Anchor.CENTER_LEFT, RenderableModule.Anchor.CENTER, RenderableModule.Anchor.CENTER_RIGHT -> y + height / 2f
-      RenderableModule.Anchor.BOTTOM_LEFT, RenderableModule.Anchor.BOTTOM_CENTER, RenderableModule.Anchor.BOTTOM_RIGHT -> y + height
+      RenderableModule.Anchor.TOP_LEFT,
+      RenderableModule.Anchor.TOP_CENTER,
+      RenderableModule.Anchor.TOP_RIGHT -> y
+
+      RenderableModule.Anchor.CENTER_LEFT,
+      RenderableModule.Anchor.CENTER,
+      RenderableModule.Anchor.CENTER_RIGHT -> y + height / 2f
+
+      RenderableModule.Anchor.BOTTOM_LEFT,
+      RenderableModule.Anchor.BOTTOM_CENTER,
+      RenderableModule.Anchor.BOTTOM_RIGHT -> y + height
     }
 
     return Vec2f(anchorX / screenWidth, anchorY / screenHeight)

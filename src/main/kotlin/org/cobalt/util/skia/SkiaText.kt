@@ -2,8 +2,6 @@ package org.cobalt.util.skia
 
 import io.github.humbleui.skija.Data
 import io.github.humbleui.skija.Font
-import io.github.humbleui.skija.FontEdging
-import io.github.humbleui.skija.FontHinting
 import io.github.humbleui.skija.FontMgr
 import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.TextLine
@@ -43,13 +41,7 @@ object SkiaText {
     val typeface = FontMgr.getDefault().makeFromData(Data.makeFromBytes(bytes))
       ?: throw IllegalArgumentException("Invalid font data: $resourcePath")
 
-    val font = Font(typeface).apply {
-      isSubpixel = false
-      hinting = FontHinting.NORMAL
-      edging = FontEdging.ANTI_ALIAS
-    }
-
-    Pair(font, typeface)
+    Pair(Font(typeface), typeface)
   }
 
   @JvmStatic
@@ -61,7 +53,10 @@ object SkiaText {
     TextLine.make(text, font).use { line ->
       val baseline = pos.y - line.ascent - 1f
 
-      Paint().setColor(style.color).use { paint ->
+      Paint().apply {
+        setColor(style.color)
+        isAntiAlias = true
+      }.use { paint ->
         canvas.drawTextLine(line, pos.x, baseline, paint)
       }
     }

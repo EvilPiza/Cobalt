@@ -13,6 +13,7 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.script.ScriptManager
+import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
 import org.slf4j.LoggerFactory
 
@@ -46,6 +47,8 @@ object Cobalt : ClientModInitializer {
 
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME $MINECRAFT_VERSION (v$MOD_VERSION)")
+
+    SidebarComponent // loads image early (i need a better way to do this)
 
     AddonManager.loadAddons()
     ThemeManager.loadThemes()

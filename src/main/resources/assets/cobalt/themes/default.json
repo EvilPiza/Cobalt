@@ -21,16 +21,16 @@
   },
 
   "accentPrimary": {
-    "red": 40,
-    "green": 90,
-    "blue": 210,
-    "alpha": 255
-  },
-  "accentSecondary": {
     "red": 70,
     "green": 130,
-    "blue": 255,
-    "alpha": 255
+    "blue": 180,
+    "alpha": 185
+  },
+  "accentSecondary": {
+    "red": 96,
+    "green": 155,
+    "blue": 205,
+    "alpha": 160
   },
 
   "textPrimary": {
