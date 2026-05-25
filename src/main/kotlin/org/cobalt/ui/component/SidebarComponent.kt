@@ -26,21 +26,17 @@ object SidebarComponent : UIComponent(
 
   private val buttons = mutableListOf<SidebarButton>()
 
-  private fun ensureButtonsInitialized() {
-    if (buttons.isNotEmpty()) {
-      return
-    }
-
+  fun preload() {
     for (page in Page.entries) {
       val button = SidebarButton(page)
       this.addChild(button)
       buttons.add(button)
     }
+
+    playerFace
   }
 
   override fun renderComponent() {
-    ensureButtonsInitialized()
-
     SkiaShapes.drawHalfRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
@@ -55,8 +51,6 @@ object SidebarComponent : UIComponent(
   }
 
   fun updateButtonState(newPage: Page) {
-    ensureButtonsInitialized()
-
     buttons.forEach { button ->
       button.updateSelectionState(button.page == newPage)
     }

@@ -48,8 +48,6 @@ object Cobalt : ClientModInitializer {
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME $MINECRAFT_VERSION (v$MOD_VERSION)")
 
-    SidebarComponent // loads image early (i need a better way to do this)
-
     AddonManager.loadAddons()
     ThemeManager.loadThemes()
 
@@ -60,6 +58,8 @@ object Cobalt : ClientModInitializer {
     LevelRenderEvents.END_MAIN.register { context ->
       EventBus.post(WorldRenderEvent(context))
     }
+
+    SidebarComponent.preload()
   }
 
 }

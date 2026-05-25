@@ -6,17 +6,15 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.PacketEvent
 
-private const val DEFAULT_TPS = 20f
-private const val TICKS_PER_SECOND = 20.0
-private const val MS_PER_SECOND = 1000.0
-private const val TPS_SMOOTHING = 0.05f
+private const val MAX_TPS = 20.0
+private const val MILLISECONDS_PER_TICK_CYCLE = 20000.0
 
 object ServerUtils {
 
   private var lastTickTime = -1L
 
   @JvmStatic
-  var averageTps = DEFAULT_TPS
+  var averageTps = MAX_TPS
     private set
 
   @JvmStatic
@@ -33,28 +31,10 @@ object ServerUtils {
       return
     }
 
-    val now = System.currentTimeMillis()
-    val last = lastTickTime
+    averageTps = (MILLISECONDS_PER_TICK_CYCLE / (System.currentTimeMillis() - lastTickTime + 1))
+      .coerceIn(0.0, MAX_TPS)
 
-    lastTickTime = now
-
-    if (last == -1L) {
-      return
-    }
-
-    val delta = now - last
-
-    if (delta <= 0) {
-      return
-    }
-
-    val tps = (MS_PER_SECOND * TICKS_PER_SECOND / delta)
-      .coerceAtMost(TICKS_PER_SECOND)
-      .toFloat()
-
-    averageTps =
-      averageTps * (1 - TPS_SMOOTHING) +
-        tps * TPS_SMOOTHING
+    lastTickTime = System.currentTimeMillis()
   }
 
 }
