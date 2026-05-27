@@ -11,7 +11,6 @@ object ThetaMovementRules {
   private const val HEIGHT = 1.8
 
   fun canTraverse(from: BlockPos, to: BlockPos, level: Level): Boolean {
-
     if (!hasGround(to, level)) return false
     if (!hasSpace(to, level)) return false
     if (!clearLine(from, to, level)) return false
@@ -20,10 +19,9 @@ object ThetaMovementRules {
   }
 
   fun shouldJump(from: BlockPos, to: BlockPos, level: Level): Boolean {
-
     val dy = to.y - from.y
 
-    return dy > 0 && dy <= 2 && !hasSpace(to.above(), level)
+    return dy in 1..2 && !hasSpace(to.above(), level)
   }
 
   private fun hasGround(pos: BlockPos, level: Level): Boolean {
@@ -31,7 +29,6 @@ object ThetaMovementRules {
   }
 
   private fun hasSpace(pos: BlockPos, level: Level): Boolean {
-
     val box = AABB(
       pos.x + 0.5 - WIDTH / 2,
       pos.y.toDouble(),
@@ -45,7 +42,6 @@ object ThetaMovementRules {
   }
 
   private fun clearLine(from: BlockPos, to: BlockPos, level: Level): Boolean {
-
     val steps = 6
 
     for (i in 0..steps) {
@@ -63,4 +59,5 @@ object ThetaMovementRules {
 
     return true
   }
+
 }

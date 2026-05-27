@@ -9,7 +9,6 @@ object ThetaManager {
     private set
 
   fun pathfind(goal: BlockPos): ThetaPath? {
-
     val level = minecraft.level ?: return null
     val player = minecraft.player ?: return null
 
@@ -40,4 +39,5 @@ object ThetaManager {
   fun toggleRender() {
     ThetaPathRenderer.toggle()
   }
+
 }

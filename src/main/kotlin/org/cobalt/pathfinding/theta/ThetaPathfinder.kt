@@ -22,7 +22,6 @@ class ThetaPathfinder(
   private var lineOfSightChecks = 0
 
   fun findPath(start: BlockPos, goal: BlockPos): ThetaPath {
-
     expandedNodes = 0
     lineOfSightChecks = 0
 
@@ -32,19 +31,16 @@ class ThetaPathfinder(
     lateinit var result: ThetaPath
 
     val nanos = measureNanoTime {
-
       val startNode = getNode(start)
       val goalNode = getNode(goal)
+      var iterations = 0
 
       startNode.g = 0.0
       startNode.h = heuristic(start, goal)
 
       openSet.add(startNode)
 
-      var iterations = 0
-
       while (openSet.isNotEmpty()) {
-
         if (++iterations > maxIterations) {
           break
         }
@@ -59,7 +55,6 @@ class ThetaPathfinder(
         expandedNodes++
 
         if (current.pos == goal) {
-
           val path = smoothPath(reconstructPath(current))
 
           result = ThetaPath(
@@ -76,7 +71,6 @@ class ThetaPathfinder(
         }
 
         for (neighborPos in getNeighbors(current.pos)) {
-
           if (!isWalkable(neighborPos)) {
             continue
           }
@@ -120,11 +114,9 @@ class ThetaPathfinder(
     neighbor: ThetaNode,
     goal: ThetaNode,
   ) {
-
     val parent = current.parent
 
     if (parent != null && hasLineOfSight(parent.pos, neighbor.pos)) {
-
       val newG = parent.g + distance(parent.pos, neighbor.pos)
 
       if (newG < neighbor.g) {
@@ -134,9 +126,7 @@ class ThetaPathfinder(
 
         openSet.add(neighbor)
       }
-
     } else {
-
       val newG = current.g + distance(current.pos, neighbor.pos)
 
       if (newG < neighbor.g) {
@@ -147,10 +137,10 @@ class ThetaPathfinder(
         openSet.add(neighbor)
       }
     }
+
   }
 
   private fun reconstructPath(end: ThetaNode): List<BlockPos> {
-
     val path = mutableListOf<BlockPos>()
 
     var current: ThetaNode? = end
@@ -166,13 +156,11 @@ class ThetaPathfinder(
   }
 
   private fun smoothPath(path: List<BlockPos>): List<BlockPos> {
-
     if (path.size <= 2) {
       return path
     }
 
     val result = mutableListOf<BlockPos>()
-
     var anchor = path.first()
 
     result += anchor
@@ -180,11 +168,9 @@ class ThetaPathfinder(
     var i = 2
 
     while (i < path.size) {
-
       val candidate = path[i]
 
       if (!hasLineOfSight(anchor, candidate)) {
-
         val previous = path[i - 1]
 
         result += previous
@@ -200,7 +186,6 @@ class ThetaPathfinder(
   }
 
   private fun hasLineOfSight(a: BlockPos, b: BlockPos): Boolean {
-
     lineOfSightChecks++
 
     val ax = a.x + 0.5
@@ -240,13 +225,11 @@ class ThetaPathfinder(
   }
 
   private fun getNeighbors(pos: BlockPos): List<BlockPos> {
-
     val neighbors = ArrayList<BlockPos>(26)
 
     for (x in -1..1) {
       for (y in -1..1) {
         for (z in -1..1) {
-
           if (x == 0 && y == 0 && z == 0) {
             continue
           }
@@ -266,7 +249,6 @@ class ThetaPathfinder(
   }
 
   private fun isWalkable(pos: BlockPos): Boolean {
-
     val below = pos.below()
 
     if (level.getBlockState(below).isAir) {
@@ -277,7 +259,6 @@ class ThetaPathfinder(
   }
 
   private fun isPassable(pos: BlockPos): Boolean {
-
     val box = AABB(
       pos.x + 0.5 - entityWidth / 2.0,
       pos.y.toDouble(),
@@ -295,7 +276,6 @@ class ThetaPathfinder(
   }
 
   private fun distance(a: BlockPos, b: BlockPos): Double {
-
     val dx = (a.x - b.x).toDouble()
     val dy = (a.y - b.y).toDouble()
     val dz = (a.z - b.z).toDouble()
@@ -312,4 +292,5 @@ class ThetaPathfinder(
   private fun nanosToMs(nanos: Long): Double {
     return nanos / 1_000_000.0
   }
+
 }

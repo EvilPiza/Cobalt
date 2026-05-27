@@ -9,12 +9,13 @@ object ThetaAsyncWorker {
 
   private val executor = Executors.newSingleThreadExecutor()
 
-  @Volatile private var currentTask: Future<*>? = null
+  @Volatile
+  private var currentTask: Future<*>? = null
 
-  @Volatile var activeGoal: BlockPos? = null
+  @Volatile
+  var activeGoal: BlockPos? = null
 
   fun requestPath(goal: BlockPos, onDone: (ThetaPath?) -> Unit) {
-
     val level = minecraft.level ?: return
     val player = minecraft.player ?: return
 
@@ -23,7 +24,6 @@ object ThetaAsyncWorker {
     currentTask?.cancel(true)
 
     currentTask = executor.submit {
-
       val pathfinder = ThetaPathfinder(level)
 
       val result = pathfinder.findPath(
@@ -40,4 +40,5 @@ object ThetaAsyncWorker {
   fun shutdown() {
     executor.shutdownNow()
   }
+
 }

@@ -57,7 +57,8 @@ object Cobalt : ClientModInitializer {
     CommandManager.registerCommands()
 
     LevelRenderEvents.END_MAIN.register { context ->
-      ThetaPathRenderer.render(context)
+      val event = WorldRenderEvent(context)
+      EventBus.post(event)
     }
 
     SidebarComponent.preload()

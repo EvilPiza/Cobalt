@@ -5,6 +5,10 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import org.cobalt.util.RenderUtils
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+import org.cobalt.dsl.drawLine
+import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.WorldRenderEvent
 
 object ThetaPathRenderer {
 
@@ -20,20 +24,28 @@ object ThetaPathRenderer {
   @Volatile
   var lineWidth: Float = 3f
 
-  fun render(context: LevelRenderContext) {
+  init {
+    EventBus.register(this)
+  }
 
-    if (!enabled) return
+  @SubscribeEvent
+  fun render(event: WorldRenderEvent) {
+    if (!enabled) {
+      return
+    }
+
     val localPath = path
+    val context = event.context
 
-    if (localPath.size < 2) return
+    if (localPath.size < 2) {
+      return
+    }
 
     for (i in 0 until localPath.size - 1) {
-
       val a = localPath[i]
       val b = localPath[i + 1]
 
-      RenderUtils.drawLine(
-        context,
+      context.drawLine(
         toVec3(a),
         toVec3(b),
         color,
@@ -67,4 +79,5 @@ object ThetaPathRenderer {
       pos.z + 0.5
     )
   }
+
 }
