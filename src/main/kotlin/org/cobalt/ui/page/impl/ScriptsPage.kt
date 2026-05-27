@@ -1,4 +1,4 @@
-package org.cobalt.ui.page
+package org.cobalt.ui.page.impl
 
 import org.cobalt.ui.UIComponent
 import org.cobalt.util.Dimensions

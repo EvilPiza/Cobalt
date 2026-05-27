@@ -8,8 +8,8 @@ import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
-import org.cobalt.ui.page.ModulesPage
 import org.cobalt.ui.page.PageManager
+import org.cobalt.ui.page.impl.ModulesPage
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.Dimensions

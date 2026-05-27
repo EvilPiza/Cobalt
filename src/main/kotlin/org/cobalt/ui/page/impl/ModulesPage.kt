@@ -1,4 +1,4 @@
-package org.cobalt.ui.page
+package org.cobalt.ui.page.impl
 
 import org.cobalt.ui.UIComponent
 import org.cobalt.util.Dimensions
@@ -6,7 +6,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaSide
 
-internal object ThemesPage : UIComponent() {
+internal object ModulesPage : UIComponent() {
 
   override val width: Float
     get() = BODY_WIDTH

@@ -44,21 +44,20 @@ object ModuleManager {
     }
   }
 
+  private val shouldSkipRender: Boolean
+    get() {
+      return minecraft.level == null ||
+        minecraft.player == null ||
+        minecraft.options.hideGui ||
+        minecraft.debugOverlay.showDebugScreen() ||
+        minecraft.screen is LevelLoadingScreen ||
+        minecraft.screen is ProgressScreen ||
+        minecraft.screen is HudEditorScreen
+    }
+
   @SubscribeEvent
   fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    if (minecraft.level == null || minecraft.player == null) {
-      return
-    }
-
-    if (minecraft.options.hideGui || minecraft.debugOverlay.showDebugScreen()) {
-      return
-    }
-
-    if (minecraft.screen is LevelLoadingScreen || minecraft.screen is ProgressScreen) {
-      return
-    }
-
-    if (minecraft.screen is HudEditorScreen) {
+    if (shouldSkipRender) {
       return
     }
 
