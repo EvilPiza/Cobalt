@@ -9,7 +9,7 @@ import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.page.ModulesPage
-import org.cobalt.ui.page.Page
+import org.cobalt.ui.page.PageManager
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.Dimensions
@@ -21,23 +21,15 @@ import org.cobalt.util.skia.SkiaTransforms
 
 internal object ConfigScreen : UIScreen() {
 
-  var selectedPage: Page = Page.MODULES
-    set(value) {
-      if (value == Page.HUD) {
-        return
-      }
-
-      if (selectedPage != value) {
-        SidebarComponent.updateButtonState(value)
-        field = value
-      }
-    }
-
   private val openAnim =
     BounceAnimation(duration = 400L)
 
   private val theme: Theme
     get() = ThemeManager.activeTheme
+
+  init {
+    components.add(SidebarComponent)
+  }
 
   override fun added() {
     EventBus.register(this)
@@ -89,7 +81,7 @@ internal object ConfigScreen : UIScreen() {
   private fun drawPage(pageX: Float, pageY: Float) {
     val startX = pageX + SidebarComponent.width
 
-    selectedPage.component
+    PageManager.currentPage.component
       ?.updateBounds(startX, pageY)
       ?.renderComponent()
   }
@@ -116,8 +108,7 @@ internal object ConfigScreen : UIScreen() {
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {
-    return SidebarComponent.mouseReleased(event.button()) ||
-      selectedPage.component?.mouseReleased(event.button()) == true ||
+    return PageManager.currentPage.component?.mouseReleased(event.button()) == true ||
       super.mouseReleased(event)
   }
 

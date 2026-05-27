@@ -9,7 +9,6 @@ enum class Page(
   val label: String,
   val iconPath: String,
   val component: UIComponent?,
-  val onClick: () -> Unit = {},
 ) {
   SCRIPTS(
     label = "Scripts",
@@ -29,9 +28,28 @@ enum class Page(
   HUD(
     label = "Edit HUD",
     iconPath = "/assets/cobalt/ui/hud.svg",
-    component = null,
-    onClick = {
-      TickScheduler.schedule(1L) { minecraft.setScreen(HudEditorScreen) }
-    }
+    component = null
   )
 }
+
+object PageManager {
+
+  var currentPage: Page = Page.SCRIPTS
+    private set
+
+  fun changePage(page: Page) {
+    if (page == Page.HUD) {
+      TickScheduler.schedule(1L) {
+        minecraft.setScreen(HudEditorScreen)
+      }
+
+      return
+    }
+
+    if (currentPage != page) {
+      currentPage = page
+    }
+  }
+
+}
+

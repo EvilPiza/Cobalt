@@ -50,11 +50,6 @@ object SidebarComponent : UIComponent(
     drawUserInfo()
   }
 
-  fun updateButtonState(newPage: Page) {
-    buttons.forEach { button ->
-      button.updateSelectionState(button.page == newPage)
-    }
-  }
 
   private fun drawTitle() {
     val textWidth = SkiaText.getTextWidth(SkiaText.boldFont, TITLE_TEXT, TITLE_FONT_SIZE)

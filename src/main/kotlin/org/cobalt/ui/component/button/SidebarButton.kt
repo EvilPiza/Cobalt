@@ -5,7 +5,7 @@ import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.page.Page
-import org.cobalt.ui.screen.ConfigScreen
+import org.cobalt.ui.page.PageManager
 import org.cobalt.util.Dimensions
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.Vec2f
@@ -23,10 +23,14 @@ class SidebarButton(val page: Page) : UIComponent(
   private val icon = SkiaImages.loadImage(page.iconPath)
   private val colorAnimation = ColorAnimation(duration = 150L)
   private val xOffsetAnimation = EaseOutAnimation(duration = 200L)
+  private var previousPage = Page.SCRIPTS
 
-  var selected = ConfigScreen.selectedPage == page
+  private val selected: Boolean
+    get() = PageManager.currentPage == page
 
   override fun renderComponent() {
+    checkCurrentPage()
+
     val opaqueColor = colorAnimation.get(theme.transparent, theme.accentPrimary.updateAlpha(alpha = 50), !selected)
     val mainColor = colorAnimation.get(theme.transparent, theme.accentPrimary, !selected)
     val textColor = colorAnimation.get(theme.textPrimary, theme.accentPrimary, !selected)
@@ -35,6 +39,19 @@ class SidebarButton(val page: Page) : UIComponent(
     drawBackground(opaqueColor, mainColor)
     drawIcon(textColor, mainColor, xOffset)
     drawText(textColor, xOffset)
+  }
+
+  private fun checkCurrentPage() {
+    if (previousPage == PageManager.currentPage) {
+      return
+    }
+
+    if (this.page == previousPage || this.page == PageManager.currentPage) {
+      colorAnimation.start()
+      xOffsetAnimation.start()
+    }
+
+    previousPage = PageManager.currentPage
   }
 
   private fun drawBackground(opaqueColor: Color, mainColor: Color) {
@@ -89,21 +106,13 @@ class SidebarButton(val page: Page) : UIComponent(
 
   override fun mouseReleased(button: Int): Boolean {
     if (MouseUtils.isHoveringOver(xPos, yPos, width, height) && button == 0) {
-      ConfigScreen.selectedPage = page
-      page.onClick()
+      PageManager.changePage(page)
       return true
     }
 
     return false
   }
 
-  fun updateSelectionState(selected: Boolean) {
-    if (this.selected != selected) {
-      this.selected = selected
-      colorAnimation.start()
-      xOffsetAnimation.start()
-    }
-  }
 
   companion object {
     const val WIDTH = 220f
