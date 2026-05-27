@@ -23,8 +23,8 @@ abstract class UIComponent(
   abstract fun renderComponent()
 
   fun addChild(component: UIComponent) {
-    if (children.contains(component) || component == this) {
-      throw IllegalArgumentException("Cannot add component as a child: ${component::class.simpleName}")
+    if (component == this) {
+      throw IllegalArgumentException("Cannot add this component as a child")
     }
 
     children.add(component)

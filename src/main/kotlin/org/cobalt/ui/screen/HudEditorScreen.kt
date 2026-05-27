@@ -8,6 +8,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.RenderableModule
+import org.cobalt.ui.UIScreen
 import org.cobalt.ui.helper.SnapHelper
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
@@ -21,7 +22,7 @@ import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaTransforms
 
-internal object HudEditorScreen : Screen(Component.empty()) {
+internal object HudEditorScreen : UIScreen() {
 
   private val modules: List<RenderableModule>
     get() = ModuleManager.modules

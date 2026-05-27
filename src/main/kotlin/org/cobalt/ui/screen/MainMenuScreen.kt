@@ -1,16 +1,14 @@
 package org.cobalt.ui.screen
 
-import net.minecraft.SharedConstants
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.options.OptionsScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.network.chat.Component
 import org.cobalt.Cobalt
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
+import org.cobalt.ui.UIScreen
 import org.cobalt.ui.component.button.MainMenuButton
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
@@ -21,39 +19,35 @@ import org.cobalt.util.helper.TickScheduler
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
-object MainMenuScreen : Screen(Component.empty()) {
+object MainMenuScreen : UIScreen() {
 
-  private val buttons = mutableListOf<MainMenuButton>()
   private var fading = false
   private var fadeStart = 0L
 
   private val theme: Theme
     get() = ThemeManager.activeTheme
 
+  private val buttons = listOf(
+    MainMenuButton(
+      label = "Singleplayer",
+      onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(SelectWorldScreen(this)) } }
+    ),
+    MainMenuButton(
+      label = "Multiplayer",
+      onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(JoinMultiplayerScreen(this)) } }
+    ),
+    MainMenuButton(
+      label = "Options",
+      onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(OptionsScreen(this, minecraft.options, false)) } }
+    ),
+    MainMenuButton(
+      label = "Quit",
+      onClick = { minecraft.stop() }
+    )
+  )
+
   init {
-    buttons.add(
-      MainMenuButton(
-        label = "Singleplayer",
-        onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(SelectWorldScreen(this)) } }
-      ))
-
-    buttons.add(
-      MainMenuButton(
-        label = "Multiplayer",
-        onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(JoinMultiplayerScreen(this)) } }
-      ))
-
-    buttons.add(
-      MainMenuButton(
-        label = "Options",
-        onClick = { TickScheduler.schedule(1L) { minecraft.setScreen(OptionsScreen(this, minecraft.options, false)) } }
-      ))
-
-    buttons.add(
-      MainMenuButton(
-        label = "Quit",
-        onClick = { minecraft.stop() }
-      ))
+    components.addAll(buttons)
   }
 
   override fun added() {
@@ -148,14 +142,6 @@ object MainMenuScreen : Screen(Component.empty()) {
   }
 
   override fun shouldCloseOnEsc(): Boolean = false
-
-  override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
-    if (buttons.any { it.mouseClicked(event.button()) }) {
-      return true
-    }
-
-    return super.mouseClicked(event, doubleClick)
-  }
 
   private const val TITLE_TEXT = Cobalt.NAMESPACE
   private const val TITLE_FONT_SIZE = 50f

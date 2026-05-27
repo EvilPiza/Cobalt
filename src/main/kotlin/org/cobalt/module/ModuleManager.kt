@@ -1,5 +1,7 @@
 package org.cobalt.module
 
+import net.minecraft.client.gui.screens.LevelLoadingScreen
+import net.minecraft.client.gui.screens.ProgressScreen
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -36,10 +38,6 @@ object ModuleManager {
     module.onRegistration()
   }
 
-  fun removeModule(module: Module): Boolean {
-    return modules.remove(module)
-  }
-
   fun getModule(moduleName: String): Module? {
     return modules.find { module ->
       module.name.equals(moduleName, true)
@@ -53,6 +51,10 @@ object ModuleManager {
     }
 
     if (minecraft.options.hideGui || minecraft.debugOverlay.showDebugScreen()) {
+      return
+    }
+
+    if (minecraft.screen is LevelLoadingScreen || minecraft.screen is ProgressScreen) {
       return
     }
 

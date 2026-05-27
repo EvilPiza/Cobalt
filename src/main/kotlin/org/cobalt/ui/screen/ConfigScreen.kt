@@ -1,12 +1,11 @@
 package org.cobalt.ui.screen
 
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.network.chat.Component
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.SkiaDrawEvent
+import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.page.ModulesPage
@@ -20,7 +19,7 @@ import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaTransforms
 
-internal object ConfigScreen : Screen(Component.empty()) {
+internal object ConfigScreen : UIScreen() {
 
   var selectedPage: Page = Page.MODULES
     set(value) {

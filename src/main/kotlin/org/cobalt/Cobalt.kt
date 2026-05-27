@@ -48,8 +48,8 @@ object Cobalt : ClientModInitializer {
   override fun onInitializeClient() {
     logger.info("Initializing $MOD_NAME $MINECRAFT_VERSION (v$MOD_VERSION)")
 
-    AddonManager.loadAddons()
     ThemeManager.loadThemes()
+    AddonManager.loadAddons()
 
     ScriptManager.registerScripts()
     ModuleManager.registerModules()

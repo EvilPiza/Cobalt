@@ -20,10 +20,6 @@ object ScriptManager {
     script.loadConfig()
   }
 
-  fun removeScript(script: Script): Boolean {
-    return scripts.remove(script)
-  }
-
   fun getScript(scriptName: String): Script? {
     return scripts.find { script ->
       script.name.equals(scriptName, true)
