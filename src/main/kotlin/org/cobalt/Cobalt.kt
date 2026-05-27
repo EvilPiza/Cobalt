@@ -12,6 +12,7 @@ import org.cobalt.command.CommandManager
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
+import org.cobalt.pathfinding.theta.ThetaPathRenderer
 import org.cobalt.script.ScriptManager
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
@@ -56,7 +57,7 @@ object Cobalt : ClientModInitializer {
     CommandManager.registerCommands()
 
     LevelRenderEvents.END_MAIN.register { context ->
-      EventBus.post(WorldRenderEvent(context))
+      ThetaPathRenderer.render(context)
     }
 
     SidebarComponent.preload()
