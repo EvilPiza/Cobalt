@@ -22,7 +22,12 @@ object ChatUtils {
     .append(Component.literal("] ").withStyle(ChatFormatting.DARK_GRAY))
 
   private var lastDebugMessage: String? = null
-
+  /*
+  * Adds a message to chat with either the [Cobalt], [Cobalt Debug], or no prefix
+  *
+  * @param message The string to appear in chat
+  * @param type Which message type to send, must be MessageType (.DEFAULT, .RAW or .DEBUG)
+   */
   @JvmStatic
   fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
     val player = minecraft.player
@@ -47,12 +52,20 @@ object ChatUtils {
 
     player.sendSystemMessage(component)
   }
-
+  /*
+  * Converts a string to MC Component
+  *
+  * @param string The string to convert to a Component
+  * @returns MutableComponent the output
+   */
   @JvmStatic
   fun stringToComponent(string: String): MutableComponent {
     return Component.literal(string)
   }
-
+  /*
+  * Sends message to minecraft chat (to the server)
+  * @param message The string you want to send
+   */
   @JvmStatic
   fun sendPlayerMessage(message: String) {
     val player = minecraft.player
@@ -64,7 +77,11 @@ object ChatUtils {
 
     player.connection.sendChat(message)
   }
-
+  /*
+  * Send command to the server
+  *
+  * @param command The command you want to send as a string
+   */
   @JvmStatic
   fun sendCommand(command: String) {
     val player = minecraft.player
