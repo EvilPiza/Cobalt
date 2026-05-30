@@ -31,14 +31,6 @@ import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.util.skia.gl.States
 import org.lwjgl.opengl.GL11
 
-private const val DEFAULT_SAMPLES = 0
-private const val DEFAULT_STENCIL_BITS = 8
-private const val FRAMEBUFFER_ID = 0
-private const val CLEAR_R = 0f
-private const val CLEAR_G = 0f
-private const val CLEAR_B = 0f
-private const val CLEAR_A_TRANSPARENT = 0f
-
 internal object SkiaContext {
 
   private var context: DirectContext? = null
@@ -60,9 +52,9 @@ internal object SkiaContext {
     renderTarget = BackendRenderTarget.makeGL(
       width,
       height,
-      DEFAULT_SAMPLES,
-      DEFAULT_STENCIL_BITS,
-      FRAMEBUFFER_ID,
+      0,
+      8,
+      0,
       FramebufferFormat.GR_GL_RGBA8
     )
 
@@ -82,7 +74,7 @@ internal object SkiaContext {
 
     States.push()
     GL11.glDisable(GL11.GL_CULL_FACE)
-    GL11.glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A_TRANSPARENT)
+    GL11.glClearColor(0f, 0f, 0f, 0f)
 
     context.resetGLAll()
 

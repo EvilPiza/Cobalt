@@ -3,6 +3,7 @@ package org.cobalt.ui.component
 import org.cobalt.ui.UIComponent
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
+import org.cobalt.util.skia.SkiaOutlines
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
@@ -25,15 +26,15 @@ class TextInputComponent(
     SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = theme.backgroundPrimary.rgb
+      5f,
+      theme.backgroundPrimary.rgb
     )
 
-    SkiaShapes.drawRoundedOutline(
+    SkiaOutlines.drawRoundedOutline(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = theme.border.rgb
+      5f,
+      theme.border.rgb
     )
 
     val textColor: Int
@@ -47,7 +48,7 @@ class TextInputComponent(
       currentText = text
     }
 
-    val textX = xPos + X_PADDING
+    val textX = xPos + 20f
     val textY = yPos + (height - FONT_SIZE) / 2
 
     SkiaText.drawText(
@@ -59,8 +60,6 @@ class TextInputComponent(
   }
 
   companion object {
-    private const val CORNER_RADIUS = 5f
-    private const val X_PADDING = 20f
     private const val FONT_SIZE = 14f
   }
 

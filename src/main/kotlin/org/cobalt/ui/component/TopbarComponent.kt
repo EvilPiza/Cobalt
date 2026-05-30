@@ -9,7 +9,7 @@ import org.cobalt.util.skia.SkiaShapes
 object TopbarComponent : UIComponent() {
 
   override val width: Float
-    get() = BODY_WIDTH
+    get() = 700f
 
   override val height: Float
     get() = 70f
@@ -28,9 +28,9 @@ object TopbarComponent : UIComponent() {
     SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = theme.backgroundSecondary.rgb,
-      corners = listOf(SkiaCorner.TOP_RIGHT)
+      10f,
+      theme.backgroundSecondary.rgb,
+      listOf(SkiaCorner.TOP_RIGHT)
     )
 
     val searchBarX = xPos + width - SEARCHBAR_WIDTH - SEARCHBAR_PADDING
@@ -41,11 +41,8 @@ object TopbarComponent : UIComponent() {
       .renderComponent()
   }
 
-  private const val BODY_WIDTH = 700f
-  private const val CORNER_RADIUS = 10f
-
   private const val SEARCHBAR_WIDTH = 250f
   private const val SEARCHBAR_HEIGHT = 40f
-  private const val SEARCHBAR_PADDING = 10f
+  private const val SEARCHBAR_PADDING = 20f
 
 }

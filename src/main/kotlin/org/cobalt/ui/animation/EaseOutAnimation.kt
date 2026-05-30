@@ -14,12 +14,8 @@ class EaseOutAnimation(duration: Long) : Animation<Float>(duration) {
   }
 
   private fun easeOutQuad(): Float {
-    val percent = getPercent() / FULL_PERCENT
+    val percent = getPercent() / 100f
     return 1 - (1 - percent) * (1 - percent)
-  }
-
-  companion object {
-    private const val FULL_PERCENT: Float = 100f
   }
 
 }

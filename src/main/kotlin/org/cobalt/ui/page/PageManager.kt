@@ -4,7 +4,7 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.helper.TickScheduler
 
-object PageManager {
+internal object PageManager {
 
   var currentPageType: PageType = PageType.SCRIPTS
     private set

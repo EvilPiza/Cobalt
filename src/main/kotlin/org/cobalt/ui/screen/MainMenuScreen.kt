@@ -3,7 +3,6 @@ package org.cobalt.ui.screen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
 import net.minecraft.client.gui.screens.options.OptionsScreen
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen
-import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.Cobalt
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -19,7 +18,7 @@ import org.cobalt.util.helper.TickScheduler
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
-object MainMenuScreen : UIScreen() {
+internal object MainMenuScreen : UIScreen() {
 
   private var fading = false
   private var fadeStart = 0L
@@ -57,9 +56,8 @@ object MainMenuScreen : UIScreen() {
     EventBus.register(this)
   }
 
-  override fun removed() {
+  override fun removed() =
     EventBus.unregister(this)
-  }
 
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
@@ -104,7 +102,7 @@ object MainMenuScreen : UIScreen() {
       SkiaText.boldFont,
       TITLE_TEXT,
       Vec2f(textX, currentY),
-      TextStyle(fontSize = TITLE_FONT_SIZE, color = theme.textPrimary.rgb)
+      TextStyle(TITLE_FONT_SIZE, theme.textPrimary.rgb)
     )
 
     currentY += TITLE_FONT_SIZE + TEXT_TO_BUTTONS_SPACING
@@ -127,7 +125,7 @@ object MainMenuScreen : UIScreen() {
       SkiaText.regularFont,
       leftText,
       Vec2f(INFO_TEXT_PADDING, textY),
-      TextStyle(fontSize = INFO_TEXT_SIZE, color = theme.textSecondary.rgb)
+      TextStyle(INFO_TEXT_SIZE, theme.textSecondary.rgb)
     )
 
     val textWidth = SkiaText.getTextWidth(SkiaText.regularFont, rightText, INFO_TEXT_SIZE)
@@ -137,13 +135,13 @@ object MainMenuScreen : UIScreen() {
       SkiaText.regularFont,
       rightText,
       Vec2f(textX, textY),
-      TextStyle(fontSize = INFO_TEXT_SIZE, color = theme.textSecondary.rgb)
+      TextStyle(INFO_TEXT_SIZE, theme.textSecondary.rgb)
     )
   }
 
   override fun shouldCloseOnEsc(): Boolean = false
 
-  private const val TITLE_TEXT = Cobalt.NAMESPACE
+  private const val TITLE_TEXT = "cobalt"
   private const val TITLE_FONT_SIZE = 50f
   private const val TEXT_TO_BUTTONS_SPACING = 30f
   private const val BUTTON_SPACING = 10f

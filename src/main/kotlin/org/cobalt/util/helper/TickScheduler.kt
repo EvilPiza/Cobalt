@@ -1,6 +1,6 @@
 package org.cobalt.util.helper
 
-import java.util.*
+import java.util.PriorityQueue
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
@@ -9,8 +9,6 @@ object TickScheduler {
 
   private val taskQueue = PriorityQueue<ScheduledTask>(Comparator.comparingLong(ScheduledTask::executeTick))
   private var currentTick: Long = 0
-
-  private data class ScheduledTask(val executeTick: Long, val action: Runnable)
 
   init {
     EventBus.register(this)
@@ -30,5 +28,7 @@ object TickScheduler {
       taskQueue.poll().action.run()
     }
   }
+
+  private data class ScheduledTask(val executeTick: Long, val action: Runnable)
 
 }

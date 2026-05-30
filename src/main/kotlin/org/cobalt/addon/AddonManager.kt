@@ -7,7 +7,6 @@ import java.util.zip.ZipFile
 import kotlin.io.path.extension
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.impl.launch.FabricLauncherBase
-import org.cobalt.Cobalt
 import org.cobalt.Cobalt.configDir
 import org.slf4j.LoggerFactory
 import org.spongepowered.asm.mixin.Mixins
@@ -46,60 +45,50 @@ object AddonManager {
 
   private fun loadAddon(jarPath: Path) {
     ZipFile(jarPath.toFile()).use { zip ->
-      val metadata = loadAddonMetadata(zip, jarPath)
+      val jsonEntry = checkNotNull(zip.getEntry("cobalt.addon.json")) {
+        "Missing cobalt.addon.json in $jarPath"
+      }
+
+      val metadata = zip.getInputStream(jsonEntry).use {
+        gson.fromJson(it.reader(), AddonMetadata::class.java)
+      }
+
+      require(metadata.entrypoints.isNotEmpty()) {
+        "Addon ${metadata.id} has no entry points defined"
+      }
 
       synchronized(Mixins::class.java) {
         metadata.mixins.forEach(Mixins::addConfiguration)
       }
 
-      loadAddonEntryPoints(zip, jarPath, metadata)
-    }
-  }
+      for (entrypoint in metadata.entrypoints) {
+        val classPath = "${entrypoint.replace('.', '/')}.class"
 
-  private fun loadAddonMetadata(zip: ZipFile, jarPath: Path): AddonMetadata {
-    val jsonEntry = checkNotNull(zip.getEntry("cobalt.addon.json")) {
-      "Missing cobalt.addon.json in $jarPath"
-    }
+        check(zip.getEntry(classPath) != null) {
+          "Entrypoint class '$entrypoint' does not exist inside ${jarPath.fileName}"
+        }
 
-    val metadata = zip.getInputStream(jsonEntry).use {
-      gson.fromJson(it.reader(), AddonMetadata::class.java)
-    }
+        val clazz = Class.forName(entrypoint)
+        val instance = runCatching {
+          clazz.getField("INSTANCE").get(null)
+        }.getOrElse {
+          clazz
+            .getDeclaredConstructor()
+            .apply { isAccessible = true }
+            .newInstance()
+        }
 
-    require(metadata.entrypoints.isNotEmpty()) {
-      "Addon ${metadata.id} has no entry points defined"
-    }
+        require(instance is Addon) {
+          "Entrypoint '$entrypoint' must implement Addon"
+        }
 
-    return metadata
-  }
-
-  private fun loadAddonEntryPoints(zip: ZipFile, jarPath: Path, metadata: AddonMetadata) {
-    for (entrypoint in metadata.entrypoints) {
-      val classPath = "${entrypoint.replace('.', '/')}.class"
-
-      check(zip.getEntry(classPath) != null) {
-        "Entrypoint class '$entrypoint' does not exist inside ${jarPath.fileName}"
+        addons.add(metadata to instance)
       }
-
-      val clazz = Class.forName(entrypoint)
-      val instance = runCatching {
-        clazz.getField("INSTANCE").get(null)
-      }.getOrElse {
-        clazz
-          .getDeclaredConstructor()
-          .apply { isAccessible = true }
-          .newInstance()
-      }
-
-      require(instance is Addon) {
-        "Entrypoint '$entrypoint' must implement Addon"
-      }
-
-      addons.add(metadata to instance)
     }
   }
 
   private fun loadDevelopmentAddons() {
-    val entries = FabricLoader.getInstance().getEntrypointContainers(Cobalt.NAMESPACE, Addon::class.java)
+    val entries = FabricLoader.getInstance().getEntrypointContainers("cobalt", Addon::class.java)
 
     for (entry in entries) {
       val metadata = entry.provider.metadata

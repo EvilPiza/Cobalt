@@ -76,8 +76,8 @@ object SkiaText {
     val canvas = canvas ?: return
     val typeface = fonts.values.find { it.first == font }?.second ?: return
 
-    buildParagraph(typeface, text, maxWidth, style).use { para ->
-      para.paint(canvas, pos.x, pos.y)
+    buildParagraph(typeface, text, maxWidth, style).use { paragraph ->
+      paragraph.paint(canvas, pos.x, pos.y)
     }
   }
 
@@ -85,8 +85,8 @@ object SkiaText {
   fun getWrappedTextHeight(font: Font, text: String, maxWidth: Float, fontSize: Float): Float {
     val typeface = fonts.values.find { it.first == font }?.second ?: return 0f
 
-    return buildParagraph(typeface, text, maxWidth, TextStyle(fontSize, 0)).use { para ->
-      para.height
+    return buildParagraph(typeface, text, maxWidth, TextStyle(fontSize, 0)).use { paragraph ->
+      paragraph.height
     }
   }
 

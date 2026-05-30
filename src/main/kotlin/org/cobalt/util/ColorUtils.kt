@@ -1,6 +1,5 @@
 package org.cobalt.util
 
-import java.awt.Color
 import kotlin.math.roundToInt
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -13,27 +12,24 @@ import org.cobalt.dsl.red
 
 object ColorUtils {
 
-  private const val MIN_TEXT_LENGTH = 1
-  private const val SHIFT_RED = 16
-  private const val SHIFT_GREEN = 8
-
   @JvmStatic
   fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
     val result = Component.empty()
     val textLength = text.length
 
-    if (textLength <= MIN_TEXT_LENGTH) {
-      return Component.literal(text)
+    if (textLength <= 1) {
+      return Component
+        .literal(text)
         .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(startColor)))
     }
 
     for (index in text.indices) {
-      val denominator = (textLength - MIN_TEXT_LENGTH).toDouble()
+      val denominator = (textLength - 1).toDouble()
       val ratio = index.toDouble() / denominator
       val red = (startColor.red + ratio * (endColor.red - startColor.red)).roundToInt()
       val green = (startColor.green + ratio * (endColor.green - startColor.green)).roundToInt()
       val blue = (startColor.blue + ratio * (endColor.blue - startColor.blue)).roundToInt()
-      val interpolatedColor = (red shl SHIFT_RED) or (green shl SHIFT_GREEN) or blue
+      val interpolatedColor = (red shl 16) or (green shl 8) or blue
 
       val coloredChar = Component.literal(text[index].toString())
         .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(interpolatedColor)))
@@ -56,8 +52,4 @@ object ColorUtils {
   @JvmStatic
   fun getAlpha(color: Int) = color.alpha
 
-}
-
-fun Color.updateAlpha(alpha: Int): Color {
-  return Color(red, green, blue, alpha)
 }

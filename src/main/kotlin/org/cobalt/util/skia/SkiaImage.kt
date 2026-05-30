@@ -44,14 +44,33 @@ class SkiaImage(
 
     val dom = svgDom ?: return null
 
-    if (!isCachedMatch(width, height)) {
+    if (
+      cachedRaster == null ||
+      width != lastWidth ||
+      height != lastHeight
+    ) {
       cachedRaster?.close()
-      val generated = generateRaster(dom, width, height)
-      if (generated != null) {
-        cachedRaster = generated
-        lastWidth = width
-        lastHeight = height
+
+      val root = dom.root ?: return null
+      val sourceWidth =
+        root.width.value.takeIf { it > 0 } ?: width.toFloat()
+      val sourceHeight =
+        root.height.value.takeIf { it > 0 } ?: height.toFloat()
+
+      var snapshot: Image? = null
+
+      Surface.makeRaster(ImageInfo.makeN32Premul(width, height)).use { surface ->
+        surface.canvas.apply {
+          scale(width / sourceWidth, height / sourceHeight)
+          dom.render(this)
+        }
+
+        snapshot = surface.makeImageSnapshot()
       }
+
+      cachedRaster = snapshot
+      lastWidth = width
+      lastHeight = height
     }
 
     return cachedRaster
@@ -66,18 +85,6 @@ class SkiaImage(
     image?.close()
     svgDom?.close()
     cachedRaster?.close()
-  }
-
-  private fun isCachedMatch(width: Int, height: Int): Boolean {
-    return cachedRaster != null && width == lastWidth && height == lastHeight
-  }
-
-  private fun generateRaster(dom: SVGDOM, width: Int, height: Int): Image? {
-    val root = dom.root ?: return null
-    val sourceWidth = root.width.value.takeIf { it > 0 } ?: width.toFloat()
-    val sourceHeight = root.height.value.takeIf { it > 0 } ?: height.toFloat()
-
-    return renderDomToSurface(dom, width, height, sourceWidth, sourceHeight)
   }
 
   private fun renderDomToSurface(
@@ -104,11 +111,19 @@ class SkiaImage(
 
     private fun getByteArray(path: String): ByteArray {
       val trimmedPath = path.trim()
-      return if (trimmedPath.startsWith("http")) runBlocking { WebUtils.getInputStream(trimmedPath).readBytes() }
-      else {
+
+      return if (trimmedPath.startsWith("http")) {
+        runBlocking {
+          WebUtils.getInputStream(trimmedPath).readBytes()
+        }
+      } else {
         val file = File(trimmedPath)
-        if (file.exists() && file.isFile) Files.readAllBytes(file.toPath())
-        else this::class.java.getResourceAsStream(trimmedPath)?.readBytes() ?: throw FileNotFoundException(trimmedPath)
+
+        if (file.exists() && file.isFile) {
+          Files.readAllBytes(file.toPath())
+        } else {
+          this::class.java.getResourceAsStream(trimmedPath)?.readBytes() ?: throw FileNotFoundException(trimmedPath)
+        }
       }
     }
 

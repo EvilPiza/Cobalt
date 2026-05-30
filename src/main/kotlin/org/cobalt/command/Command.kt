@@ -1,5 +1,6 @@
 package org.cobalt.command
 
+import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.FloatArgumentType
@@ -17,116 +18,84 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
-abstract class Command(val name: String, val aliases: List<String> = emptyList<String>()) {
+abstract class Command(val name: String, val aliases: List<String> = emptyList()) {
 
   internal fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
 
-    registerFunctions(mainRoot)
-
-    return listOf(mainRoot) + buildAliases(mainRoot)
-  }
-
-  private fun registerFunctions(mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>) {
     for (function in this::class.declaredFunctions) {
       function.isAccessible = true
 
-      if (function.findAnnotation<DefaultHandler>() != null) {
-        mainRoot.executes {
-          function.call(this@Command)
-          return@executes 1
+      when {
+        function.findAnnotation<DefaultHandler>() != null -> {
+          mainRoot.executes {
+            function.call(this@Command)
+            return@executes 1
+          }
         }
-        continue
-      }
 
-      if (function.findAnnotation<SubCommand>() != null) {
-        mainRoot.then(buildSubCommand(function))
+        function.findAnnotation<SubCommand>() != null -> {
+          mainRoot.then(buildSubCommand(function))
+        }
       }
     }
-  }
 
-  private fun buildAliases(
-    mainRoot: LiteralArgumentBuilder<ClientSuggestionProvider>,
-  ): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
-    return aliases.filter { it.isNotBlank() }.map { alias ->
+    val aliasRoots = aliases.filter { it.isNotBlank() }.map { alias ->
       val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
+
       mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
       mainRoot.command?.let { aliasRoot.executes(it) }
-      aliasRoot
+
+      return@map aliasRoot
     }
+
+    return listOf(mainRoot) + aliasRoots
   }
 
   private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)
+    val valueParams = function.parameters.filter { it.kind == KParameter.Kind.VALUE }
 
-    val parameters = function.parameters
-    val valueParams = parameters.filter { it.kind == KParameter.Kind.VALUE }
+    if (valueParams.isEmpty()) {
+      literal.executes {
+        function.call(this@Command)
+        return@executes 1
+      }
 
-    return if (valueParams.isEmpty()) buildNoArgSubCommand(literal, function)
-    else buildArgSubCommand(literal, function, parameters, valueParams)
-  }
-
-  private fun buildNoArgSubCommand(
-    literal: LiteralArgumentBuilder<ClientSuggestionProvider>,
-    function: KFunction<*>,
-  ): LiteralArgumentBuilder<ClientSuggestionProvider> {
-    literal.executes {
-      function.call(this@Command)
-      return@executes 1
+      return literal
     }
 
-    return literal
-  }
-
-  private fun buildArgSubCommand(
-    literal: LiteralArgumentBuilder<ClientSuggestionProvider>,
-    function: KFunction<*>,
-    parameters: List<KParameter>,
-    valueParams: List<KParameter>,
-  ): LiteralArgumentBuilder<ClientSuggestionProvider> {
     val arguments = valueParams.mapIndexed { index, param ->
       val name = param.name ?: "argument$index"
       createArgument(name, param.type.classifier)
     }
 
     arguments.last().executes { ctx ->
-      executeFunctionWithContext(function, parameters, valueParams, ctx)
+      val instanceParam = function.parameters.firstOrNull {
+        it.kind == KParameter.Kind.INSTANCE
+      }
+
+      val argsMap = buildMap<KParameter, Any?> {
+        if (instanceParam != null) {
+          put(instanceParam, this@Command)
+        }
+
+        valueParams.forEachIndexed { index, param ->
+          val argumentName = param.name ?: "argument$index"
+          val argumentValue = valueExtractors[param.type.classifier]?.invoke(ctx, argumentName)
+            ?: error("Unsupported type: ${param.type}")
+
+          put(param, argumentValue)
+        }
+      }
+
+      function.callBy(argsMap)
       return@executes 1
     }
 
-    val argumentTree = buildArgumentTree(arguments)
-
-    return literal.then(argumentTree)
-  }
-
-  private fun buildArgumentTree(
-    arguments: List<RequiredArgumentBuilder<ClientSuggestionProvider, *>>,
-  ): RequiredArgumentBuilder<ClientSuggestionProvider, *> {
-    return arguments.reduceRight { arg, acc -> arg.then(acc) }
-  }
-
-  private fun executeFunctionWithContext(
-    function: KFunction<*>,
-    parameters: List<KParameter>,
-    valueParams: List<KParameter>,
-    ctx: CommandContext<ClientSuggestionProvider>,
-  ) {
-    val mappedValues = valueParams.mapIndexed { index, param ->
-      val argumentName = param.name ?: "argument$index"
-      valueExtractors[param.type.classifier]?.invoke(ctx, argumentName)
-        ?: error("Unsupported type: ${param.type}")
-    }
-
-    val argsMap = mutableMapOf<KParameter, Any?>()
-
-    val instanceParam = parameters.firstOrNull { it.kind == KParameter.Kind.INSTANCE }
-    if (instanceParam != null) argsMap[instanceParam] = this@Command
-
-    for (i in valueParams.indices) {
-      argsMap[valueParams[i]] = mappedValues[i]
-    }
-
-    function.callBy(argsMap)
+    return literal.then(arguments.reduceRight { arg, acc ->
+      arg.then(acc)
+    })
   }
 
   private fun createArgument(
@@ -139,7 +108,7 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList<S
     return RequiredArgumentBuilder.argument(name, argType)
   }
 
-  private val argumentTypeSuppliers: Map<Any?, () -> com.mojang.brigadier.arguments.ArgumentType<*>> = mapOf(
+  private val argumentTypeSuppliers: Map<Any?, () -> ArgumentType<*>> = mapOf(
     Double::class to { DoubleArgumentType.doubleArg() },
     Int::class to { IntegerArgumentType.integer() },
     String::class to { StringArgumentType.word() },

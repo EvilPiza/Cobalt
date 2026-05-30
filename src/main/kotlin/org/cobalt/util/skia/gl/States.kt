@@ -23,9 +23,6 @@ import org.lwjgl.opengl.GL30.GL_MAJOR_VERSION
 import org.lwjgl.opengl.GL30.GL_MINOR_VERSION
 import org.lwjgl.opengl.GL30.glGetIntegerv
 
-private const val GL_MAJOR_MULTIPLIER = 100
-private const val GL_MINOR_MULTIPLIER = 10
-
 object States {
 
   private val glVersion: Int
@@ -45,7 +42,7 @@ object States {
     val minor = IntArray(1)
     glGetIntegerv(GL_MAJOR_VERSION, major)
     glGetIntegerv(GL_MINOR_VERSION, minor)
-    glVersion = major[0] * GL_MAJOR_MULTIPLIER + minor[0] * GL_MINOR_MULTIPLIER
+    glVersion = major[0] * 100 + minor[0] * 10
   }
 
 }

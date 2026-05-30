@@ -21,9 +21,9 @@ internal class Notification(
   height = calculateHeight(title, description)
 ) {
 
-  private val slideInAnim = BounceAnimation(duration = 300L)
-  private val slideDownAnim = EaseOutAnimation(duration = 200L)
-  private val slideOutAnim = EaseOutAnimation(duration = 400L)
+  private val slideInAnim = BounceAnimation(300L)
+  private val slideDownAnim = EaseOutAnimation(200L)
+  private val slideOutAnim = EaseOutAnimation(400L)
 
   private var isExpired: Boolean = false
   private var startTime: Long = 0L

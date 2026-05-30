@@ -7,6 +7,7 @@ import org.cobalt.module.RenderableModule
 import org.cobalt.util.Dimensions
 import org.cobalt.util.ServerUtils
 import org.cobalt.util.Vec2f
+import org.cobalt.util.skia.SkiaOutlines
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
@@ -32,99 +33,71 @@ internal object PerformanceHUD : RenderableModule(
   }
 
   override fun getHeight(): Float {
-    return PANEL_HEIGHT
+    return 50f
   }
 
   override fun renderComponent() {
     val width = getWidth()
     val height = getHeight()
 
-    drawBackground(width, height)
-    drawStats(height)
-  }
-
-  private fun drawBackground(width: Float, height: Float) {
     SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
-      CORNER_RADIUS,
+      5f,
       theme.backgroundPrimary.rgb
     )
-  }
-
-  private fun drawStats(height: Float) {
-    val centerY = yPos + height / 2
 
     var currentX = xPos + PADDING
+    val centerY = yPos + height / 2
     val textY = centerY - FONT_SIZE / 2
 
     for ((index, stat) in getStats().withIndex()) {
       if (index > 0) {
-        currentX = drawDivider(currentX, height)
+        val dividerX = currentX + DIVIDER_GAP
+        val midY = yPos + height / 2
+
+        SkiaOutlines.drawLine(
+          Vec2f(dividerX, midY - DIVIDER_HALF_HEIGHT),
+          Vec2f(dividerX, midY + DIVIDER_HALF_HEIGHT),
+          theme.border.rgb,
+          2f
+        )
+
+        currentX = dividerX + DIVIDER_GAP
       }
 
-      currentX = drawStatText(stat, currentX, textY)
+      var textX = currentX
+
+      SkiaText.drawText(
+        SkiaText.boldFont,
+        stat.value,
+        Vec2f(textX, textY),
+        TextStyle(FONT_SIZE, theme.textPrimary.rgb)
+      )
+
+      textX += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
+
+      SkiaText.drawText(
+        SkiaText.boldFont,
+        stat.unit,
+        Vec2f(textX, textY),
+        TextStyle(FONT_SIZE, theme.textDisabled.rgb)
+      )
+
+      currentX = textX + SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
     }
   }
 
-  private fun drawDivider(startX: Float, height: Float): Float {
-    var x = startX + DIVIDER_GAP
-    val midY = yPos + height * MID_FACTOR
-
-    SkiaShapes.drawLine(
-      Vec2f(x, midY - DIVIDER_HALF_HEIGHT),
-      Vec2f(x, midY + DIVIDER_HALF_HEIGHT),
-      theme.border.rgb,
-      OUTLINE_THICKNESS
-    )
-
-    x += DIVIDER_GAP
-
-    return x
-  }
-
-  private fun drawStatText(stat: Stat, startX: Float, textY: Float): Float {
-    var x = startX
-
-    SkiaText.drawText(
-      SkiaText.boldFont,
-      stat.value,
-      Vec2f(x, textY),
-      TextStyle(FONT_SIZE, theme.textPrimary.rgb)
-    )
-
-    x += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
-
-    SkiaText.drawText(
-      SkiaText.boldFont,
-      stat.unit,
-      Vec2f(x, textY),
-      TextStyle(FONT_SIZE, theme.textDisabled.rgb)
-    )
-
-    x += SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
-
-    return x
-  }
-
   private fun getStats() = listOf(
-    Stat(getFPS(), "FPS"),
-    Stat(getTPS(), "TPS"),
-    Stat(getPing(), "MS"),
+    Stat(minecraft.fps.toString(), "FPS"),
+    Stat(ServerUtils.averageTps.roundToInt().toString(), "TPS"),
+    Stat(ServerUtils.currentPing.toString(), "MS"),
   )
 
-  private fun getFPS(): String = minecraft.fps.toString()
-  private fun getTPS(): String = ServerUtils.averageTps.roundToInt().toString()
-  private fun getPing(): String = ServerUtils.currentPing.toString()
-
   private const val PADDING = 25f
-  private const val CORNER_RADIUS = 5f
-  private const val OUTLINE_THICKNESS = 2f
   private const val FONT_SIZE = 16f
   private const val TEXT_SPACING = 5f
   private const val DIVIDER_HALF_HEIGHT = 10f
-  private const val PANEL_HEIGHT = 50f
-  private const val MID_FACTOR = 0.5f
   private const val DIVIDER_GAP = PADDING / 2 + TEXT_SPACING
 
   private data class Stat(val value: String, val unit: String)

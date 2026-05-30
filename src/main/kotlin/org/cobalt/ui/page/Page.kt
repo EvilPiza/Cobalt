@@ -11,7 +11,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
 
-abstract class Page : UIComponent() {
+internal abstract class Page : UIComponent() {
 
   override val width: Float
     get() = TopbarComponent.width
@@ -23,9 +23,9 @@ abstract class Page : UIComponent() {
     SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = theme.backgroundPrimary.rgb,
-      corners = listOf(SkiaCorner.BOTTOM_RIGHT)
+      CORNER_RADIUS,
+      theme.backgroundPrimary.rgb,
+      listOf(SkiaCorner.BOTTOM_RIGHT)
     )
   }
 
@@ -35,7 +35,7 @@ abstract class Page : UIComponent() {
 
 }
 
-enum class PageType(
+internal enum class PageType(
   val label: String,
   val iconPath: String,
   val page: Page?,

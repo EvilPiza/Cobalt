@@ -4,16 +4,6 @@ import kotlin.math.pow
 
 class BounceAnimation(duration: Long) : Animation<Float>(duration) {
 
-  companion object {
-    private const val PERCENT_DIVISOR: Float = 100f
-    private const val FIRST_PHASE_THRESHOLD: Float = 0.3f
-    private const val SECOND_PHASE_RANGE: Float = 0.7f
-    private const val OVERSHOOT: Float = 1.05f
-    private const val OVERSHOOT_DECAY: Float = 0.05f
-    private const val FIRST_EASE_EXP: Float = 3f
-    private const val SECOND_EASE_EXP: Float = 2f
-  }
-
   override fun get(start: Float, end: Float, reverse: Boolean): Float {
     if (!isAnimating()) {
       return if (reverse) start else end
@@ -23,19 +13,19 @@ class BounceAnimation(duration: Long) : Animation<Float>(duration) {
   }
 
   private fun ease(): Float {
-    val x = getPercent() / PERCENT_DIVISOR
+    val x = getPercent() / 100f
 
     return when {
-      x < FIRST_PHASE_THRESHOLD -> {
-        val t = x / FIRST_PHASE_THRESHOLD
-        val easeOut = 1f - (1f - t).pow(FIRST_EASE_EXP)
-        easeOut * OVERSHOOT
+      x < 0.3f -> {
+        val t = x / 0.3f
+        val easeOut = 1f - (1f - t).pow(3f)
+        easeOut * 1.05f
       }
 
       else -> {
-        val t = (x - FIRST_PHASE_THRESHOLD) / SECOND_PHASE_RANGE
-        val easeOut = 1f - (1f - t).pow(SECOND_EASE_EXP)
-        OVERSHOOT - (OVERSHOOT_DECAY * easeOut)
+        val t = (x - 0.3f) / 0.7f
+        val easeOut = 1f - (1f - t).pow(2f)
+        1.05f - (0.05f * easeOut)
       }
     }
   }

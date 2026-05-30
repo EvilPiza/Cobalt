@@ -17,13 +17,12 @@ import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
-import org.cobalt.util.skia.SkiaShapes
+import org.cobalt.util.skia.SkiaOutlines
 import org.cobalt.util.skia.SkiaTransforms
 
 internal object ConfigScreen : UIScreen() {
 
-  private val openAnim =
-    BounceAnimation(duration = 400L)
+  private val openAnim = BounceAnimation(400L)
 
   private val theme: Theme
     get() = ThemeManager.activeTheme
@@ -38,9 +37,8 @@ internal object ConfigScreen : UIScreen() {
     openAnim.start()
   }
 
-  override fun removed() {
+  override fun removed() =
     EventBus.unregister(this)
-  }
 
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
@@ -67,65 +65,41 @@ internal object ConfigScreen : UIScreen() {
     val pageX = centerX - (interfaceWidth / 2f)
     val pageY = centerY - (interfaceHeight / 2f)
 
-    drawPage(pageX, pageY)
-    drawTopBar(pageX, pageY)
-    drawSidebar(pageX, pageY)
-    drawBorders(pageX, pageY)
-
-    SkiaTransforms.restore()
-  }
-
-  private fun drawPage(pageX: Float, pageY: Float) {
     val startX = pageX + SidebarComponent.width
     val startY = pageY + TopbarComponent.height
 
     PageManager.currentPageType.page
       ?.updateBounds(startX, startY)
       ?.renderComponent()
-  }
-
-  private fun drawTopBar(pageX: Float, pageY: Float) {
-    val startX = pageX + SidebarComponent.width
 
     TopbarComponent
       .updateBounds(startX, pageY)
       .renderComponent()
-  }
 
-  private fun drawSidebar(pageX: Float, pageY: Float) {
     SidebarComponent
       .updateBounds(pageX, pageY)
       .renderComponent()
-  }
 
-  private fun drawBorders(pageX: Float, pageY: Float) {
-    val width = SidebarComponent.width + ModulesPage.width
-    val height = SidebarComponent.height
-
-    SkiaShapes.drawRoundedOutline(
+    SkiaOutlines.drawRoundedOutline(
       Vec2f(pageX, pageY),
-      Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = theme.border.rgb
+      Dimensions(interfaceWidth, interfaceHeight),
+      10f,
+      theme.border.rgb
     )
 
-    val lineStartX = pageX + SidebarComponent.width
-    val lineEndY = pageY + ModulesPage.height
-
-    SkiaShapes.drawLine(
-      Vec2f(lineStartX, pageY),
-      Vec2f(lineStartX, lineEndY),
-      color = theme.border.rgb
+    SkiaOutlines.drawLine(
+      Vec2f(startX, pageY),
+      Vec2f(startX, pageY + ModulesPage.height),
+      theme.border.rgb
     )
 
-    val lineTwoEndX = pageX + SidebarComponent.width + TopbarComponent.width
-    val lineTwoY = pageY + TopbarComponent.height
-
-    SkiaShapes.drawLine(
-      Vec2f(lineStartX, lineTwoY),
-      Vec2f(lineTwoEndX, lineTwoY),
-      color = theme.border.rgb
+    SkiaOutlines.drawLine(
+      Vec2f(startX, startY),
+      Vec2f(startX + TopbarComponent.width, startY),
+      theme.border.rgb
     )
+
+    SkiaTransforms.restore()
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {
@@ -136,8 +110,4 @@ internal object ConfigScreen : UIScreen() {
   override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit
   override fun extractMenuBackground(graphics: GuiGraphicsExtractor) = Unit
 
-  private const val CORNER_RADIUS = 10f
-
 }
-
-

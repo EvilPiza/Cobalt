@@ -1,80 +1,64 @@
 package org.cobalt.ui.component.button
 
-import java.awt.Color
+import org.cobalt.dsl.updateAlpha
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
-import org.cobalt.ui.page.PageType
 import org.cobalt.ui.page.PageManager
+import org.cobalt.ui.page.PageType
 import org.cobalt.util.Dimensions
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaImages
+import org.cobalt.util.skia.SkiaOutlines
 import org.cobalt.util.skia.SkiaShapes
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
-import org.cobalt.util.updateAlpha
 
-class SidebarButton(val pageType: PageType) : UIComponent(
+internal class SidebarButton(val pageType: PageType) : UIComponent(
   width = WIDTH,
   height = HEIGHT
 ) {
 
   private val icon = SkiaImages.loadImage(pageType.iconPath)
-  private val colorAnimation = ColorAnimation(duration = 150L)
-  private val xOffsetAnimation = EaseOutAnimation(duration = 200L)
+  private val colorAnimation = ColorAnimation(150L)
+  private val xOffsetAnimation = EaseOutAnimation(200L)
   private var previousPageType = PageType.SCRIPTS
 
   private val selected: Boolean
     get() = PageManager.currentPageType == pageType
 
   override fun renderComponent() {
-    checkCurrentPage()
+    if (previousPageType != PageManager.currentPageType) {
+      if (pageType == previousPageType || pageType == PageManager.currentPageType) {
+        colorAnimation.start()
+        xOffsetAnimation.start()
+      }
 
-    val opaqueColor = colorAnimation.get(theme.transparent, theme.accentPrimary.updateAlpha(alpha = 50), !selected)
+      previousPageType = PageManager.currentPageType
+    }
+
+    val opaqueColor = colorAnimation.get(theme.transparent, theme.accentPrimary.updateAlpha(50), !selected)
     val mainColor = colorAnimation.get(theme.transparent, theme.accentPrimary, !selected)
     val textColor = colorAnimation.get(theme.textPrimary, theme.accentPrimary, !selected)
     val xOffset = xOffsetAnimation.get(0F, TEXT_SELECTED_OFFSET, !selected)
 
-    drawBackground(opaqueColor, mainColor)
-    drawIcon(textColor, mainColor, xOffset)
-    drawText(textColor, xOffset)
-  }
+    if (selected) {
+      SkiaShapes.drawRoundedRect(
+        Vec2f(xPos, yPos),
+        Dimensions(width, height),
+        CORNER_RADIUS,
+        opaqueColor.rgb,
+      )
 
-  private fun checkCurrentPage() {
-    if (previousPageType == PageManager.currentPageType) {
-      return
+      SkiaOutlines.drawRoundedOutline(
+        Vec2f(xPos, yPos),
+        Dimensions(width, height),
+        CORNER_RADIUS,
+        mainColor.rgb
+      )
     }
 
-    if (this.pageType == previousPageType || this.pageType == PageManager.currentPageType) {
-      colorAnimation.start()
-      xOffsetAnimation.start()
-    }
-
-    previousPageType = PageManager.currentPageType
-  }
-
-  private fun drawBackground(opaqueColor: Color, mainColor: Color) {
-    if (!selected) {
-      return
-    }
-
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = opaqueColor.rgb,
-    )
-
-    SkiaShapes.drawRoundedOutline(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
-      radius = CORNER_RADIUS,
-      color = mainColor.rgb
-    )
-  }
-
-  private fun drawIcon(textColor: Color, mainColor: Color, xOffset: Float) {
     val iconX = xPos + ICON_LEFT_PADDING
     fun iconY(iconSize: Float) = yPos + (height - iconSize) / 2F
 
@@ -91,10 +75,7 @@ class SidebarButton(val pageType: PageType) : UIComponent(
         Dimensions(SELECTION_ICON_SIZE, SELECTION_ICON_SIZE)
       )
     }
-  }
 
-  private fun drawText(textColor: Color, xOffset: Float) {
-    val iconX = xPos + ICON_LEFT_PADDING
     val textX = iconX + ICON_SIZE + ICON_TEXT_PADDING
     val textY = yPos + height / 2F - FONT_SIZE / 2F
 
@@ -102,7 +83,7 @@ class SidebarButton(val pageType: PageType) : UIComponent(
       SkiaText.regularFont,
       pageType.label,
       Vec2f(textX + xOffset, textY),
-      TextStyle(fontSize = FONT_SIZE, color = textColor.rgb),
+      TextStyle(FONT_SIZE, textColor.rgb),
     )
   }
 
@@ -114,7 +95,6 @@ class SidebarButton(val pageType: PageType) : UIComponent(
 
     return false
   }
-
 
   companion object {
     const val WIDTH = 220f

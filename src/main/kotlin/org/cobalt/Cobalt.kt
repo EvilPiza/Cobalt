@@ -12,15 +12,12 @@ import org.cobalt.command.CommandManager
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
-import org.cobalt.pathfinding.theta.ThetaPathRenderer
 import org.cobalt.script.ScriptManager
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
 import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
-
-  const val NAMESPACE = "cobalt"
 
   @JvmStatic
   val minecraft: Minecraft
@@ -29,10 +26,10 @@ object Cobalt : ClientModInitializer {
   @JvmStatic
   val configDir: Path
     get() = minecraft.gameDirectory.toPath()
-      .resolve("config/$NAMESPACE")
+      .resolve("config/cobalt")
 
   @JvmField
-  val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer(NAMESPACE).orElseThrow()
+  val MOD_CONTAINER: ModContainer = FabricLoader.getInstance().getModContainer("cobalt").orElseThrow()
 
   @JvmField
   val MOD_NAME: String = MOD_CONTAINER.metadata.name

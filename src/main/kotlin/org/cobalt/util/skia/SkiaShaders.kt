@@ -15,7 +15,7 @@ import org.cobalt.util.skia.SkiaContext.surface
 
 object SkiaShaders {
 
-  private val START_TIME: Long = System.currentTimeMillis()
+  private val startTime: Long = System.currentTimeMillis()
 
   fun loadShader(resourcePath: String): RuntimeEffect {
     try {
@@ -36,9 +36,7 @@ object SkiaShaders {
     val canvas = canvas ?: return
     val surface = surface ?: return
 
-    val elapsedSeconds =
-      (System.currentTimeMillis() - START_TIME) / MILLISECONDS_PER_SECOND
-
+    val elapsedSeconds = (System.currentTimeMillis() - startTime) / 1000f
     val uniformData = createUniformData(elapsedSeconds, dim)
 
     Data.makeFromBytes(uniformData).use { data ->
@@ -54,7 +52,7 @@ object SkiaShaders {
     elapsedSeconds: Float,
     dim: Dimensions
   ): ByteArray {
-    return ByteBuffer.allocate(UNIFORM_BUFFER_SIZE)
+    return ByteBuffer.allocate(12)
       .order(ByteOrder.LITTLE_ENDIAN)
       .putFloat(elapsedSeconds)
       .putFloat(dim.width)
@@ -79,8 +77,5 @@ object SkiaShaders {
       }
     }
   }
-
-  private const val MILLISECONDS_PER_SECOND = 1000f
-  private const val UNIFORM_BUFFER_SIZE = Float.SIZE_BYTES * 3
 
 }

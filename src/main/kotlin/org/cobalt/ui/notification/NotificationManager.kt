@@ -32,20 +32,12 @@ object NotificationManager {
 
   @SubscribeEvent
   fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
-    updateNotifications()
-
-    activeNotifications.forEach { notification ->
-      notification.renderComponent()
-    }
-  }
-
-  private fun updateNotifications() {
     val currentTime = System.currentTimeMillis()
 
     activeNotifications.forEach { it.checkExpiry(currentTime) }
     activeNotifications.removeIf { it.isDone() }
 
-    while (activeNotifications.size < MAX_ACTIVE_NOTIFICATIONS && notifQueue.isNotEmpty()) {
+    while (activeNotifications.size < 3 && notifQueue.isNotEmpty()) {
       val notif = notifQueue.removeAt(0)
       val targetY = computeTargetY(windowHeight, activeNotifications.size, notif.height)
 
@@ -59,13 +51,14 @@ object NotificationManager {
     activeNotifications.forEachIndexed { index, notif ->
       notif.moveTo(computeTargetY(windowHeight, index, notif.height))
     }
+
+    activeNotifications.forEach { notification ->
+      notification.renderComponent()
+    }
   }
 
   private fun computeTargetY(screenHeight: Float, index: Int, notifHeight: Float): Float {
-    return screenHeight - (index + 1) * (notifHeight + NOTIFICATION_MARGIN) - NOTIFICATION_MARGIN
+    return screenHeight - (index + 1) * (notifHeight + 10f) - 10f
   }
-
-  private const val MAX_ACTIVE_NOTIFICATIONS: Int = 3
-  private const val NOTIFICATION_MARGIN: Float = 10f
 
 }

@@ -1,5 +1,7 @@
 package org.cobalt.dsl
 
+import java.awt.Color
+
 inline val Int.red
   get() = this shr 16 and 0xFF
 
@@ -11,3 +13,7 @@ inline val Int.blue
 
 inline val Int.alpha
   get() = this shr 24 and 0xFF
+
+fun Color.updateAlpha(alpha: Int): Color {
+  return Color(red, green, blue, alpha)
+}

@@ -1,10 +1,8 @@
 package org.cobalt.util.skia
 
 import io.github.humbleui.skija.BlendMode
-import io.github.humbleui.skija.Canvas
 import io.github.humbleui.skija.ClipMode
 import io.github.humbleui.skija.ColorFilter
-import io.github.humbleui.skija.Image
 import io.github.humbleui.skija.Paint
 import io.github.humbleui.skija.SamplingMode
 import io.github.humbleui.types.RRect
@@ -40,66 +38,51 @@ object SkiaImages {
     val canvas = canvas ?: return
     val sourceImage = image.getOrGenerateRaster(dim.width.toInt(), dim.height.toInt()) ?: return
 
-    drawConfiguredImage(canvas, image, pos, dim, sourceImage)
-  }
-
-  private fun drawConfiguredImage(
-    canvas: Canvas,
-    image: SkiaImage,
-    pos: Vec2f,
-    dim: Dimensions,
-    sourceImage: Image,
-  ) {
     Paint().use { paint ->
       image.color?.let { color ->
         paint.colorFilter = ColorFilter.makeBlend(color, BlendMode.MODULATE)
       }
 
-      drawWithOptionalClip(canvas, image, pos, dim, sourceImage, paint)
-    }
-  }
+      val radius = image.radius
 
-  private fun drawWithOptionalClip(
-    canvas: Canvas,
-    image: SkiaImage,
-    pos: Vec2f,
-    dim: Dimensions,
-    sourceImage: Image,
-    paint: Paint,
-  ) {
-    val radius = image.radius
-    val roundedRect = if (radius != null && radius > 0f) {
-      RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, radius)
-    } else null
-
-    withOptionalClip(canvas, roundedRect) {
-      canvas.drawImageRect(
-        sourceImage,
-        Rect.makeWH(sourceImage.width.toFloat(), sourceImage.height.toFloat()),
-        Rect.makeXYWH(pos.x, pos.y, dim.width, dim.height),
-        SamplingMode.MITCHELL,
-        paint,
-        false
-      )
-    }
-  }
-
-  private inline fun withOptionalClip(
-    canvas: Canvas,
-    roundedRect: RRect?,
-    block: () -> Unit,
-  ) {
-    if (roundedRect != null) {
-      canvas.save()
-      canvas.clipRRect(roundedRect, ClipMode.INTERSECT, true)
-
-      try {
-        block()
-      } finally {
-        canvas.restore()
+      val roundedRect = if (radius != null && radius > 0f) {
+        RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, radius)
+      } else {
+        null
       }
-    } else {
-      block()
+
+      if (roundedRect != null) {
+        canvas.save()
+        canvas.clipRRect(roundedRect, ClipMode.INTERSECT, true)
+
+        try {
+          canvas.drawImageRect(
+            sourceImage,
+            Rect.makeWH(
+              sourceImage.width.toFloat(),
+              sourceImage.height.toFloat()
+            ),
+            Rect.makeXYWH(pos.x, pos.y, dim.width, dim.height),
+            SamplingMode.MITCHELL,
+            paint,
+            false
+          )
+        } finally {
+          canvas.restore()
+        }
+      } else {
+        canvas.drawImageRect(
+          sourceImage,
+          Rect.makeWH(
+            sourceImage.width.toFloat(),
+            sourceImage.height.toFloat()
+          ),
+          Rect.makeXYWH(pos.x, pos.y, dim.width, dim.height),
+          SamplingMode.MITCHELL,
+          paint,
+          false
+        )
+      }
     }
   }
 

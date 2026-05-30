@@ -19,6 +19,10 @@ internal class ColorAnimation(duration: Long) {
     )
   }
 
+  private fun interpolateColor(start: Int, end: Int, reverse: Boolean): Float {
+    return interpolate(start, end, reverse) / 255f
+  }
+
   fun get(start: Int, end: Int, reverse: Boolean): Int {
     val startColor = Color(start, true)
     val endColor = Color(end, true)
@@ -28,28 +32,14 @@ internal class ColorAnimation(duration: Long) {
     val blue = interpolate(startColor.blue, endColor.blue, reverse)
     val alpha = interpolate(startColor.alpha, endColor.alpha, reverse)
 
-    return (alpha shl ALPHA_SHIFT) or (red shl RED_SHIFT) or (green shl GREEN_SHIFT) or blue
+    return (alpha shl 24) or (red shl 16) or (green shl 8) or blue
   }
 
   private fun interpolate(start: Int, end: Int, reverse: Boolean): Int {
     return animation
       .get(start.toFloat(), end.toFloat(), reverse)
       .roundToInt()
-      .coerceIn(MIN_VALUE, MAX_VALUE)
-  }
-
-  private fun interpolateColor(start: Int, end: Int, reverse: Boolean): Float {
-    return interpolate(start, end, reverse) / MAX_VALUE_FLOAT
-  }
-
-  companion object {
-    private const val MIN_VALUE = 0
-    private const val MAX_VALUE = 255
-    private const val MAX_VALUE_FLOAT = 255f
-
-    private const val ALPHA_SHIFT = 24
-    private const val RED_SHIFT = 16
-    private const val GREEN_SHIFT = 8
+      .coerceIn(0, 255)
   }
 
 }

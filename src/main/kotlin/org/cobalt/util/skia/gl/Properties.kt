@@ -1,6 +1,6 @@
 package org.cobalt.util.skia.gl
 
-import java.util.*
+import java.util.BitSet
 
 class Properties {
 

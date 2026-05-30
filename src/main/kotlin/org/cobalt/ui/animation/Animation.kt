@@ -7,14 +7,7 @@ package org.cobalt.ui.animation
 
 abstract class Animation<T>(val duration: Long) {
 
-  companion object {
-    private const val PERCENT_MAX: Float = 100f
-    private const val MIN_PROGRESS: Float = 0f
-    private const val MAX_PROGRESS: Float = 1f
-    private const val ZERO_TIME: Long = 0L
-  }
-
-  private var startTime: Long = ZERO_TIME
+  private var startTime = 0L
   private var animating = false
   private var reversed = false
 
@@ -30,24 +23,24 @@ abstract class Animation<T>(val duration: Long) {
       return
     }
 
-    val percent = ((currentTime - startTime) / duration.toFloat()).coerceIn(MIN_PROGRESS, MAX_PROGRESS)
+    val percent = ((currentTime - startTime) / duration.toFloat()).coerceIn(0f, 1f)
     reversed = !reversed
-    startTime = currentTime - ((MAX_PROGRESS - percent) * duration).toLong()
+    startTime = currentTime - ((1f - percent) * duration).toLong()
   }
 
   fun getPercent(): Float {
     if (!animating) {
-      return PERCENT_MAX
+      return 100f
     }
 
-    val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * PERCENT_MAX)
+    val percent = ((System.currentTimeMillis() - startTime) / duration.toFloat() * 100f)
 
-    if (percent >= PERCENT_MAX) {
+    if (percent >= 100f) {
       animating = false
-      return PERCENT_MAX
+      return 100f
     }
 
-    return percent.coerceAtMost(PERCENT_MAX)
+    return percent.coerceAtMost(100f)
   }
 
   fun isAnimating(): Boolean {

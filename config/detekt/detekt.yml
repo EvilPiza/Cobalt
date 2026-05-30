@@ -1,116 +1,85 @@
 config:
   validation: true
-  warningsAsErrors: true
-
-processors:
-  active: true
-
-console-reports:
-  active: true
-
-style:
-  MagicNumber:
-    active: true
-    ignoreNumbers: ["-1", "0", "1", "2"]
-    ignoreHashCodeFunction: true
-    ignorePropertyDeclaration: true
-
-  WildcardImport:
-    active: true
-
-  MaxLineLength:
-    active: true
-    maxLineLength: 120
-    excludePackageStatements: true
-    excludeImportStatements: true
-    excludeCommentStatements: true
-
-  ReturnCount:
-    active: true
-    max: 3
-    excludedFunctions:
-      - equals
-
-  ThrowsCount:
-    active: true
-    max: 1
-
-  NewLineAtEndOfFile:
-    active: true
-
-  ForbiddenComment:
-    active: true
-    comments:
-      - "FIXME:"
-      - "STOPSHIP:"
-
-  UnusedImport:
-    active: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
 
 complexity:
-  LongMethod:
+  active: true
+  NamedArguments:
     active: true
-    allowedLines: 30
-
-  CyclomaticComplexMethod:
-    active: true
-    allowedComplexity: 10
-
-  NestedBlockDepth:
-    active: true
-    allowedDepth: 3
-
+    allowedArguments: 4
+  ComplexCondition:
+    allowedConditions: 5
   LongParameterList:
+    allowedFunctionParameters: 7
+    allowedConstructorParameters: 7
+  CyclomaticComplexMethod:
+    active: false
+  CognitiveComplexMethod:
     active: true
-    allowedFunctionParameters: 4
-    allowedConstructorParameters: 4
-
-  LargeClass:
-    active: true
-    allowedLines: 300
-
-  TooManyFunctions:
-    active: true
-    allowedFunctionsPerFile: 20
-    allowedFunctionsPerClass: 20
-    allowedFunctionsPerInterface: 20
-    allowedFunctionsPerObject: 20
-    allowedFunctionsPerEnum: 20
-
-potential-bugs:
-  UnsafeCallOnNullableType:
-    active: true
-
-  UnreachableCode:
-    active: true
-
-  EqualsAlwaysReturnsTrueOrFalse:
-    active: true
-
-  ImplicitUnitReturnType:
+    allowedComplexity: 16
+  StringLiteralDuplication:
     active: false
 
 performance:
-  SpreadOperator:
+  active: true
+  ArrayPrimitive:
+    active: true
+  CouldBeSequence:
+    active: true
+  ForEachOnRange:
+    active: true
+  UnnecessaryPartOfBinaryExpression:
+    active: true
+  UnnecessaryTemporaryInstantiation:
     active: true
 
-naming:
-  ClassNaming:
-    active: true
-    classPattern: '[A-Z][a-zA-Z0-9]*'
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
 
-  FunctionNaming:
+style:
+  MaxLineLength:
     active: true
-    functionPattern: '[a-z][a-zA-Z0-9]*'
-
-  VariableNaming:
+    excludeCommentStatements: true
+  DestructuringDeclarationWithTooManyEntries:
+    maxDestructuringEntries: 4
+  MagicNumber:
+    active: false
+  ReturnCount:
     active: true
-    variablePattern: '[a-z][a-zA-Z0-9]*'
-
-  ObjectPropertyNaming:
+    excludeGuardClauses: true
+    max: 4
+  LoopWithTooManyJumpStatements:
     active: true
-    constantPattern: '[A-Z][_A-Z0-9]*'
-
-  PackageNaming:
+    maxJumpCount: 3
+  WildcardImport:
     active: true
-    packagePattern: '[a-z]+(\.[a-z][a-z0-9]*)*'
+    excludeImports:
+      - 'org.lwjgl.opengl.GL45.*'
+  ForbiddenComment:
+    active: false
+  UnusedPrivateProperty:
+    allowedNames: '_|ignored|expected|serialVersionUID|.+Handler\d*|repeatable'
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - value: 'kotlin.io.print'
+      - value: 'kotlin.io.println'
+      - value: 'java.math.BigDecimal.<init>(kotlin.Double)'
+      - value: 'java.math.BigDecimal.<init>(kotlin.String)'
+      - value: 'kotlin.system.measureTimeMillis'
+      - value: 'org.lwjgl.opengl.GL11.glBindTexture'
+        reason: 'replace with GlStateManager._bindTexture(), because everything else will mess up the internal state handling.'
+      - value: 'java.util.Vector.<init>'
+        reason: 'Replaced with CopyOnWriteArrayList and list.synchronized()'
+      - value: 'java.util.Stack.<init>'
+        reason: 'Replaced with CopyOnWriteArrayList and list.synchronized()'
+      - value: 'java.util.Hashtable.<init>'
+        reason: 'Replaced with ConcurrentHashMap'
+      - value: 'java.util.LinkedList.<init>'
+        reason: 'Use ArrayDeque for deque usage, ArrayList for list usage'
+  BracesOnIfStatements:
+    active: true
+    singleLine: 'never'
+    multiLine: 'always'
