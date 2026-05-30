@@ -8,6 +8,7 @@ import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
+import org.cobalt.ui.component.TopbarComponent
 import org.cobalt.ui.page.PageManager
 import org.cobalt.ui.page.impl.ModulesPage
 import org.cobalt.ui.theme.Theme
@@ -29,6 +30,7 @@ internal object ConfigScreen : UIScreen() {
 
   init {
     components.add(SidebarComponent)
+    components.add(TopbarComponent)
   }
 
   override fun added() {
@@ -66,24 +68,34 @@ internal object ConfigScreen : UIScreen() {
     val pageY = centerY - (interfaceHeight / 2f)
 
     drawPage(pageX, pageY)
+    drawTopBar(pageX, pageY)
     drawSidebar(pageX, pageY)
     drawBorders(pageX, pageY)
 
     SkiaTransforms.restore()
   }
 
+  private fun drawPage(pageX: Float, pageY: Float) {
+    val startX = pageX + SidebarComponent.width
+    val startY = pageY + TopbarComponent.height
+
+    PageManager.currentPageType.page
+      ?.updateBounds(startX, startY)
+      ?.renderComponent()
+  }
+
+  private fun drawTopBar(pageX: Float, pageY: Float) {
+    val startX = pageX + SidebarComponent.width
+
+    TopbarComponent
+      .updateBounds(startX, pageY)
+      .renderComponent()
+  }
+
   private fun drawSidebar(pageX: Float, pageY: Float) {
     SidebarComponent
       .updateBounds(pageX, pageY)
       .renderComponent()
-  }
-
-  private fun drawPage(pageX: Float, pageY: Float) {
-    val startX = pageX + SidebarComponent.width
-
-    PageManager.currentPage.component
-      ?.updateBounds(startX, pageY)
-      ?.renderComponent()
   }
 
   private fun drawBorders(pageX: Float, pageY: Float) {
@@ -105,10 +117,19 @@ internal object ConfigScreen : UIScreen() {
       Vec2f(lineStartX, lineEndY),
       color = theme.border.rgb
     )
+
+    val lineTwoEndX = pageX + SidebarComponent.width + TopbarComponent.width
+    val lineTwoY = pageY + TopbarComponent.height
+
+    SkiaShapes.drawLine(
+      Vec2f(lineStartX, lineTwoY),
+      Vec2f(lineTwoEndX, lineTwoY),
+      color = theme.border.rgb
+    )
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {
-    return PageManager.currentPage.component?.mouseReleased(event.button()) == true ||
+    return PageManager.currentPageType.page?.mouseReleased(event.button()) == true ||
       super.mouseReleased(event)
   }
 

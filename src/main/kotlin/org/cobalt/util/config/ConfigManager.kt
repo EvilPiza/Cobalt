@@ -12,6 +12,7 @@ import org.cobalt.Cobalt.configDir
 import org.cobalt.module.Module
 import org.cobalt.module.RenderableModule
 import org.cobalt.util.setting.SettingsContainer
+import org.cobalt.util.setting.impl.ButtonSetting
 import org.cobalt.util.setting.impl.InfoSetting
 import org.slf4j.LoggerFactory
 
@@ -88,7 +89,7 @@ object ConfigManager {
     json: JsonObject
   ) {
     container.getSettings()
-      .filterNot { it is InfoSetting }
+      .filterNot { it is InfoSetting || it is ButtonSetting }
       .forEach { setting ->
         json.get(setting.name)?.let(setting::read)
       }
@@ -96,7 +97,7 @@ object ConfigManager {
 
   fun saveConfig(container: SettingsContainer) {
     val settings = container.getSettings()
-      .filterNot { it is InfoSetting }
+      .filterNot { it is InfoSetting || it is ButtonSetting }
 
     if (settings.isEmpty() && container !is Module) {
       return

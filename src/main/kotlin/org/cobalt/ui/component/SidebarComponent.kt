@@ -7,12 +7,12 @@ import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.component.button.SidebarButton
-import org.cobalt.ui.page.Page
+import org.cobalt.ui.page.PageType
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
+import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaImages
 import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaSide
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
@@ -27,7 +27,7 @@ object SidebarComponent : UIComponent(
   private val buttons = mutableListOf<SidebarButton>()
 
   fun preload() {
-    for (page in Page.entries) {
+    for (page in PageType.entries) {
       val button = SidebarButton(page)
       this.addChild(button)
       buttons.add(button)
@@ -37,12 +37,12 @@ object SidebarComponent : UIComponent(
   }
 
   override fun renderComponent() {
-    SkiaShapes.drawHalfRoundedRect(
+    SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
       Dimensions(width, height),
       radius = CORNER_RADIUS,
       color = theme.backgroundSecondary.rgb,
-      side = SkiaSide.LEFT
+      corners = listOf(SkiaCorner.LEFT)
     )
 
     drawTitle()

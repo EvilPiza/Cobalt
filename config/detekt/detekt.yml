@@ -38,9 +38,6 @@ style:
   NewLineAtEndOfFile:
     active: true
 
-  TrailingWhitespace:
-    active: true
-
   ForbiddenComment:
     active: true
     comments:
@@ -117,7 +114,3 @@ naming:
   PackageNaming:
     active: true
     packagePattern: '[a-z]+(\.[a-z][a-z0-9]*)*'
-
-exceptions:
-  TooGenericExceptionCaught:
-    active: false

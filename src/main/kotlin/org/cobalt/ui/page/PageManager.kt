@@ -6,11 +6,11 @@ import org.cobalt.util.helper.TickScheduler
 
 object PageManager {
 
-  var currentPage: Page = Page.SCRIPTS
+  var currentPageType: PageType = PageType.SCRIPTS
     private set
 
-  fun changePage(page: Page) {
-    if (page == Page.HUD) {
+  fun changePage(pageType: PageType) {
+    if (pageType == PageType.HUD) {
       TickScheduler.schedule(1L) {
         minecraft.setScreen(HudEditorScreen)
       }
@@ -18,8 +18,8 @@ object PageManager {
       return
     }
 
-    if (currentPage != page) {
-      currentPage = page
+    if (currentPageType != pageType) {
+      currentPageType = pageType
     }
   }
 

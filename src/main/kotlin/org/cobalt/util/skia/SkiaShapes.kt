@@ -84,15 +84,26 @@ object SkiaShapes {
   }
 
   @JvmStatic
-  fun drawRoundedRect(pos: Vec2f, dim: Dimensions, radius: Float, color: Int) {
+  fun drawRoundedRect(
+    pos: Vec2f,
+    dim: Dimensions,
+    radius: Float,
+    color: Int,
+    corners: List<SkiaCorner> = listOf(SkiaCorner.ALL),
+  ) {
     if (!isValid(dim)) {
       return
     }
 
     val canvas = canvas ?: return
+    val radius = radius.coerceAtLeast(0f)
+    val radii = buildRadii(corners, radius)
 
-    Paint().setColor(color).use { paint ->
-      canvas.drawRRect(RRect.makeXYWH(pos.x, pos.y, dim.width, dim.height, radius.coerceAtLeast(0f)), paint)
+    Paint().apply {
+      setColor(color)
+      isAntiAlias = true
+    }.use { paint ->
+      canvas.drawRRect(RRect.makeComplexXYWH(pos.x, pos.y, dim.width, dim.height, radii), paint)
     }
   }
 
@@ -144,27 +155,6 @@ object SkiaShapes {
       canvas.drawRRect(
         RRect.makeXYWH(pos.x + half, pos.y + half, dim.width - thickness, dim.height - thickness, innerRadius), paint
       )
-    }
-  }
-
-  @JvmStatic
-  fun drawHalfRoundedRect(
-    pos: Vec2f, dim: Dimensions,
-    radius: Float, color: Int, side: SkiaSide = SkiaSide.TOP,
-  ) {
-    if (!isValid(dim)) {
-      return
-    }
-
-    val canvas = canvas ?: return
-    val radius = radius.coerceAtLeast(0f)
-    val radii = buildRadii(side, radius)
-
-    Paint().apply {
-      setColor(color)
-      isAntiAlias = true
-    }.use { paint ->
-      canvas.drawRRect(RRect.makeComplexXYWH(pos.x, pos.y, dim.width, dim.height, radii), paint)
     }
   }
 
@@ -221,15 +211,46 @@ object SkiaShapes {
     }
   }
 
-  private fun buildRadii(side: SkiaSide, radius: Float): FloatArray {
-    return when (side) {
-      SkiaSide.TOP -> floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
-      SkiaSide.BOTTOM -> floatArrayOf(0f, 0f, 0f, 0f, radius, radius, radius, radius)
-      SkiaSide.LEFT -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius)
-      SkiaSide.RIGHT -> floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f)
+  private fun buildRadii(corners: List<SkiaCorner>, radius: Float): FloatArray {
+    val radii = FloatArray(RADII_ARRAY_SIZE)
+
+    setCornerRadii(radii, CORNER_TOP_LEFT_INDICES, hasCorner(corners, SkiaCorner.TOP_LEFT), radius)
+    setCornerRadii(radii, CORNER_TOP_RIGHT_INDICES, hasCorner(corners, SkiaCorner.TOP_RIGHT), radius)
+    setCornerRadii(radii, CORNER_BOTTOM_RIGHT_INDICES, hasCorner(corners, SkiaCorner.BOTTOM_RIGHT), radius)
+    setCornerRadii(radii, CORNER_BOTTOM_LEFT_INDICES, hasCorner(corners, SkiaCorner.BOTTOM_LEFT), radius)
+
+    return radii
+  }
+
+  private fun hasCorner(corners: List<SkiaCorner>, corner: SkiaCorner): Boolean {
+    val relatedCorners = when (corner) {
+      SkiaCorner.TOP_LEFT -> listOf(SkiaCorner.TOP_LEFT, SkiaCorner.TOP, SkiaCorner.LEFT, SkiaCorner.ALL)
+      SkiaCorner.TOP_RIGHT -> listOf(SkiaCorner.TOP_RIGHT, SkiaCorner.TOP, SkiaCorner.RIGHT, SkiaCorner.ALL)
+      SkiaCorner.BOTTOM_RIGHT -> listOf(SkiaCorner.BOTTOM_RIGHT, SkiaCorner.BOTTOM, SkiaCorner.RIGHT, SkiaCorner.ALL)
+      SkiaCorner.BOTTOM_LEFT -> listOf(SkiaCorner.BOTTOM_LEFT, SkiaCorner.BOTTOM, SkiaCorner.LEFT, SkiaCorner.ALL)
+      else -> return corner in corners
     }
+
+    return relatedCorners.any { it in corners }
+  }
+
+  private fun setCornerRadii(radii: FloatArray, indices: Pair<Int, Int>, hasRadius: Boolean, radius: Float) {
+    val value = if (hasRadius) {
+      radius
+    } else {
+      0f
+    }
+
+    radii[indices.first] = value
+    radii[indices.second] = value
   }
 
   private fun isValid(dim: Dimensions) = dim.width > 0f && dim.height > 0f
+
+  private const val RADII_ARRAY_SIZE = 8
+  private val CORNER_TOP_LEFT_INDICES = 0 to 1
+  private val CORNER_TOP_RIGHT_INDICES = 2 to 3
+  private val CORNER_BOTTOM_RIGHT_INDICES = 4 to 5
+  private val CORNER_BOTTOM_LEFT_INDICES = 6 to 7
 
 }

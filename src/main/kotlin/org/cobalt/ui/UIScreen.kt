@@ -45,4 +45,6 @@ abstract class UIScreen : Screen(Component.empty()) {
       super.keyReleased(event)
   }
 
+  override fun isPauseScreen(): Boolean = false
+
 }

@@ -22,23 +22,23 @@ abstract class Script(
   abstract fun onDisable()
 
   fun startScript() {
+    if (running) {
+      return
+    }
+
     onEnable()
     ChatUtils.sendSystemMessage("$name ${ChatFormatting.GREEN}Started")
     running = true
   }
 
   fun stopScript() {
+    if (!running) {
+      return
+    }
+
     onDisable()
     ChatUtils.sendSystemMessage("$name ${ChatFormatting.RED}Stopped")
     running = false
-  }
-
-  fun toggleScript() {
-    if (running) {
-      stopScript()
-    } else {
-      startScript()
-    }
   }
 
   override fun addSettings(vararg settings: Setting<*>) {

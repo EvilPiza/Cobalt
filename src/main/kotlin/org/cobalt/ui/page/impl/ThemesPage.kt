@@ -1,30 +1,15 @@
 package org.cobalt.ui.page.impl
 
-import org.cobalt.ui.UIComponent
+import org.cobalt.ui.page.Page
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
+import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaSide
 
-internal object ThemesPage : UIComponent() {
-
-  override val width: Float
-    get() = BODY_WIDTH
-
-  override val height: Float
-    get() = 600f
+internal object ThemesPage : Page() {
 
   override fun renderComponent() {
-    SkiaShapes.drawHalfRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(BODY_WIDTH, height),
-      radius = CORNER_RADIUS,
-      color = theme.backgroundPrimary.rgb,
-      side = SkiaSide.RIGHT
-    )
+    super.renderComponent()
   }
-
-  private const val BODY_WIDTH = 700f
-  private const val CORNER_RADIUS: Float = 10f
 
 }

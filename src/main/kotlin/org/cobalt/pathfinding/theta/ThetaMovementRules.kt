@@ -11,9 +11,17 @@ object ThetaMovementRules {
   private const val HEIGHT = 1.8
 
   fun canTraverse(from: BlockPos, to: BlockPos, level: Level): Boolean {
-    if (!hasGround(to, level)) return false
-    if (!hasSpace(to, level)) return false
-    if (!clearLine(from, to, level)) return false
+    if (!hasGround(to, level)) {
+      return false
+    }
+
+    if (!hasSpace(to, level)) {
+      return false
+    }
+
+    if (!clearLine(from, to, level)) {
+      return false
+    }
 
     return true
   }

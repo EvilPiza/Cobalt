@@ -4,7 +4,7 @@ import java.awt.Color
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
-import org.cobalt.ui.page.Page
+import org.cobalt.ui.page.PageType
 import org.cobalt.ui.page.PageManager
 import org.cobalt.util.Dimensions
 import org.cobalt.util.MouseUtils
@@ -15,18 +15,18 @@ import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 import org.cobalt.util.updateAlpha
 
-class SidebarButton(val page: Page) : UIComponent(
+class SidebarButton(val pageType: PageType) : UIComponent(
   width = WIDTH,
   height = HEIGHT
 ) {
 
-  private val icon = SkiaImages.loadImage(page.iconPath)
+  private val icon = SkiaImages.loadImage(pageType.iconPath)
   private val colorAnimation = ColorAnimation(duration = 150L)
   private val xOffsetAnimation = EaseOutAnimation(duration = 200L)
-  private var previousPage = Page.SCRIPTS
+  private var previousPageType = PageType.SCRIPTS
 
   private val selected: Boolean
-    get() = PageManager.currentPage == page
+    get() = PageManager.currentPageType == pageType
 
   override fun renderComponent() {
     checkCurrentPage()
@@ -42,20 +42,22 @@ class SidebarButton(val page: Page) : UIComponent(
   }
 
   private fun checkCurrentPage() {
-    if (previousPage == PageManager.currentPage) {
+    if (previousPageType == PageManager.currentPageType) {
       return
     }
 
-    if (this.page == previousPage || this.page == PageManager.currentPage) {
+    if (this.pageType == previousPageType || this.pageType == PageManager.currentPageType) {
       colorAnimation.start()
       xOffsetAnimation.start()
     }
 
-    previousPage = PageManager.currentPage
+    previousPageType = PageManager.currentPageType
   }
 
   private fun drawBackground(opaqueColor: Color, mainColor: Color) {
-    if (!selected) return
+    if (!selected) {
+      return
+    }
 
     SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos),
@@ -98,7 +100,7 @@ class SidebarButton(val page: Page) : UIComponent(
 
     SkiaText.drawText(
       SkiaText.regularFont,
-      page.label,
+      pageType.label,
       Vec2f(textX + xOffset, textY),
       TextStyle(fontSize = FONT_SIZE, color = textColor.rgb),
     )
@@ -106,7 +108,7 @@ class SidebarButton(val page: Page) : UIComponent(
 
   override fun mouseReleased(button: Int): Boolean {
     if (MouseUtils.isHoveringOver(xPos, yPos, width, height) && button == 0) {
-      PageManager.changePage(page)
+      PageManager.changePage(pageType)
       return true
     }
 

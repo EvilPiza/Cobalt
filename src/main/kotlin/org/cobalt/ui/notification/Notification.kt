@@ -7,8 +7,8 @@ import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.Dimensions
 import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowWidth
+import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaSide
 import org.cobalt.util.skia.SkiaText
 import org.cobalt.util.skia.TextStyle
 
@@ -103,21 +103,21 @@ internal class Notification(
     val progress = calculateProgress(System.currentTimeMillis())
     val fillWidth = width * progress
 
-    SkiaShapes.drawHalfRoundedRect(
+    SkiaShapes.drawRoundedRect(
       Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
       Dimensions(width, PROGRESS_BAR_HEIGHT),
       CORNER_RADIUS,
       theme.backgroundSecondary.rgb,
-      SkiaSide.BOTTOM
+      listOf(SkiaCorner.BOTTOM)
     )
 
     if (fillWidth > 0f) {
-      SkiaShapes.drawHalfRoundedRect(
+      SkiaShapes.drawRoundedRect(
         Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
         Dimensions(fillWidth, PROGRESS_BAR_HEIGHT),
         CORNER_RADIUS,
         theme.accentPrimary.rgb,
-        SkiaSide.BOTTOM
+        listOf(SkiaCorner.BOTTOM)
       )
     }
   }
