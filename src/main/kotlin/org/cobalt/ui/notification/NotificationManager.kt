@@ -31,7 +31,7 @@ object NotificationManager {
   }
 
   @SubscribeEvent
-  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
+  fun onSkiaDraw(ignored: SkiaDrawEvent) {
     val currentTime = System.currentTimeMillis()
 
     activeNotifications.forEach { it.checkExpiry(currentTime) }

@@ -41,7 +41,7 @@ internal object ConfigScreen : UIScreen() {
     EventBus.unregister(this)
 
   @SubscribeEvent
-  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
+  fun onSkiaDraw(ignored: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }

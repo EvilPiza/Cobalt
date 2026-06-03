@@ -20,7 +20,7 @@ object TickScheduler {
   }
 
   @SubscribeEvent
-  fun onClientTick(@Suppress("UnusedParameter") event: TickEvent.End) {
+  fun onClientTick(ignored: TickEvent.End) {
     currentTick++
     var task: ScheduledTask?
 

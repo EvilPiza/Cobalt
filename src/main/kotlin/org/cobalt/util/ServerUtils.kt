@@ -23,7 +23,7 @@ object ServerUtils {
   }
 
   @SubscribeEvent
-  fun onPacketReceive(@Suppress("UnusedParameter") event: PacketEvent.Receive) {
+  fun onPacketReceive(event: PacketEvent.Receive) {
     if (event.packet !is ClientboundSetTimePacket) {
       return
     }

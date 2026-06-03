@@ -38,7 +38,7 @@ internal object HudEditorScreen : UIScreen() {
   override fun removed() = EventBus.unregister(this)
 
   @SubscribeEvent
-  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
+  fun onSkiaDraw(ignored: SkiaDrawEvent) {
     if (minecraft.screen != this) return
 
     modules.forEach { module ->

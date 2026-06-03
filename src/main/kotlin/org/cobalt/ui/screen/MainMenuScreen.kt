@@ -60,7 +60,7 @@ internal object MainMenuScreen : UIScreen() {
     EventBus.unregister(this)
 
   @SubscribeEvent
-  fun onSkiaDraw(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
+  fun onSkiaDraw(event: SkiaDrawEvent) {
     if (minecraft.screen != this) {
       return
     }

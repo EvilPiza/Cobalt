@@ -56,7 +56,7 @@ object ModuleManager {
     }
 
   @SubscribeEvent
-  fun drawRenderableModules(@Suppress("UnusedParameter") event: SkiaDrawEvent) {
+  fun drawRenderableModules(ignored: SkiaDrawEvent) {
     if (shouldSkipRender) {
       return
     }

@@ -39,7 +39,7 @@ object CommandManager {
   }
 
   @SubscribeEvent
-  fun handleCommandExecution(@Suppress("UnusedParameter") event: ChatSendEvent) {
+  fun handleCommandExecution(event: ChatSendEvent) {
     val content = event.message
 
     if (!content.startsWith(PREFIX)) {
