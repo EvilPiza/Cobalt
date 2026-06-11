@@ -3,7 +3,7 @@ package org.cobalt.ui.component
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
+import java.util.Locale
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.component.button.SidebarButton

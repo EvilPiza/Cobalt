@@ -74,7 +74,10 @@ class SkiaPIP(buffer: MultiBufferSource.BufferSource) : PictureInPictureRenderer
     }
 
     GlStateManager._glBindFramebuffer(GL30C.GL_FRAMEBUFFER, fbo)
-    GlStateManager._glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11C.GL_TEXTURE_2D, colorTexId, 0)
+    GlStateManager._glFramebufferTexture2D(
+      GL30C.GL_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0,
+      GL11C.GL_TEXTURE_2D, colorTexId, 0
+    )
 
     if (depthStencil == 0 || attachedWidth != width || attachedHeight != height) {
       if (depthStencil != 0) {
@@ -86,7 +89,10 @@ class SkiaPIP(buffer: MultiBufferSource.BufferSource) : PictureInPictureRenderer
       GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, depthStencil)
       GL30C.glRenderbufferStorage(GL30C.GL_RENDERBUFFER, GL30C.GL_DEPTH24_STENCIL8, width, height)
       GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, 0)
-      GL30C.glFramebufferRenderbuffer(GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_STENCIL_ATTACHMENT, GL30C.GL_RENDERBUFFER, depthStencil)
+      GL30C.glFramebufferRenderbuffer(
+        GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_STENCIL_ATTACHMENT,
+        GL30C.GL_RENDERBUFFER, depthStencil
+      )
 
       attachedWidth = width
       attachedHeight = height

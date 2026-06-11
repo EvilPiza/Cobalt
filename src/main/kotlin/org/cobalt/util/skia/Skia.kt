@@ -1,17 +1,12 @@
+@file:Suppress("TooManyFunctions", "WildcardImport")
+
 package org.cobalt.util.skia
 
 import io.github.humbleui.skija.*
-import io.github.humbleui.skija.paragraph.FontCollection
-import io.github.humbleui.skija.paragraph.Paragraph
-import io.github.humbleui.skija.paragraph.ParagraphBuilder
-import io.github.humbleui.skija.paragraph.ParagraphStyle
-import io.github.humbleui.skija.paragraph.TextStyle
-import io.github.humbleui.skija.svg.SVGDOM
-import io.github.humbleui.skija.svg.SVGLengthContext
+import io.github.humbleui.skija.paragraph.*
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
 import java.awt.Color
-import kotlin.math.max
 import org.cobalt.util.skia.helper.SkiaCorner
 import org.cobalt.util.skia.helper.SkiaFont
 import org.cobalt.util.skia.helper.SkiaImage
