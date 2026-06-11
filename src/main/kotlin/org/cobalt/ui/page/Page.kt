@@ -6,10 +6,8 @@ import org.cobalt.ui.component.TopbarComponent
 import org.cobalt.ui.page.impl.ModulesPage
 import org.cobalt.ui.page.impl.ScriptsPage
 import org.cobalt.ui.page.impl.ThemesPage
-import org.cobalt.util.Dimensions
-import org.cobalt.util.Vec2f
-import org.cobalt.util.skia.SkiaCorner
-import org.cobalt.util.skia.SkiaShapes
+import org.cobalt.util.skia.Skia
+import org.cobalt.util.skia.helper.SkiaCorner
 
 internal abstract class Page(
   val title: String
@@ -22,12 +20,12 @@ internal abstract class Page(
     get() = SidebarComponent.height - TopbarComponent.height
 
   override fun renderComponent() {
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
+    Skia.roundedRect(
+      xPos, yPos,
+      width, height,
       CORNER_RADIUS,
-      theme.backgroundPrimary.rgb,
-      listOf(SkiaCorner.BOTTOM_RIGHT)
+      theme.backgroundPrimary,
+      arrayOf(SkiaCorner.BOTTOM_RIGHT)
     )
   }
 

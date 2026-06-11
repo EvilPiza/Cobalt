@@ -2,6 +2,7 @@ package org.cobalt
 
 import java.nio.file.Path
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
@@ -15,6 +16,7 @@ import org.cobalt.module.ModuleManager
 import org.cobalt.script.ScriptManager
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
+import org.cobalt.util.skia.SkiaPIP
 import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
@@ -56,6 +58,10 @@ object Cobalt : ClientModInitializer {
     LevelRenderEvents.END_MAIN.register { context ->
       val event = WorldRenderEvent(context)
       EventBus.post(event)
+    }
+
+    PictureInPictureRendererRegistry.register {
+      SkiaPIP(it.bufferSource())
     }
 
     SidebarComponent.preload()

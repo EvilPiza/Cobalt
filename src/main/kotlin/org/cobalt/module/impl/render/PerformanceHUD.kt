@@ -4,13 +4,8 @@ import kotlin.math.roundToInt
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.module.ModuleCategory
 import org.cobalt.module.RenderableModule
-import org.cobalt.util.Dimensions
 import org.cobalt.util.ServerUtils
-import org.cobalt.util.Vec2f
-import org.cobalt.util.skia.SkiaOutlines
-import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaText
-import org.cobalt.util.skia.TextStyle
+import org.cobalt.util.skia.Skia
 
 internal object PerformanceHUD : RenderableModule(
   name = "Performance HUD",
@@ -25,8 +20,8 @@ internal object PerformanceHUD : RenderableModule(
         width += PADDING + 2 * TEXT_SPACING
       }
 
-      width += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
+      width += Skia.textWidth(Skia.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      width += Skia.textWidth(Skia.boldFont, stat.unit, FONT_SIZE)
     }
 
     return width
@@ -40,11 +35,9 @@ internal object PerformanceHUD : RenderableModule(
     val width = getWidth()
     val height = getHeight()
 
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
-      5f,
-      theme.backgroundPrimary.rgb
+    Skia.roundedRect(
+      xPos, yPos, width, height,
+      5f, theme.backgroundPrimary
     )
 
     var currentX = xPos + PADDING
@@ -56,11 +49,10 @@ internal object PerformanceHUD : RenderableModule(
         val dividerX = currentX + DIVIDER_GAP
         val midY = yPos + height / 2
 
-        SkiaOutlines.drawLine(
-          Vec2f(dividerX, midY - DIVIDER_HALF_HEIGHT),
-          Vec2f(dividerX, midY + DIVIDER_HALF_HEIGHT),
-          theme.border.rgb,
-          2f
+        Skia.line(
+          dividerX, midY - DIVIDER_HALF_HEIGHT,
+          dividerX, midY + DIVIDER_HALF_HEIGHT,
+          2f, theme.border
         )
 
         currentX = dividerX + DIVIDER_GAP
@@ -68,23 +60,23 @@ internal object PerformanceHUD : RenderableModule(
 
       var textX = currentX
 
-      SkiaText.drawText(
-        SkiaText.boldFont,
+      Skia.text(
+        Skia.boldFont,
         stat.value,
-        Vec2f(textX, textY),
-        TextStyle(FONT_SIZE, theme.textPrimary.rgb)
+        textX, textY,
+        FONT_SIZE, theme.textPrimary
       )
 
-      textX += SkiaText.getTextWidth(SkiaText.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
+      textX += Skia.textWidth(Skia.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
 
-      SkiaText.drawText(
-        SkiaText.boldFont,
+      Skia.text(
+        Skia.boldFont,
         stat.unit,
-        Vec2f(textX, textY),
-        TextStyle(FONT_SIZE, theme.textDisabled.rgb)
+        textX, textY,
+        FONT_SIZE, theme.textDisabled
       )
 
-      currentX = textX + SkiaText.getTextWidth(SkiaText.boldFont, stat.unit, FONT_SIZE)
+      currentX = textX + Skia.textWidth(Skia.boldFont, stat.unit, FONT_SIZE)
     }
   }
 

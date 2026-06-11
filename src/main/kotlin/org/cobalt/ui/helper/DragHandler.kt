@@ -4,7 +4,6 @@ import org.cobalt.module.RenderableModule
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.MouseUtils.mouseX
 import org.cobalt.util.MouseUtils.mouseY
-import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 
@@ -32,8 +31,8 @@ class DragHandler {
 
   fun tryStartResize(module: RenderableModule, squareSize: Float): Boolean {
     val (x, y) = module.screenPosition
-    val scaledWidth = module.dimensions.width * module.scale
-    val scaledHeight = module.dimensions.height * module.scale
+    val scaledWidth = module.getWidth() * module.scale
+    val scaledHeight = module.getHeight() * module.scale
     val squareSizeScaled = squareSize * module.scale
     val squareOffset = squareSizeScaled / 2f
 
@@ -84,7 +83,7 @@ class DragHandler {
       .filter { it != module }
       .map { other ->
         val (ox, oy) = other.screenPosition
-        SnapHelper.ModuleBounds(ox, oy, other.dimensions.width * other.scale, other.dimensions.height * other.scale)
+        SnapHelper.ModuleBounds(ox, oy, other.getWidth() * other.scale, other.getHeight() * other.scale)
       }
 
     val (snappedX, snappedY) = snapHelper.findAlignmentGuides(
@@ -112,7 +111,7 @@ class DragHandler {
     x: Float, y: Float,
     width: Float, height: Float,
     screenWidth: Float, screenHeight: Float,
-  ): Vec2f {
+  ): Pair<Float, Float> {
     val anchorX = when (anchor) {
       RenderableModule.Anchor.TOP_LEFT,
       RenderableModule.Anchor.CENTER_LEFT,
@@ -147,6 +146,6 @@ class DragHandler {
         -> y + height
     }
 
-    return Vec2f(anchorX / screenWidth, anchorY / screenHeight)
+    return Pair(anchorX / screenWidth, anchorY / screenHeight)
   }
 }

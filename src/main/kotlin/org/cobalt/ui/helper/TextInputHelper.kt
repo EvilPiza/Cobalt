@@ -1,9 +1,10 @@
 package org.cobalt.ui.helper
 
+import kotlin.math.abs
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import org.cobalt.util.MouseUtils
-import org.cobalt.util.skia.SkiaText
+import org.cobalt.util.skia.Skia
 import org.lwjgl.glfw.GLFW
 
 class TextInputHelper(
@@ -65,10 +66,12 @@ class TextInputHelper(
 
     val hoveringOver = MouseUtils.isHoveringOver(xPos, yPos, width, height)
     focused = hoveringOver
+
     if (hoveringOver) {
       caretIndex = calculateCaretIndex(relativeX)
       clearSelection()
     }
+
     return hoveringOver
   }
 
@@ -76,23 +79,28 @@ class TextInputHelper(
     if (text.isEmpty()) {
       return 0
     }
+
     var bestIndex = 0
     var minDiff = Float.MAX_VALUE
+
     for (i in 0..text.length) {
       val prefix = if (isPassword) "*".repeat(i) else text.substring(0, i)
-      val w = getTextWidth(prefix)
-      val diff = kotlin.math.abs(w - relativeX)
+      val w = textWidth(prefix)
+      val diff = abs(w - relativeX)
+
       if (diff < minDiff) {
         minDiff = diff
         bestIndex = i
       }
     }
+
     return bestIndex
   }
 
   fun charTyped(input: CharacterEvent): Boolean {
     if (focused && input.isAllowedChatCharacter) {
       val str = input.codepointAsString()
+
       if (hasSelection) {
         text = text.substring(0, selectionStart) + str + text.substring(selectionEnd)
         caretIndex = selectionStart + str.length
@@ -101,8 +109,10 @@ class TextInputHelper(
         text = text.substring(0, caretIndex) + str + text.substring(caretIndex)
         caretIndex += str.length
       }
+
       return true
     }
+
     return false
   }
 
@@ -110,14 +120,17 @@ class TextInputHelper(
     if (!focused) {
       return false
     }
+
     var handled = false
     val key = input.key()
+
     if (key == GLFW.GLFW_KEY_A && (input.modifiers() and GLFW.GLFW_MOD_CONTROL) != 0) {
       selectionStart = 0
       selectionEnd = text.length
       caretIndex = text.length
       handled = true
     }
+
     if (key == GLFW.GLFW_KEY_BACKSPACE) {
       if (hasSelection) {
         text = text.substring(0, selectionStart) + text.substring(selectionEnd)
@@ -148,10 +161,11 @@ class TextInputHelper(
         handled = true
       }
     }
+
     return handled
   }
 
-  private fun getTextWidth(str: String) =
-    SkiaText.getTextWidth(SkiaText.regularFont, str, fontSize)
+  private fun textWidth(str: String) =
+    Skia.textWidth(Skia.regularFont, str, fontSize)
 
 }

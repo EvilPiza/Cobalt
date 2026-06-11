@@ -8,9 +8,9 @@
     "client.MouseHandlerMixin",
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
+    "gui.GuiMixin",
     "gui.GuiRendererMixin",
-    "gui.SplashManagerMixin",
-    "platform.WindowMixin"
+    "gui.SplashManagerMixin"
   ],
   "mixins": [
     "mojang.YggdrasilServicesKeyInfoMixin",

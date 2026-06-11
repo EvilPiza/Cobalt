@@ -3,8 +3,9 @@ package org.cobalt.ui.notification
 import kotlin.time.Duration
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.SkiaDrawEvent
+import org.cobalt.event.impl.HudEvent
 import org.cobalt.util.WindowUtils.windowHeight
+import org.cobalt.util.skia.SkiaPIP
 
 object NotificationManager {
 
@@ -31,7 +32,7 @@ object NotificationManager {
   }
 
   @SubscribeEvent
-  fun onSkiaDraw(ignored: SkiaDrawEvent) {
+  fun onSkiaDraw(event: HudEvent) {
     val currentTime = System.currentTimeMillis()
 
     activeNotifications.forEach { it.checkExpiry(currentTime) }
@@ -48,12 +49,14 @@ object NotificationManager {
       activeNotifications.add(notif)
     }
 
-    activeNotifications.forEachIndexed { index, notif ->
-      notif.moveTo(computeTargetY(windowHeight, index, notif.height))
+    activeNotifications.forEachIndexed { index, notification ->
+      notification.moveTo(computeTargetY(windowHeight, index, notification.height))
     }
 
-    activeNotifications.forEach { notification ->
-      notification.renderComponent()
+    SkiaPIP.drawSkia(event.graphics) {
+      activeNotifications.forEach { notification ->
+        notification.renderComponent()
+      }
     }
   }
 

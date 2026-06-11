@@ -5,11 +5,11 @@ import net.minecraft.client.gui.screens.ProgressScreen
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.SkiaDrawEvent
+import org.cobalt.event.impl.HudEvent
 import org.cobalt.module.impl.render.PerformanceHUD
 import org.cobalt.ui.screen.HudEditorScreen
-import org.cobalt.util.Vec2f
-import org.cobalt.util.skia.SkiaTransforms
+import org.cobalt.util.skia.Skia
+import org.cobalt.util.skia.SkiaPIP
 
 object ModuleManager {
 
@@ -56,27 +56,29 @@ object ModuleManager {
     }
 
   @SubscribeEvent
-  fun drawRenderableModules(ignored: SkiaDrawEvent) {
+  fun drawRenderableModules(event: HudEvent) {
     if (shouldSkipRender) {
       return
     }
 
-    modules.filterIsInstance<RenderableModule>()
-      .filter { module -> module.enabled }
-      .forEach { module ->
-        SkiaTransforms.save()
+    SkiaPIP.drawSkia(event.graphics) {
+      modules.filterIsInstance<RenderableModule>()
+        .filter { module -> module.enabled }
+        .forEach { module ->
+          Skia.push()
 
-        val (x, y) = module.screenPosition
-        val scale = module.scale
+          val (x, y) = module.screenPosition
+          val scale = module.scale
 
-        SkiaTransforms.translate(Vec2f(x, y))
-        SkiaTransforms.scale(Vec2f(scale, scale))
-        SkiaTransforms.translate(Vec2f(-x, -y))
+          Skia.translate(x, y)
+          Skia.scale(scale, scale)
+          Skia.translate(-x, -y)
 
-        module.renderComponent()
+          module.renderComponent()
 
-        SkiaTransforms.restore()
-      }
+          Skia.pop()
+        }
+    }
   }
 
 }

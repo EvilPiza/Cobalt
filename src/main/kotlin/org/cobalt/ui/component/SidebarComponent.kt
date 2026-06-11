@@ -3,20 +3,13 @@ package org.cobalt.ui.component
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
-import net.minecraft.client.Minecraft
+import java.util.*
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.component.button.SidebarButton
 import org.cobalt.ui.page.PageType
-import org.cobalt.util.Dimensions
-import org.cobalt.util.Vec2f
-import org.cobalt.util.skia.SkiaCorner
-import org.cobalt.util.skia.SkiaImages
-import org.cobalt.util.skia.SkiaOutlines
-import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaText
-import org.cobalt.util.skia.TextStyle
+import org.cobalt.util.skia.Skia
+import org.cobalt.util.skia.helper.SkiaCorner
 
 object SidebarComponent : UIComponent(
   width = 250f,
@@ -36,22 +29,20 @@ object SidebarComponent : UIComponent(
   }
 
   override fun renderComponent() {
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
-      10f,
-      theme.backgroundSecondary.rgb,
-      listOf(SkiaCorner.LEFT)
+    Skia.roundedRect(
+      xPos, yPos, width, height,
+      10f, theme.backgroundSecondary,
+      SkiaCorner.LEFT_SIDE
     )
 
-    val titleTextWidth = SkiaText.getTextWidth(SkiaText.boldFont, TITLE_TEXT, TITLE_FONT_SIZE)
+    val titleTextWidth = Skia.textWidth(Skia.boldFont, TITLE_TEXT, TITLE_FONT_SIZE)
     val titleTextX = xPos + (width - titleTextWidth) / 2
     val titleTextY = yPos + TITLE_PADDING
 
-    SkiaText.drawText(
-      SkiaText.boldFont, TITLE_TEXT,
-      Vec2f(titleTextX, titleTextY),
-      TextStyle(TITLE_FONT_SIZE, theme.textPrimary.rgb)
+    Skia.text(
+      Skia.boldFont, TITLE_TEXT,
+      titleTextX, titleTextY,
+      TITLE_FONT_SIZE, theme.textPrimary
     )
 
     val buttonX = xPos + (width - SidebarButton.WIDTH) / 2f
@@ -68,36 +59,32 @@ object SidebarComponent : UIComponent(
     val boxX = xPos + USER_INFO_OUTER_PADDING
     val boxY = yPos + height - (USER_INFO_HEIGHT + USER_INFO_OUTER_PADDING)
 
-    SkiaShapes.drawRoundedRect(
-      Vec2f(boxX, boxY),
-      Dimensions(USER_INFO_WIDTH, USER_INFO_HEIGHT),
-      USER_INFO_CORNER_RADIUS,
-      theme.backgroundPrimary.rgb,
+    Skia.roundedRect(
+      boxX, boxY, USER_INFO_WIDTH, USER_INFO_HEIGHT,
+      USER_INFO_CORNER_RADIUS, theme.backgroundPrimary,
     )
 
-    SkiaOutlines.drawRoundedOutline(
-      Vec2f(boxX, boxY),
-      Dimensions(USER_INFO_WIDTH, USER_INFO_HEIGHT),
-      USER_INFO_CORNER_RADIUS,
-      theme.border.rgb
+    Skia.roundedOutline(
+      boxX, boxY, USER_INFO_WIDTH, USER_INFO_HEIGHT,
+      1f, USER_INFO_CORNER_RADIUS, theme.border
     )
 
     val playerFaceX = boxX + USER_INFO_INNER_PADDING
     val playerFaceY = boxY + (USER_INFO_HEIGHT - PLAYER_FACE_SIDE_LENGTH) / 2
 
-    SkiaImages.drawImage(
+    Skia.image(
       playerFace,
-      Vec2f(playerFaceX, playerFaceY),
-      Dimensions(PLAYER_FACE_SIDE_LENGTH, PLAYER_FACE_SIDE_LENGTH)
+      playerFaceX, playerFaceY,
+      PLAYER_FACE_SIDE_LENGTH, PLAYER_FACE_SIDE_LENGTH,
+      PLAYER_FACE_SIDE_LENGTH / 2
     )
 
     val textX = boxX + PLAYER_FACE_SIDE_LENGTH + (USER_INFO_INNER_PADDING * 2)
     val textY = boxY + USER_INFO_INNER_PADDING
 
-    SkiaText.drawText(
-      SkiaText.regularFont, minecraft.gameProfile.name,
-      Vec2f(textX, textY),
-      TextStyle(USER_INFO_TEXT_SIZE, theme.textPrimary.rgb),
+    Skia.text(
+      Skia.regularFont, minecraft.gameProfile.name,
+      textX, textY, USER_INFO_TEXT_SIZE, theme.textPrimary
     )
 
     val currentTime = ZonedDateTime.now()
@@ -105,24 +92,18 @@ object SidebarComponent : UIComponent(
       .ofLocalizedTime(FormatStyle.SHORT)
       .withLocale(Locale.getDefault())
 
-    SkiaText.drawText(
-      SkiaText.regularFont,
+    Skia.text(
+      Skia.regularFont,
       currentTime.format(formatter),
-      Vec2f(textX, textY + USER_INFO_TEXT_SIZE + 2f),
-      TextStyle(USER_INFO_TEXT_SIZE, theme.textSecondary.rgb),
+      textX, textY + USER_INFO_TEXT_SIZE + 2f,
+      USER_INFO_TEXT_SIZE, theme.textSecondary,
     )
   }
 
   private val playerFace = try {
-    SkiaImages.loadImage(
-      identifier = "https://mc-heads.net/avatar/${Minecraft.getInstance().user.profileId}/100/face.png",
-      radius = PLAYER_FACE_SIDE_LENGTH / 2
-    )
+    Skia.createImage("https://mc-heads.net/avatar/${minecraft.user.profileId}/100/face.png")
   } catch (_: Exception) {
-    SkiaImages.loadImage(
-      identifier = "/assets/cobalt/textures/steve.png",
-      radius = PLAYER_FACE_SIDE_LENGTH / 2
-    )
+    Skia.createImage("/assets/cobalt/textures/steve.png")
   }
 
   private const val TITLE_TEXT = "cobalt"
@@ -136,7 +117,7 @@ object SidebarComponent : UIComponent(
   private const val USER_INFO_CORNER_RADIUS = 5f
   private const val USER_INFO_TEXT_SIZE = 12.5f
   private const val USER_INFO_HEIGHT = 55f
-  private val USER_INFO_WIDTH = width - (USER_INFO_OUTER_PADDING * 2)
   private const val PLAYER_FACE_SIDE_LENGTH = USER_INFO_HEIGHT - (USER_INFO_INNER_PADDING * 2)
+  private val USER_INFO_WIDTH = width - (USER_INFO_OUTER_PADDING * 2)
 
 }

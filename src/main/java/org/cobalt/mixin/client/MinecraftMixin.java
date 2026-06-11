@@ -18,53 +18,23 @@
 
 package org.cobalt.mixin.client;
 
+import java.util.List;
 import kotlin.Pair;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.main.GameConfig;
 import org.cobalt.Cobalt;
 import org.cobalt.addon.Addon;
 import org.cobalt.addon.AddonManager;
 import org.cobalt.addon.AddonMetadata;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.TickEvent;
-import org.cobalt.util.skia.SkiaContext;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.util.List;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-
-  @Inject(method = "<init>", at = @At("TAIL"))
-  private void registerSkia(GameConfig gameConfig, CallbackInfo callbackInfo) {
-    int[] width = new int[1];
-    int[] height = new int[1];
-
-    long windowHandle = Minecraft.getInstance().getWindow().handle();
-    GLFW.glfwGetFramebufferSize(windowHandle, width, height);
-
-    int finalWidth = Math.max(width[0], 1);
-    int finalHeight = Math.max(height[0], 1);
-
-    SkiaContext.INSTANCE.initSkia$cobalt(finalWidth, finalHeight);
-  }
-
-  @Inject(
-    method = "renderFrame",
-    at = @At(
-      value = "INVOKE",
-      target = "Lcom/mojang/blaze3d/systems/RenderSystem;flipFrame(Lcom/mojang/blaze3d/TracyFrameCapture;)V"
-    ),
-    require = 1
-  )
-  private void onBeforeFlipFrame(boolean advanceGameTime, CallbackInfo callbackInfo) {
-    SkiaContext.INSTANCE.draw$cobalt();
-  }
 
   @Inject(method = "tick", at = @At("HEAD"))
   private void onStartTick(CallbackInfo callbackInfo) {

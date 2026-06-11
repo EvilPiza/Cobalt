@@ -6,21 +6,15 @@ import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.page.PageManager
 import org.cobalt.ui.page.PageType
-import org.cobalt.util.Dimensions
 import org.cobalt.util.MouseUtils
-import org.cobalt.util.Vec2f
-import org.cobalt.util.skia.SkiaImages
-import org.cobalt.util.skia.SkiaOutlines
-import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaText
-import org.cobalt.util.skia.TextStyle
+import org.cobalt.util.skia.Skia
 
 internal class SidebarButton(val pageType: PageType) : UIComponent(
   width = WIDTH,
   height = HEIGHT
 ) {
 
-  private val icon = SkiaImages.loadImage(pageType.iconPath)
+  private val icon = Skia.createImage(pageType.iconPath)
   private val colorAnimation = ColorAnimation(150L)
   private val xOffsetAnimation = EaseOutAnimation(200L)
   private var previousPageType = PageType.SCRIPTS
@@ -44,46 +38,47 @@ internal class SidebarButton(val pageType: PageType) : UIComponent(
     val xOffset = xOffsetAnimation.get(0F, TEXT_SELECTED_OFFSET, !selected)
 
     if (selected) {
-      SkiaShapes.drawRoundedRect(
-        Vec2f(xPos, yPos),
-        Dimensions(width, height),
+      Skia.roundedRect(
+        xPos, yPos,
+        width, height,
         CORNER_RADIUS,
-        opaqueColor.rgb,
+        opaqueColor
       )
 
-      SkiaOutlines.drawRoundedOutline(
-        Vec2f(xPos, yPos),
-        Dimensions(width, height),
-        CORNER_RADIUS,
-        mainColor.rgb
+      Skia.roundedOutline(
+        xPos, yPos,
+        width, height,
+        1f, CORNER_RADIUS, mainColor
       )
     }
 
     val iconX = xPos + ICON_LEFT_PADDING
     fun iconY(iconSize: Float) = yPos + (height - iconSize) / 2F
 
-    SkiaImages.drawImage(
-      icon.updateColor(textColor.rgb),
-      Vec2f(iconX + xOffset, iconY(ICON_SIZE)),
-      Dimensions(ICON_SIZE, ICON_SIZE)
+    Skia.image(
+      icon,
+      iconX + xOffset, iconY(ICON_SIZE),
+      ICON_SIZE, ICON_SIZE,
+      color = textColor
     )
 
     if (selected) {
-      SkiaImages.drawImage(
-        selectedIcon.updateColor(mainColor.rgb),
-        Vec2f(iconX, iconY(SELECTION_ICON_SIZE)),
-        Dimensions(SELECTION_ICON_SIZE, SELECTION_ICON_SIZE)
+      Skia.image(
+        selectedIcon,
+        iconX, iconY(SELECTION_ICON_SIZE),
+        SELECTION_ICON_SIZE, SELECTION_ICON_SIZE,
+        color = mainColor
       )
     }
 
     val textX = iconX + ICON_SIZE + ICON_TEXT_PADDING
     val textY = yPos + height / 2F - FONT_SIZE / 2F
 
-    SkiaText.drawText(
-      SkiaText.regularFont,
+    Skia.text(
+      Skia.regularFont,
       pageType.label,
-      Vec2f(textX + xOffset, textY),
-      TextStyle(FONT_SIZE, textColor.rgb),
+      textX + xOffset, textY,
+      FONT_SIZE, textColor
     )
   }
 
@@ -108,7 +103,7 @@ internal class SidebarButton(val pageType: PageType) : UIComponent(
     private const val SELECTION_ICON_SIZE = 13f
     private const val TEXT_SELECTED_OFFSET = 17f
 
-    private val selectedIcon = SkiaImages.loadImage("/assets/cobalt/ui/selected.svg")
+    private val selectedIcon = Skia.createImage("/assets/cobalt/ui/selected.svg")
   }
 
 }

@@ -1,14 +1,26 @@
 package org.cobalt.ui
 
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
+import org.cobalt.util.skia.SkiaPIP
 
 abstract class UIScreen : Screen(Component.empty()) {
 
   val components = mutableListOf<UIComponent>()
+
+  abstract fun renderSkia()
+
+  override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
+    super.extractRenderState(graphics, mouseX, mouseY, a)
+
+    SkiaPIP.drawSkia(graphics) {
+      renderSkia()
+    }
+  }
 
   override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
     return components.any { it.mouseClicked(event.button()) } ||

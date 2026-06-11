@@ -2,8 +2,6 @@ package org.cobalt.ui.screen
 
 import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.event.EventBus
-import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.SkiaDrawEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.RenderableModule
 import org.cobalt.ui.UIScreen
@@ -11,14 +9,10 @@ import org.cobalt.ui.helper.DragHandler
 import org.cobalt.ui.helper.SnapHelper
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
-import org.cobalt.util.Dimensions
 import org.cobalt.util.MouseUtils
-import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
-import org.cobalt.util.skia.SkiaOutlines
-import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaTransforms
+import org.cobalt.util.skia.Skia
 
 internal object HudEditorScreen : UIScreen() {
 
@@ -37,20 +31,19 @@ internal object HudEditorScreen : UIScreen() {
   override fun added() = EventBus.register(this)
   override fun removed() = EventBus.unregister(this)
 
-  @SubscribeEvent
-  fun onSkiaDraw(ignored: SkiaDrawEvent) {
-    if (minecraft.screen != this) return
-
+  override fun renderSkia() {
     modules.forEach { module ->
       val (x, y) = module.screenPosition
       val scale = module.scale
 
-      SkiaTransforms.save()
-      SkiaTransforms.translate(Vec2f(x, y))
-      SkiaTransforms.scale(Vec2f(scale, scale))
-      SkiaTransforms.translate(Vec2f(-x, -y))
+      Skia.push()
+      Skia.translate(x, y)
+      Skia.scale(scale, scale)
+      Skia.translate(-x, -y)
+
       drawRenderableModule(module)
-      SkiaTransforms.restore()
+
+      Skia.pop()
     }
 
     drawSnapGuides()
@@ -63,18 +56,16 @@ internal object HudEditorScreen : UIScreen() {
 
     snapHelper.activeGuides.forEach { guide ->
       if (guide.isVertical) {
-        SkiaOutlines.drawLine(
-          Vec2f(guide.position, 0f),
-          Vec2f(guide.position, windowHeight),
-          theme.accentPrimary.rgb,
-          thickness = 1f
+        Skia.line(
+          guide.position, 0f,
+          guide.position, windowHeight,
+          1f, theme.accentPrimary
         )
       } else {
-        SkiaOutlines.drawLine(
-          Vec2f(0f, guide.position),
-          Vec2f(windowWidth, guide.position),
-          theme.accentPrimary.rgb,
-          thickness = 1f
+        Skia.line(
+          0f, guide.position,
+          windowWidth, guide.position,
+          1f, theme.accentPrimary
         )
       }
     }
@@ -87,18 +78,17 @@ internal object HudEditorScreen : UIScreen() {
 
     module.renderComponent()
 
-    SkiaOutlines.drawOutline(
-      module.screenPosition,
-      module.dimensions,
-      (if (isSelected) theme.accentPrimary else theme.border).rgb
+    Skia.outline(
+      x, y, width, height, 1f,
+      if (isSelected) theme.accentPrimary else theme.border
     )
 
     if (isSelected) {
       val squareOffset = SQUARE_SIZE / 2.0f
-      SkiaShapes.drawRect(
-        Vec2f(x + width - squareOffset, y + height - squareOffset),
-        Dimensions(SQUARE_SIZE, SQUARE_SIZE),
-        theme.accentPrimary.rgb
+      Skia.rect(
+        x + width - squareOffset, y + height - squareOffset,
+        SQUARE_SIZE, SQUARE_SIZE,
+        theme.accentPrimary
       )
     }
   }
@@ -115,9 +105,9 @@ internal object HudEditorScreen : UIScreen() {
 
       if (
         MouseUtils.isHoveringOver(
-          module.screenPosition.x, module.screenPosition.y,
-          module.dimensions.width * module.scale,
-          module.dimensions.height * module.scale
+          module.xPos, module.yPos,
+          module.getWidth() * module.scale,
+          module.getHeight() * module.scale
         )
       ) {
         dragHandler.startMove(module)

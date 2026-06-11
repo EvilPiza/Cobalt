@@ -2,8 +2,6 @@ package org.cobalt.module
 
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
-import org.cobalt.util.Dimensions
-import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.setting.Setting
@@ -45,7 +43,7 @@ abstract class RenderableModule(
   val theme: Theme
     get() = ThemeManager.activeTheme
 
-  val screenPosition: Vec2f
+  val screenPosition: Pair<Float, Float>
     get() = anchor.computePosition(
       offsetX,
       offsetY,
@@ -55,14 +53,14 @@ abstract class RenderableModule(
       windowHeight
     )
 
-  val dimensions: Dimensions
-    get() = Dimensions(getWidth(), getHeight())
+  val dimensions: Pair<Float, Float>
+    get() = Pair(getWidth(), getHeight())
 
   val xPos: Float
-    get() = screenPosition.x
+    get() = screenPosition.first
 
   val yPos: Float
-    get() = screenPosition.y
+    get() = screenPosition.second
 
   abstract fun getWidth(): Float
   abstract fun getHeight(): Float
@@ -87,7 +85,7 @@ abstract class RenderableModule(
       moduleHeight: Float,
       screenWidth: Float,
       screenHeight: Float,
-    ): Vec2f {
+    ): Pair<Float, Float> {
       val absX = offsetX * screenWidth
       val absY = offsetY * screenHeight
 
@@ -102,7 +100,7 @@ abstract class RenderableModule(
         BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> absY - moduleHeight
       }
 
-      return Vec2f(
+      return Pair(
         x.coerceIn(0f, (screenWidth - moduleWidth).coerceAtLeast(0f)),
         y.coerceIn(0f, (screenHeight - moduleHeight).coerceAtLeast(0f))
       )

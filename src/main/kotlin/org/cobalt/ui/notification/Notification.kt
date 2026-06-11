@@ -4,13 +4,9 @@ import kotlin.time.Duration
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
-import org.cobalt.util.Dimensions
-import org.cobalt.util.Vec2f
 import org.cobalt.util.WindowUtils.windowWidth
-import org.cobalt.util.skia.SkiaCorner
-import org.cobalt.util.skia.SkiaShapes
-import org.cobalt.util.skia.SkiaText
-import org.cobalt.util.skia.TextStyle
+import org.cobalt.util.skia.Skia
+import org.cobalt.util.skia.helper.SkiaCorner
 
 internal class Notification(
   private val title: String,
@@ -64,11 +60,9 @@ internal class Notification(
     val resolvedY = targetY + slideDownAnim.get(previousY - targetY, 0f, false)
     updateBounds(resolvedX, resolvedY)
 
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos),
-      Dimensions(width, height),
-      CORNER_RADIUS,
-      theme.backgroundPrimary.rgb
+    Skia.roundedRect(
+      xPos, yPos, width, height,
+      CORNER_RADIUS, theme.backgroundPrimary
     )
 
     drawText()
@@ -78,24 +72,20 @@ internal class Notification(
   private fun drawText() {
     val contentWidth = width - CONTENT_PADDING * 2
 
-    SkiaText.drawWrappedText(
-      SkiaText.boldFont,
-      title,
-      Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING),
-      contentWidth,
-      TextStyle(TITLE_FONT_SIZE, theme.textPrimary.rgb)
+    Skia.wrappedText(
+      Skia.boldFont, title,
+      xPos + CONTENT_PADDING, yPos + CONTENT_PADDING,
+      contentWidth, TITLE_FONT_SIZE, theme.textPrimary
     )
 
-    val titleHeight = SkiaText.getWrappedTextHeight(
-      SkiaText.boldFont, title, contentWidth, TITLE_FONT_SIZE
+    val titleHeight = Skia.wrappedTextHeight(
+      Skia.boldFont, title, contentWidth, TITLE_FONT_SIZE
     )
 
-    SkiaText.drawWrappedText(
-      SkiaText.boldFont,
-      description,
-      Vec2f(xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP),
-      contentWidth,
-      TextStyle(DESCRIPTION_FONT_SIZE, theme.textSecondary.rgb)
+    Skia.wrappedText(
+      Skia.boldFont, description,
+      xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP,
+      contentWidth, DESCRIPTION_FONT_SIZE, theme.textSecondary
     )
   }
 
@@ -103,21 +93,21 @@ internal class Notification(
     val progress = calculateProgress(System.currentTimeMillis())
     val fillWidth = width * progress
 
-    SkiaShapes.drawRoundedRect(
-      Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
-      Dimensions(width, PROGRESS_BAR_HEIGHT),
+    Skia.roundedRect(
+      xPos, yPos + height - PROGRESS_BAR_HEIGHT,
+      width, PROGRESS_BAR_HEIGHT,
       CORNER_RADIUS,
-      theme.backgroundSecondary.rgb,
-      listOf(SkiaCorner.BOTTOM)
+      theme.backgroundSecondary,
+      SkiaCorner.BOTTOM_SIDE
     )
 
     if (fillWidth > 0f) {
-      SkiaShapes.drawRoundedRect(
-        Vec2f(xPos, yPos + height - PROGRESS_BAR_HEIGHT),
-        Dimensions(fillWidth, PROGRESS_BAR_HEIGHT),
+      Skia.roundedRect(
+        xPos, yPos + height - PROGRESS_BAR_HEIGHT,
+        fillWidth, PROGRESS_BAR_HEIGHT,
         CORNER_RADIUS,
-        theme.accentPrimary.rgb,
-        listOf(SkiaCorner.BOTTOM)
+        theme.accentPrimary,
+        SkiaCorner.BOTTOM_SIDE
       )
     }
   }
@@ -152,16 +142,14 @@ internal class Notification(
     private const val PROGRESS_BAR_HEIGHT: Float = 5f
 
     private fun calculateHeight(title: String, description: String): Float {
-      val titleHeight = SkiaText.getWrappedTextHeight(
-        SkiaText.boldFont,
-        title,
+      val titleHeight = Skia.wrappedTextHeight(
+        Skia.boldFont, title,
         DEFAULT_WIDTH - CONTENT_PADDING * 2,
         TITLE_FONT_SIZE
       )
 
-      val descHeight = SkiaText.getWrappedTextHeight(
-        SkiaText.boldFont,
-        description,
+      val descHeight = Skia.wrappedTextHeight(
+        Skia.boldFont, description,
         DEFAULT_WIDTH - CONTENT_PADDING * 2,
         DESCRIPTION_FONT_SIZE
       )
