@@ -14,7 +14,7 @@ abstract class UIComponent(
 
   var parent: UIComponent? = null
 
-  protected val theme: Theme
+  protected open val theme: Theme
     get() = ThemeManager.activeTheme
 
   private val children =

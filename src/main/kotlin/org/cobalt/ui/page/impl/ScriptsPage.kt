@@ -6,7 +6,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
 
-internal object ScriptsPage : Page() {
+internal object ScriptsPage : Page(title = "Scripts") {
 
   override fun renderComponent() {
     super.renderComponent()

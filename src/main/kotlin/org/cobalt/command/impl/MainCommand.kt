@@ -12,6 +12,7 @@ import org.cobalt.util.helper.TickScheduler
 import net.minecraft.core.BlockPos
 import org.cobalt.pathfinding.theta.ThetaAsyncWorker
 import org.cobalt.pathfinding.theta.ThetaManager
+import org.cobalt.util.MouseUtils
 
 internal object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
 
@@ -38,7 +39,6 @@ internal object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
 
   @SubCommand
   fun theta(x: Int, y: Int, z: Int) {
-
     val result = ThetaManager.pathfind(
       BlockPos(x, y, z)
     )

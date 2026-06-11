@@ -19,6 +19,7 @@ base {
 repositories {
   mavenCentral()
   maven("https://api.modrinth.com/maven")
+  maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -36,8 +37,9 @@ dependencies {
   shadowImpl(libs.skija.shared)
   shadowImpl(libs.bundles.skija.natives)
 
-  // Additional Mods
-  runtimeOnly("maven.modrinth:sodium:mc26.1-0.8.7-fabric")
+  // Additional Stuff
+  runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.2")
+  runtimeOnly("maven.modrinth:sodium:mc26.1.2-0.8.12-fabric")
 }
 
 tasks {

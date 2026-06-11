@@ -10,7 +10,6 @@
     "gui.CommandSuggestionsMixin",
     "gui.GuiRendererMixin",
     "gui.SplashManagerMixin",
-    "gui.TitleScreenMixin",
     "platform.WindowMixin"
   ],
   "mixins": [

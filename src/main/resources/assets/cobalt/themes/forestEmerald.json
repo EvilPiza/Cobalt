@@ -1,0 +1,20 @@
+{
+  "name": "Forest Emerald",
+
+  "backgroundPrimary": { "red": 13, "green": 20, "blue": 16, "alpha": 255 },
+  "backgroundSecondary": { "red": 20, "green": 31, "blue": 24, "alpha": 255 },
+  "border": { "red": 38, "green": 58, "blue": 45, "alpha": 255 },
+
+  "accentPrimary": { "red": 34, "green": 197, "blue": 94, "alpha": 255 },
+  "accentSecondary": { "red": 74, "green": 222, "blue": 128, "alpha": 255 },
+
+  "textPrimary": { "red": 232, "green": 240, "blue": 234, "alpha": 255 },
+  "textSecondary": { "red": 182, "green": 195, "blue": 185, "alpha": 255 },
+  "textMuted": { "red": 120, "green": 135, "blue": 126, "alpha": 255 },
+  "textDisabled": { "red": 86, "green": 98, "blue": 91, "alpha": 255 },
+
+  "success": { "red": 45, "green": 220, "blue": 120, "alpha": 255 },
+  "warning": { "red": 245, "green": 190, "blue": 85, "alpha": 255 },
+  "error": { "red": 225, "green": 80, "blue": 80, "alpha": 255 },
+  "info": { "red": 75, "green": 175, "blue": 255, "alpha": 255 }
+}

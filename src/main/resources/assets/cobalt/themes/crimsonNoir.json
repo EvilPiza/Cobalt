@@ -1,0 +1,20 @@
+{
+  "name": "Crimson Noir",
+
+  "backgroundPrimary": { "red": 8, "green": 8, "blue": 8, "alpha": 255 },
+  "backgroundSecondary": { "red": 16, "green": 16, "blue": 16, "alpha": 255 },
+  "border": { "red": 42, "green": 24, "blue": 24, "alpha": 255 },
+
+  "accentPrimary": { "red": 220, "green": 38, "blue": 38, "alpha": 255 },
+  "accentSecondary": { "red": 239, "green": 68, "blue": 68, "alpha": 255 },
+
+  "textPrimary": { "red": 240, "green": 240, "blue": 240, "alpha": 255 },
+  "textSecondary": { "red": 190, "green": 190, "blue": 190, "alpha": 255 },
+  "textMuted": { "red": 130, "green": 130, "blue": 130, "alpha": 255 },
+  "textDisabled": { "red": 90, "green": 90, "blue": 90, "alpha": 255 },
+
+  "success": { "red": 70, "green": 200, "blue": 110, "alpha": 255 },
+  "warning": { "red": 240, "green": 175, "blue": 70, "alpha": 255 },
+  "error": { "red": 255, "green": 80, "blue": 80, "alpha": 255 },
+  "info": { "red": 80, "green": 170, "blue": 255, "alpha": 255 }
+}

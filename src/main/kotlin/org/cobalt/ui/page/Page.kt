@@ -11,7 +11,9 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
 
-internal abstract class Page : UIComponent() {
+internal abstract class Page(
+  val title: String
+) : UIComponent() {
 
   override val width: Float
     get() = TopbarComponent.width

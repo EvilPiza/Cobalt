@@ -6,7 +6,7 @@ import org.cobalt.util.Vec2f
 import org.cobalt.util.skia.SkiaCorner
 import org.cobalt.util.skia.SkiaShapes
 
-internal object ModulesPage : Page() {
+internal object ModulesPage : Page(title = "Modules") {
 
   override fun renderComponent() {
     super.renderComponent()

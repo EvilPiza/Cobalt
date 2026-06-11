@@ -1,7 +1,9 @@
 package org.cobalt.ui.component
 
-import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 import net.minecraft.client.Minecraft
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.UIComponent
@@ -98,9 +100,14 @@ object SidebarComponent : UIComponent(
       TextStyle(USER_INFO_TEXT_SIZE, theme.textPrimary.rgb),
     )
 
+    val currentTime = ZonedDateTime.now()
+    val formatter = DateTimeFormatter
+      .ofLocalizedTime(FormatStyle.SHORT)
+      .withLocale(Locale.getDefault())
+
     SkiaText.drawText(
       SkiaText.regularFont,
-      LocalDate.now().format(DateTimeFormatter.ofPattern("MM.dd.yyyy")),
+      currentTime.format(formatter),
       Vec2f(textX, textY + USER_INFO_TEXT_SIZE + 2f),
       TextStyle(USER_INFO_TEXT_SIZE, theme.textSecondary.rgb),
     )

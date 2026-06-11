@@ -23,7 +23,7 @@ class TextInputComponent(
   height = height
 ) {
 
-  val inputHandler = TextInputHelper(FONT_SIZE, type == TextInputType.PASSWORD)
+  private val inputHandler = TextInputHelper(FONT_SIZE, type == TextInputType.PASSWORD)
   private var xOffset: Float = 0f
 
   override fun renderComponent() {

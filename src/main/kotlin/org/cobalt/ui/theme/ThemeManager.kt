@@ -9,10 +9,17 @@ import org.cobalt.Cobalt.configDir
 object ThemeManager {
 
   private val gson = Gson()
+  private val defaultThemes = listOf(
+    "/assets/cobalt/themes/steelBlue.json",
+    "/assets/cobalt/themes/forestEmerald.json",
+    "/assets/cobalt/themes/midnightViolet.json",
+    "/assets/cobalt/themes/sunsetHorizon.json",
+    "/assets/cobalt/themes/crimsonNoir.json",
+    "/assets/cobalt/themes/arcticFrost.json",
+  )
 
   @JvmStatic
   lateinit var activeTheme: Theme
-    private set
 
   @JvmStatic
   var themes: Map<String, Theme> = emptyMap()
@@ -24,14 +31,23 @@ object ThemeManager {
       .resolve("themes")
       .apply(Files::createDirectories)
 
-    val defaultPath =
-      folder.resolve("default.json")
+    val hasThemes = folder.toFile()
+      .walkTopDown()
+      .any { it.isFile && it.extension == "json" }
 
-    if (defaultPath.notExists()) {
-      val default = javaClass.getResourceAsStream("/assets/cobalt/themes/default.json")
-        ?: error("Default theme resource not found")
+    if (!hasThemes) {
+      defaultThemes.forEach { resourcePath ->
+        val resourceName = resourcePath.substringAfterLast('/')
+        val target = folder.resolve(resourceName)
 
-      Files.copy(default, defaultPath)
+        if (target.notExists()) {
+          javaClass.getResourceAsStream(resourcePath)
+            ?.use { input ->
+              Files.copy(input, target)
+            }
+            ?: error("Theme resource not found: $resourcePath")
+        }
+      }
     }
 
     themes = folder.toFile()
@@ -45,7 +61,7 @@ object ThemeManager {
       }
       .toMap()
 
-    activeTheme = themes["default"]!!
+    activeTheme = themes["Steel Blue"] ?: themes.entries.first().value
   }
 
   private data class ColorJson(

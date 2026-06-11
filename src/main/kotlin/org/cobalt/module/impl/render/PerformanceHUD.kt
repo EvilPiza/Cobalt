@@ -91,7 +91,7 @@ internal object PerformanceHUD : RenderableModule(
   private fun getStats() = listOf(
     Stat(minecraft.fps.toString(), "FPS"),
     Stat(ServerUtils.averageTps.roundToInt().toString(), "TPS"),
-    Stat(ServerUtils.currentPing.toString(), "MS"),
+    Stat(ServerUtils.averagePing.toString(), "MS"),
   )
 
   private const val PADDING = 25f

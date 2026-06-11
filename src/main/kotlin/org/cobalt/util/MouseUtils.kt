@@ -1,5 +1,7 @@
 package org.cobalt.util
 
+import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 
 object MouseUtils {
@@ -25,12 +27,14 @@ object MouseUtils {
 
   @JvmStatic
   fun leftClick() {
-    minecraft.startAttack()
+    val key = minecraft.options.keyAttack.key
+    KeyMapping.click(key)
   }
 
   @JvmStatic
   fun rightClick() {
-    minecraft.startUseItem()
+    val key = minecraft.options.keyUse.key
+    KeyMapping.click(key)
   }
 
 }
