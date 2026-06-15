@@ -58,7 +58,9 @@ class SkiaPIP(buffer: MultiBufferSource.BufferSource) : PictureInPictureRenderer
     Skia.beginFrame(skijaSurface.canvas)
     Skia.push()
     Skia.transform(state.poseMatrix)
+
     state.runnable.run()
+
     Skia.pop()
     Skia.endFrame()
 

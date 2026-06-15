@@ -46,20 +46,12 @@ class TextInputHelper(
     this.height = height
   }
 
-  fun mouseClicked(button: Int, relativeX: Float): Boolean {
-    return handleMouse(button, relativeX)
-  }
-
-  fun mouseReleased(button: Int, relativeX: Float): Boolean {
-    return handleMouse(button, relativeX)
-  }
-
   fun clearSelection() {
     selectionStart = -1
     selectionEnd = -1
   }
 
-  private fun handleMouse(button: Int, relativeX: Float): Boolean {
+  fun handleMouse(button: Int, relativeX: Float): Boolean {
     if (button != 0) {
       return false
     }

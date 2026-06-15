@@ -56,6 +56,10 @@ object SidebarComponent : UIComponent(
       buttonY += SidebarButton.HEIGHT + BUTTONS_SPACING
     }
 
+    drawUserInfo()
+  }
+
+  private fun drawUserInfo() {
     val boxX = xPos + USER_INFO_OUTER_PADDING
     val boxY = yPos + height - (USER_INFO_HEIGHT + USER_INFO_OUTER_PADDING)
 
@@ -77,6 +81,12 @@ object SidebarComponent : UIComponent(
       playerFaceX, playerFaceY,
       PLAYER_FACE_SIDE_LENGTH, PLAYER_FACE_SIDE_LENGTH,
       PLAYER_FACE_SIDE_LENGTH / 2
+    )
+
+    Skia.roundedOutline(
+      playerFaceX, playerFaceY,
+      PLAYER_FACE_SIDE_LENGTH, PLAYER_FACE_SIDE_LENGTH,
+      1f, PLAYER_FACE_SIDE_LENGTH / 2, theme.border
     )
 
     val textX = boxX + PLAYER_FACE_SIDE_LENGTH + (USER_INFO_INNER_PADDING * 2)

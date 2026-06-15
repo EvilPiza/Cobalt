@@ -3,6 +3,7 @@ package org.cobalt.ui.component
 import java.awt.Color
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
+import org.cobalt.dsl.updateAlpha
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.helper.TextInputHelper
 import org.cobalt.util.MouseUtils
@@ -87,12 +88,7 @@ class TextInputComponent(
     val selStartX = textX + Skia.textWidth(Skia.regularFont, selStartPrefix, FONT_SIZE)
     val selEndX = textX + Skia.textWidth(Skia.regularFont, selEndPrefix, FONT_SIZE)
     val selWidth = selEndX - selStartX
-    val selectionColor = Color(
-      theme.textPrimary.red,
-      theme.textPrimary.green,
-      theme.textPrimary.blue,
-      40
-    )
+    val selectionColor = theme.textPrimary.updateAlpha(40)
 
     Skia.rect(
       selStartX, textY,
@@ -138,12 +134,12 @@ class TextInputComponent(
 
   override fun mouseClicked(button: Int): Boolean {
     val relativeX = MouseUtils.mouseX - (xPos + TEXT_PADDING - xOffset)
-    return inputHandler.mouseClicked(button, relativeX) || super.mouseClicked(button)
+    return inputHandler.handleMouse(button, relativeX) || super.mouseClicked(button)
   }
 
   override fun mouseReleased(button: Int): Boolean {
     val relativeX = MouseUtils.mouseX - (xPos + TEXT_PADDING - xOffset)
-    return inputHandler.mouseReleased(button, relativeX) || super.mouseReleased(button)
+    return inputHandler.handleMouse(button, relativeX) || super.mouseReleased(button)
   }
 
   override fun charTyped(input: CharacterEvent): Boolean {
