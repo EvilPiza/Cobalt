@@ -9,10 +9,8 @@ plugins {
   `maven-publish`
 }
 
-version = project.findProperty("version")?.toString()?.takeIf { it != "unspecified" }
-  ?: providers.gradleProperty("modVersion").get()
-group = project.findProperty("group")?.toString()?.takeIf { it != "" && it != "unspecified" }
-  ?: providers.gradleProperty("baseGroup").get()
+version = providers.gradleProperty("version").orElse(providers.gradleProperty("modVersion")).get()
+group = providers.gradleProperty("group").orElse(providers.gradleProperty("baseGroup")).get()
 
 base {
   archivesName = providers.gradleProperty("modName").get()
