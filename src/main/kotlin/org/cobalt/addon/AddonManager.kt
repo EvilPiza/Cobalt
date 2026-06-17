@@ -41,6 +41,11 @@ object AddonManager {
           }
         }
     }
+
+    for (pair in addons) {
+      val addon = pair.second
+      addon.onLoad()
+    }
   }
 
   private fun loadAddon(jarPath: Path) {
