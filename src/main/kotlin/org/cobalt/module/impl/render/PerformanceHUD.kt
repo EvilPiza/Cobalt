@@ -8,7 +8,7 @@ import org.cobalt.util.ServerUtils
 import org.cobalt.util.skia.Skia
 
 internal object PerformanceHUD : RenderableModule(
-  name = "Performance HUD",
+  name = "PerformanceHUD",
   category = ModuleCategory.RENDER,
 ) {
 

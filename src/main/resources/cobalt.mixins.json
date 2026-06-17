@@ -8,6 +8,7 @@
     "client.MouseHandlerMixin",
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
+    "gui.FontMixin",
     "gui.GuiMixin",
     "gui.GuiRendererMixin",
     "gui.SplashManagerMixin"

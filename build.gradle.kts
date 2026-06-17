@@ -26,6 +26,7 @@ publishing {
 
 repositories {
   mavenCentral()
+  maven("https://maven.ccbluex.net/snapshots")
   maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
@@ -43,6 +44,9 @@ dependencies {
 
   shadowImpl(libs.skija.shared)
   shadowImpl(libs.bundles.skija.natives)
+
+  implementation(libs.discordIpc)
+  include(libs.discordIpc)
 
   runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.2")
 }

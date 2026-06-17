@@ -6,6 +6,10 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.HudEvent
+import org.cobalt.module.impl.misc.AutoHarp
+import org.cobalt.module.impl.misc.AutoSprint
+import org.cobalt.module.impl.misc.DiscordRPC
+import org.cobalt.module.impl.misc.NickHider
 import org.cobalt.module.impl.render.PerformanceHUD
 import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.skia.Skia
@@ -21,7 +25,11 @@ object ModuleManager {
 
   internal fun registerModules() {
     val builtIn = arrayOf(
-      PerformanceHUD
+      PerformanceHUD,
+      AutoSprint,
+      DiscordRPC,
+      AutoHarp,
+      NickHider
     )
 
     builtIn.forEach { module ->

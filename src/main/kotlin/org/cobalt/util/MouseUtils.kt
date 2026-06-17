@@ -1,6 +1,5 @@
 package org.cobalt.util
 
-import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 
@@ -39,8 +38,14 @@ object MouseUtils {
 
 }
 
+enum class MouseButton {
+  LEFT, RIGHT, MIDDLE
+}
+
+enum class MouseAction {
+  PRESS, RELEASE
+}
+
 enum class MouseMode {
-  DEFAULT,
-  UNGRAB_MOUSE,
-  LOCK_MOUSE
+  DEFAULT, UNGRAB_MOUSE, LOCK_MOUSE
 }

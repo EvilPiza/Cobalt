@@ -1,5 +1,6 @@
 package org.cobalt.module
 
+import net.minecraft.client.Minecraft
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.WindowUtils.windowHeight
@@ -13,13 +14,30 @@ abstract class Module(
 ) : SettingsContainer {
 
   private val settingsList = mutableListOf<Setting<*>>()
+  protected val minecraft
+    get() = Minecraft.getInstance()
 
   var enabled: Boolean = false
+    set(value) {
+      if (field == value) {
+        return
+      }
+
+      if (value) {
+        onEnable()
+      } else {
+        onDisable()
+      }
+
+      field = value
+    }
 
   override val identifier: String = name.replace(" ", "")
   override val directoryPath: String = "modules"
 
   open fun onRegistration() {}
+  open fun onEnable() {}
+  open fun onDisable() {}
 
   override fun addSettings(vararg settings: Setting<*>) {
     settingsList += settings
