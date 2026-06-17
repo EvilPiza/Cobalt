@@ -4,9 +4,12 @@ package org.cobalt.util.skia
 
 import io.github.humbleui.skija.*
 import io.github.humbleui.skija.paragraph.*
+import io.github.humbleui.skija.svg.SVGDOM
+import io.github.humbleui.skija.svg.SVGLengthContext
 import io.github.humbleui.types.RRect
 import io.github.humbleui.types.Rect
 import java.awt.Color
+import kotlin.math.max
 import org.cobalt.util.skia.helper.SkiaCorner
 import org.cobalt.util.skia.helper.SkiaFont
 import org.cobalt.util.skia.helper.SkiaImage
@@ -14,7 +17,7 @@ import org.joml.Matrix3x2fc
 
 object Skia {
 
-  private val imageCache = HashMap<String, SkiaImage>()
+  private val imageCache = HashMap<SkiaImage, CachedImage>()
   private val typefaces = HashMap<SkiaFont, Typeface>()
   private var canvas: Canvas? = null
   private var globalAlpha = 1f
@@ -212,19 +215,23 @@ object Skia {
 
   @JvmStatic
   fun createImage(resourcePath: String): SkiaImage {
-    val image = imageCache.getOrPut(resourcePath) { SkiaImage(resourcePath) }
-    image.refCount++
+    val image = imageCache.keys.find { it.location == resourcePath } ?: SkiaImage(resourcePath)
+    val cached = imageCache.getOrPut(image) { CachedImage(0, loadImage(image)) }
+    cached.count++
     return image
   }
 
   @JvmStatic
   fun deleteImage(image: SkiaImage) {
-    image.refCount--
+    val cached = imageCache[image] ?: return
+    cached.count--
 
-    if (image.refCount > 0) return
+    if (cached.count > 0) {
+      return
+    }
 
-    image.close()
-    imageCache.remove(image.location)
+    cached.image.close()
+    imageCache.remove(image)
   }
 
   @JvmStatic
@@ -237,33 +244,57 @@ object Skia {
     radius: Float? = null,
     color: Color? = null,
   ) {
-    val img = image.resolve(width.toInt().coerceAtLeast(1), height.toInt().coerceAtLeast(1), color)
-    val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
+    val img = getImage(image)
     val dst = Rect.makeXYWH(x, y, width, height)
 
     Paint().use { paint ->
-      if (color != null && !image.isSvg) {
+      if (color != null && image.isSvg) {
         paint.colorFilter = ColorFilter.makeBlend(color.rgb, BlendMode.MODULATE)
       }
 
       paint.alphaf = globalAlpha
 
-      val draw = {
-        canvas().drawImageRect(img, src, dst, SamplingMode.MITCHELL, paint, false)
-      }
-
-      if (radius != null && radius > 0f) {
-        canvas().save()
-        try {
-          canvas().clipRRect(RRect.makeXYWH(x, y, width, height, radius))
-          draw()
-        } finally {
-          canvas().restore()
-        }
-      } else {
-        draw()
+      canvas().save()
+      try {
+        canvas().clipRRect(RRect.makeXYWH(x, y, width, height, radius ?: 0f))
+        canvas().drawImageRect(img, dst, paint)
+      } finally {
+        canvas().restore()
       }
     }
+  }
+
+
+  private fun getImage(image: SkiaImage): Image {
+    return imageCache[image]?.image ?: throw IllegalStateException("Image (${image.location}) doesn't exist")
+  }
+
+  private fun loadImage(image: SkiaImage): Image {
+    if (!image.isSvg) {
+      return Image.makeDeferredFromEncodedBytes(image.bytes)
+    }
+
+    val data = Data.makeFromBytes(image.bytes)
+    val dom = SVGDOM(data)
+    val root = dom.root
+      ?: throw IllegalStateException("Failed to read SVG root: ${image.location}")
+
+    val intrinsic = root.getIntrinsicSize(SVGLengthContext(256f, 256f, 96f))
+    val width = max(1, intrinsic.x.toInt())
+    val height = max(1, intrinsic.y.toInt())
+    val surface = Surface.makeRaster(ImageInfo(width, height, ColorType.N32, ColorAlphaType.PREMUL, ColorSpace.getSRGB()))
+
+    surface.canvas.clear(0)
+    dom.setContainerSize(width.toFloat(), height.toFloat())
+    dom.render(surface.canvas)
+
+    val snapshot = surface.makeImageSnapshot()
+
+    surface.close()
+    dom.close()
+    data.close()
+
+    return snapshot
   }
 
   private fun typeface(font: SkiaFont): Typeface {
@@ -305,5 +336,7 @@ object Skia {
   private fun canvas(): Canvas {
     return canvas ?: throw IllegalStateException("Skia frame has not started")
   }
+
+  private data class CachedImage(var count: Int, val image: Image)
 
 }

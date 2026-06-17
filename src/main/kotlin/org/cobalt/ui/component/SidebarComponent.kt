@@ -111,7 +111,7 @@ object SidebarComponent : UIComponent(
   }
 
   private val playerFace = try {
-    Skia.createImage("https://mc-heads.net/avatar/${minecraft.user.profileId}/100/face.png")
+    Skia.createImage("https://mc-heads.net/avatar/${minecraft.user.name}/100/face.png")
   } catch (_: Exception) {
     Skia.createImage("/assets/cobalt/textures/steve.png")
   }
