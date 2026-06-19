@@ -4,6 +4,8 @@ import com.jagrosh.discordipc.IPCClient
 import com.jagrosh.discordipc.entities.ActivityType
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
+import java.time.OffsetDateTime
+import java.time.OffsetTime
 import org.cobalt.Cobalt
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -27,9 +29,13 @@ internal object DiscordRPC : Module(
   private const val APPLICATION_ID = 1441864552936636519L
 
   init {
+    val minecraftVersion = "Minecraft ${Cobalt.MINECRAFT_VERSION}"
+
     rpc.setActivityType(ActivityType.Playing)
     rpc.setLargeImage("logo", "${Cobalt.MOD_NAME} ${Cobalt.MOD_VERSION}", null)
-    rpc.setDetails("Playing Minecraft ${Cobalt.MINECRAFT_VERSION}")
+    rpc.setSmallImage("minecraft", minecraftVersion, null)
+    rpc.setDetails("Playing $minecraftVersion")
+    rpc.setStartTimestamp(System.currentTimeMillis())
 
     EventBus.register(this)
   }

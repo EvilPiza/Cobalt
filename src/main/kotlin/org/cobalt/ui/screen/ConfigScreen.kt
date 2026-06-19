@@ -1,12 +1,11 @@
 package org.cobalt.ui.screen
 
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.component.TopbarComponent
-import org.cobalt.ui.page.PageManager
+import org.cobalt.ui.page.Page
 import org.cobalt.ui.page.impl.ModulesPage
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
@@ -21,9 +20,21 @@ internal object ConfigScreen : UIScreen() {
   private val theme: Theme
     get() = ThemeManager.activeTheme
 
+  var currentPage: Page = ModulesPage
+    set(value) {
+      if (field == value) {
+        return
+      }
+
+      components.remove(field)
+      components.add(value)
+      field = value
+    }
+
   init {
     components.add(SidebarComponent)
     components.add(TopbarComponent)
+    components.add(currentPage)
   }
 
   override fun added() {
@@ -53,9 +64,9 @@ internal object ConfigScreen : UIScreen() {
     val startX = pageX + SidebarComponent.width
     val startY = pageY + TopbarComponent.height
 
-    PageManager.currentPageType.page
-      ?.updateBounds(startX, startY)
-      ?.renderComponent()
+    currentPage
+      .updateBounds(startX, startY)
+      .renderComponent()
 
     TopbarComponent
       .updateBounds(startX, pageY)
@@ -84,11 +95,6 @@ internal object ConfigScreen : UIScreen() {
     )
 
     Skia.pop()
-  }
-
-  override fun mouseReleased(event: MouseButtonEvent): Boolean {
-    return PageManager.currentPageType.page?.mouseReleased(event.button()) == true ||
-      super.mouseReleased(event)
   }
 
   override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit

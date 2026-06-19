@@ -1,5 +1,6 @@
 package org.cobalt.module
 
+import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.screens.LevelLoadingScreen
 import net.minecraft.client.gui.screens.ProgressScreen
 import org.cobalt.Cobalt.minecraft
@@ -10,14 +11,20 @@ import org.cobalt.module.impl.misc.AutoHarp
 import org.cobalt.module.impl.misc.AutoSprint
 import org.cobalt.module.impl.misc.DiscordRPC
 import org.cobalt.module.impl.misc.NickHider
-import org.cobalt.module.impl.render.PerformanceHUD
+import org.cobalt.module.impl.visual.PerformanceHUD
+import org.cobalt.module.type.RenderableModule
+import org.cobalt.module.type.Script
 import org.cobalt.ui.screen.HudEditorScreen
+import org.cobalt.util.ChatUtils
+import org.cobalt.util.WindowUtils.scaleX
+import org.cobalt.util.WindowUtils.scaleY
 import org.cobalt.util.skia.Skia
 import org.cobalt.util.skia.SkiaPIP
 
 object ModuleManager {
 
   val modules = mutableSetOf<Module>()
+  var currentScript: Script? = null
 
   init {
     EventBus.register(this)
@@ -52,6 +59,50 @@ object ModuleManager {
     }
   }
 
+  fun startScript(script: Script) {
+    if (currentScript != null && currentScript != script) {
+      stopAllScripts()
+      ChatUtils.sendSystemMessage(
+        "${ChatFormatting.RED}Cannot start a different script when one is currently active, disabling all scripts..."
+      )
+
+      return
+    }
+
+    currentScript = script
+    script.startScript()
+  }
+
+  fun stopScript() {
+    if (currentScript == null) {
+      ChatUtils.sendSystemMessage("${ChatFormatting.RED}There is no script currently running")
+      return
+    }
+
+    currentScript?.startScript().also {
+      currentScript = null
+    }
+  }
+
+
+  fun stopAllScripts() {
+    modules
+      .filterIsInstance<Script>()
+      .forEach { script ->
+        script.stopScript()
+      }
+
+    currentScript = null
+  }
+
+  fun getScript(scriptName: String): Script? {
+    return modules
+      .filterIsInstance<Script>()
+      .find { script ->
+        script.name.equals(scriptName, true)
+      }
+  }
+
   private val shouldSkipRender: Boolean
     get() {
       return minecraft.level == null ||
@@ -64,7 +115,7 @@ object ModuleManager {
     }
 
   @SubscribeEvent
-  fun drawRenderableModules(event: HudEvent) {
+  fun onHudEvent(event: HudEvent) {
     if (shouldSkipRender) {
       return
     }
@@ -75,12 +126,13 @@ object ModuleManager {
         .forEach { module ->
           Skia.push()
 
-          val (x, y) = module.screenPosition
-          val scale = module.scale
+          val renderX = module.xPos * scaleX
+          val renderY = module.yPos * scaleY
+          val finalScale = module.scale * scaleY
 
-          Skia.translate(x, y)
-          Skia.scale(scale, scale)
-          Skia.translate(-x, -y)
+          Skia.translate(renderX, renderY)
+          Skia.scale(finalScale, finalScale)
+          Skia.translate(-module.xPos, -module.yPos)
 
           module.renderComponent()
 

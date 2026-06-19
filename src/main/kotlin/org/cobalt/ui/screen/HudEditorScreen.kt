@@ -3,13 +3,15 @@ package org.cobalt.ui.screen
 import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.event.EventBus
 import org.cobalt.module.ModuleManager
-import org.cobalt.module.RenderableModule
+import org.cobalt.module.type.RenderableModule
 import org.cobalt.ui.UIScreen
 import org.cobalt.ui.helper.DragHandler
 import org.cobalt.ui.helper.SnapHelper
 import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.MouseUtils
+import org.cobalt.util.WindowUtils.scaleX
+import org.cobalt.util.WindowUtils.scaleY
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.Skia
@@ -25,7 +27,7 @@ internal object HudEditorScreen : UIScreen() {
   private val snapHelper = SnapHelper()
   private val dragHandler = DragHandler()
 
-  private val theme: Theme
+  private inline val theme: Theme
     get() = ThemeManager.activeTheme
 
   override fun added() = EventBus.register(this)
@@ -33,13 +35,15 @@ internal object HudEditorScreen : UIScreen() {
 
   override fun renderSkia() {
     modules.forEach { module ->
-      val (x, y) = module.screenPosition
-      val scale = module.scale
-
       Skia.push()
-      Skia.translate(x, y)
-      Skia.scale(scale, scale)
-      Skia.translate(-x, -y)
+
+      val renderX = module.xPos * scaleX
+      val renderY = module.yPos * scaleY
+      val finalScale = module.scale * scaleY
+
+      Skia.translate(renderX, renderY)
+      Skia.scale(finalScale, finalScale)
+      Skia.translate(-module.xPos, -module.yPos)
 
       drawRenderableModule(module)
 
@@ -56,32 +60,24 @@ internal object HudEditorScreen : UIScreen() {
 
     snapHelper.activeGuides.forEach { guide ->
       if (guide.isVertical) {
-        Skia.line(
-          guide.position, 0f,
-          guide.position, windowHeight,
-          1f, theme.accentPrimary
-        )
+        Skia.line(guide.position, 0f, guide.position, windowHeight, 1f, theme.accentPrimary)
       } else {
-        Skia.line(
-          0f, guide.position,
-          windowWidth, guide.position,
-          1f, theme.accentPrimary
-        )
+        Skia.line(0f, guide.position, windowWidth, guide.position, 1f, theme.accentPrimary)
       }
     }
   }
 
   private fun drawRenderableModule(module: RenderableModule) {
-    val (x, y) = module.screenPosition
-    val (width, height) = module.dimensions
-    val isSelected = module == selectedModule
+    val x = module.xPos
+    val y = module.yPos
+    val width = module.width
+    val height = module.height
 
     module.renderComponent()
 
-    Skia.outline(
-      x, y, width, height, 1f,
-      if (isSelected) theme.accentPrimary else theme.border
-    )
+    val isSelected = module == selectedModule
+
+    Skia.outline(x, y, width, height, 1f, if (isSelected) theme.accentPrimary else theme.border)
 
     if (isSelected) {
       val squareOffset = SQUARE_SIZE / 2.0f
@@ -99,22 +95,29 @@ internal object HudEditorScreen : UIScreen() {
     }
 
     val clickedModule = modules.firstOrNull { module ->
-      if (module == selectedModule && dragHandler.tryStartResize(module, SQUARE_SIZE)) {
-        return@firstOrNull true
-      }
+      val renderX = module.xPos * scaleX
+      val renderY = module.yPos * scaleY
+      val resScale = scaleY
+      val scaledWidth = module.width * module.scale * resScale
+      val scaledHeight = module.height * module.scale * resScale
 
-      if (
-        MouseUtils.isHoveringOver(
-          module.xPos, module.yPos,
-          module.getWidth() * module.scale,
-          module.getHeight() * module.scale
+      if (module == selectedModule && dragHandler.tryStartResize(
+          SQUARE_SIZE,
+          renderX,
+          renderY,
+          scaledWidth,
+          scaledHeight
         )
       ) {
-        dragHandler.startMove(module)
         return@firstOrNull true
       }
 
-      return@firstOrNull false
+      if (MouseUtils.isHoveringOver(renderX, renderY, scaledWidth, scaledHeight)) {
+        dragHandler.startMove(renderX, renderY)
+        return@firstOrNull true
+      }
+
+      false
     }
 
     selectedModule = clickedModule
@@ -123,9 +126,8 @@ internal object HudEditorScreen : UIScreen() {
 
   override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
     val module = selectedModule ?: return super.mouseDragged(event, dx, dy)
-    val handled = dragHandler.handleDrag(module, modules, snapHelper)
 
-    return if (handled) {
+    return if (dragHandler.handleDrag(module, modules, snapHelper)) {
       true
     } else {
       super.mouseDragged(event, dx, dy)

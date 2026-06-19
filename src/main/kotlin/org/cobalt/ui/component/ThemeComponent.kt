@@ -67,7 +67,7 @@ class ThemeComponent(val newTheme: Theme) : UIComponent(
       return super.mouseReleased(button)
     }
 
-    ThemeManager.activeTheme = newTheme
+    ThemeManager.changeTheme(newTheme)
     return true
   }
 

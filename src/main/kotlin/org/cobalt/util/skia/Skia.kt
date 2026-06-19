@@ -84,9 +84,9 @@ object Skia {
   }
 
   @JvmStatic
-  fun pushScissor(x: Float, y: Float, width: Float, height: Float) {
+  fun pushScissor(x: Float, y: Float, width: Float, height: Float, radius: Float = 0f) {
     canvas().save()
-    canvas().clipRect(Rect.makeXYWH(x, y, width, height))
+    canvas().clipRRect(RRect.makeXYWH(x, y, width, height, radius), ClipMode.INTERSECT, true)
   }
 
   @JvmStatic
@@ -98,6 +98,7 @@ object Skia {
   fun line(x1: Float, y1: Float, x2: Float, y2: Float, thickness: Float, color: Color) {
     paint(color, PaintMode.STROKE).use {
       it.strokeWidth = thickness
+      it.strokeCap = PaintStrokeCap.ROUND
       canvas().drawLine(x1, y1, x2, y2, it)
     }
   }
@@ -252,12 +253,19 @@ object Skia {
         paint.colorFilter = ColorFilter.makeBlend(color.rgb, BlendMode.MODULATE)
       }
 
-      paint.alphaf = globalAlpha
+      val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
 
+      paint.alphaf = globalAlpha
       canvas().save()
+
       try {
-        canvas().clipRRect(RRect.makeXYWH(x, y, width, height, radius ?: 0f))
-        canvas().drawImageRect(img, dst, paint)
+        canvas().clipRRect(
+          RRect.makeXYWH(x, y, width, height, radius ?: 0f),
+          ClipMode.INTERSECT,
+          true
+        )
+
+        canvas().drawImageRect(img, src, dst, SamplingMode.MITCHELL, paint, true)
       } finally {
         canvas().restore()
       }
@@ -282,7 +290,10 @@ object Skia {
     val intrinsic = root.getIntrinsicSize(SVGLengthContext(256f, 256f, 96f))
     val width = max(1, intrinsic.x.toInt())
     val height = max(1, intrinsic.y.toInt())
-    val surface = Surface.makeRaster(ImageInfo(width, height, ColorType.N32, ColorAlphaType.PREMUL, ColorSpace.getSRGB()))
+
+    val surface = Surface.makeRaster(
+      ImageInfo(width, height, ColorType.N32, ColorAlphaType.PREMUL, ColorSpace.getSRGB())
+    )
 
     surface.canvas.clear(0)
     dom.setContainerSize(width.toFloat(), height.toFloat())
@@ -308,10 +319,13 @@ object Skia {
   private fun font(font: SkiaFont, size: Float): Font {
     return Font(typeface(font), size)
       .setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS)
+      .setSubpixel(true)
+      .setHinting(FontHinting.FULL)
   }
 
   private fun paint(color: Color, mode: PaintMode = PaintMode.FILL): Paint {
-    return Paint().setAntiAlias(true)
+    return Paint()
+      .setAntiAlias(true)
       .setMode(mode)
       .setColor(color.rgb)
       .setAlphaf((color.alpha / 255f) * globalAlpha)

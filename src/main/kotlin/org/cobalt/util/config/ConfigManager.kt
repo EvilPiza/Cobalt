@@ -10,7 +10,8 @@ import kotlin.io.path.exists
 import kotlin.io.path.readText
 import org.cobalt.Cobalt.configDir
 import org.cobalt.module.Module
-import org.cobalt.module.RenderableModule
+import org.cobalt.module.type.RenderableModule
+import org.cobalt.module.type.Script
 import org.cobalt.util.setting.SettingsContainer
 import org.cobalt.util.setting.impl.ButtonSetting
 import org.cobalt.util.setting.impl.InfoSetting
@@ -29,6 +30,7 @@ object ConfigManager {
       .apply(Files::createDirectories)
       .resolve("${container.identifier}.json")
 
+  @JvmStatic
   fun loadConfig(container: SettingsContainer) {
     val configFile = getConfigFile(container)
 
@@ -42,19 +44,21 @@ object ConfigManager {
         JsonObject::class.java
       )
     }.onSuccess { json ->
-      (container as? Module)?.let { module ->
-        json.get("enabled")?.asBoolean?.let {
-          module.enabled = it
+      (container as? Module)
+        ?.takeIf { module -> module !is Script }
+        ?.let { module ->
+          json.get("enabled")?.asBoolean?.let {
+            module.enabled = it
+          }
         }
-      }
 
       (container as? RenderableModule)?.let { renderableModule ->
         json.get("offsetX")?.asFloat?.let {
-          renderableModule.offsetX = it
+          renderableModule.xPos = it
         }
 
         json.get("offsetY")?.asFloat?.let {
-          renderableModule.offsetY = it
+          renderableModule.yPos = it
         }
 
         json.get("scale")?.asFloat?.let {
@@ -75,6 +79,7 @@ object ConfigManager {
     }
   }
 
+  @JvmStatic
   fun saveConfig(container: SettingsContainer) {
     val settings = container.getSettings()
       .filterNot { it is InfoSetting || it is ButtonSetting }
@@ -84,13 +89,15 @@ object ConfigManager {
     }
 
     val jsonObject = JsonObject().apply {
-      (container as? Module)?.let {
-        addProperty("enabled", it.enabled)
-      }
+      (container as? Module)
+        ?.takeIf { module -> module !is Script }
+        ?.let {
+          addProperty("enabled", it.enabled)
+        }
 
       (container as? RenderableModule)?.let {
-        addProperty("offsetX", it.offsetX)
-        addProperty("offsetY", it.offsetY)
+        addProperty("offsetX", it.xPos)
+        addProperty("offsetY", it.yPos)
         addProperty("scale", it.scale)
       }
 

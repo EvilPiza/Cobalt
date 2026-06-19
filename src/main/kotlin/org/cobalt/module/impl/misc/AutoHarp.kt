@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.Blocks
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
-import org.cobalt.module.Module
 import org.cobalt.module.ModuleCategory
+import org.cobalt.module.Module
 import org.cobalt.util.InventoryUtils
 import org.cobalt.util.MouseButton
 

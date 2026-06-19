@@ -5,6 +5,7 @@ import java.awt.Color
 import java.nio.file.Files
 import kotlin.io.path.notExists
 import org.cobalt.Cobalt.configDir
+import org.cobalt.util.config.Config
 
 object ThemeManager {
 
@@ -18,8 +19,14 @@ object ThemeManager {
     "/assets/cobalt/themes/arcticFrost.json",
   )
 
+  private val settingsConfig = Config(
+    configDir.resolve("settings.json").toString(),
+    Settings::class.java
+  )
+
   @JvmStatic
   lateinit var activeTheme: Theme
+    private set
 
   @JvmStatic
   var themes: Map<String, Theme> = emptyMap()
@@ -27,6 +34,16 @@ object ThemeManager {
 
   @JvmStatic
   internal fun loadThemes() {
+    reloadThemes()
+
+    val savedSettings = settingsConfig.load() ?: Settings("Steel Blue")
+    activeTheme = themes[savedSettings.activeThemeName] ?: themes.values.first()
+  }
+
+  @JvmStatic
+  internal fun reloadThemes() {
+    themes = emptyMap()
+
     val folder = configDir
       .resolve("themes")
       .apply(Files::createDirectories)
@@ -60,9 +77,17 @@ object ThemeManager {
         }.getOrNull()
       }
       .toMap()
-
-    activeTheme = themes["Steel Blue"] ?: themes.entries.first().value
   }
+
+  @JvmStatic
+  fun changeTheme(theme: Theme) {
+    activeTheme = theme
+    settingsConfig.save(Settings(theme.name))
+  }
+
+  private data class Settings(
+    val activeThemeName: String
+  )
 
   private data class ColorJson(
     val red: Int,

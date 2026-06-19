@@ -11,8 +11,6 @@ import org.cobalt.event.impl.PacketEvent
 
 object ServerUtils {
 
-  private var lastTickTime = -1L
-
   @JvmStatic
   var averageTps = 20.0
     private set
@@ -24,6 +22,8 @@ object ServerUtils {
   @JvmStatic
   var averagePing = 0
     private set
+
+  private var lastTickTime = -1L
 
   init {
     EventBus.register(this)

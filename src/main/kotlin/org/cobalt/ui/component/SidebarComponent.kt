@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.module.ModuleCategory
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.component.button.SidebarButton
-import org.cobalt.ui.page.PageType
 import org.cobalt.util.skia.Skia
 import org.cobalt.util.skia.helper.SkiaCorner
 
@@ -19,8 +19,8 @@ object SidebarComponent : UIComponent(
   private val buttons = mutableListOf<SidebarButton>()
 
   fun preload() {
-    for (page in PageType.entries) {
-      val button = SidebarButton(page)
+    for (category in ModuleCategory.entries) {
+      val button = SidebarButton(category)
       this.addChild(button)
       buttons.add(button)
     }
@@ -113,7 +113,7 @@ object SidebarComponent : UIComponent(
   private val playerFace = try {
     Skia.createImage("https://mc-heads.net/avatar/${minecraft.user.name}/100/face.png")
   } catch (_: Exception) {
-    Skia.createImage("/assets/cobalt/textures/steve.png")
+    Skia.createImage("/assets/cobalt/ui/steve.png")
   }
 
   private const val TITLE_TEXT = "cobalt"

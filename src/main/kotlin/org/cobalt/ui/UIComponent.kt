@@ -14,7 +14,7 @@ abstract class UIComponent(
 
   var parent: UIComponent? = null
 
-  protected open val theme: Theme
+  protected inline val theme: Theme
     get() = ThemeManager.activeTheme
 
   private val children =
@@ -29,6 +29,10 @@ abstract class UIComponent(
 
     children.add(component)
     component.parent = this
+  }
+
+  fun removeAllChildren() {
+    children.clear()
   }
 
   open fun mouseClicked(button: Int): Boolean {

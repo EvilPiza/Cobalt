@@ -1,40 +1,36 @@
-package org.cobalt.module.impl.render
+package org.cobalt.module.impl.visual
 
-import kotlin.math.roundToInt
-import org.cobalt.Cobalt.minecraft
 import org.cobalt.module.ModuleCategory
-import org.cobalt.module.RenderableModule
+import org.cobalt.module.type.RenderableModule
 import org.cobalt.util.ServerUtils
 import org.cobalt.util.skia.Skia
+import kotlin.math.roundToInt
 
 internal object PerformanceHUD : RenderableModule(
   name = "PerformanceHUD",
-  category = ModuleCategory.RENDER,
+  category = ModuleCategory.VISUAL,
 ) {
 
-  override fun getWidth(): Float {
-    var width = PADDING * 2
+  override val width: Float
+    get() {
+      var width = PADDING * 2
 
-    for ((index, stat) in getStats().withIndex()) {
-      if (index > 0) {
-        width += PADDING + 2 * TEXT_SPACING
+      for ((index, stat) in getStats().withIndex()) {
+        if (index > 0) {
+          width += PADDING + 2 * TEXT_SPACING
+        }
+
+        width += Skia.textWidth(Skia.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
+        width += Skia.textWidth(Skia.boldFont, stat.unit, FONT_SIZE)
       }
 
-      width += Skia.textWidth(Skia.boldFont, stat.value, FONT_SIZE) + TEXT_SPACING
-      width += Skia.textWidth(Skia.boldFont, stat.unit, FONT_SIZE)
+      return width
     }
 
-    return width
-  }
-
-  override fun getHeight(): Float {
-    return 50f
-  }
+  override val height: Float
+    get() = 50f
 
   override fun renderComponent() {
-    val width = getWidth()
-    val height = getHeight()
-
     Skia.roundedRect(
       xPos, yPos, width, height,
       5f, theme.backgroundPrimary

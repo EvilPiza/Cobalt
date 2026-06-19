@@ -1,15 +1,39 @@
 package org.cobalt.ui.page.impl
 
+import kotlin.math.ceil
 import org.cobalt.ui.component.ThemeComponent
+import org.cobalt.ui.component.button.IconButton
+import org.cobalt.ui.helper.ScrollHelper
 import org.cobalt.ui.page.Page
 import org.cobalt.ui.theme.ThemeManager
+import org.cobalt.util.MouseUtils
+import org.cobalt.util.skia.Skia
 
-// TODO: setup scrolling
-internal object ThemesPage : Page(title = "Themes") {
+internal object ThemesPage : Page() {
 
   private val themeComponents = mutableListOf<ThemeComponent>()
+  private val scrollHelper = ScrollHelper()
+
+  override val title: String
+    get() = "Themes"
+
+  val reloadButton = IconButton("/assets/cobalt/ui/reload.svg") {
+    scrollHelper.reset()
+    ThemeManager.reloadThemes()
+    reloadComponents()
+  }
 
   init {
+    reloadComponents()
+  }
+
+  private fun reloadComponents() {
+    themeComponents.clear()
+    scrollHelper.reset()
+
+    removeAllChildren()
+    addChild(reloadButton)
+
     ThemeManager.themes.values.forEach { theme ->
       val component = ThemeComponent(theme)
 
@@ -21,17 +45,41 @@ internal object ThemesPage : Page(title = "Themes") {
   override fun renderComponent() {
     super.renderComponent()
 
+    val rows = ceil(themeComponents.size.toDouble() / COLUMNS).toFloat()
+    val contentHeight = PADDING * 2 + rows * ThemeComponent.HEIGHT + (rows - 1) * SPACING
+
+    scrollHelper.updateMaxScroll(contentHeight, height)
+    Skia.pushScissor(xPos, yPos, width, height)
+
     themeComponents.forEachIndexed { index, component ->
       val col = index % COLUMNS
       val row = index / COLUMNS
 
       val x = xPos + PADDING + col * (ThemeComponent.WIDTH + SPACING)
-      val y = yPos + PADDING + row * (ThemeComponent.HEIGHT + SPACING)
+      val y = yPos + PADDING + row * (ThemeComponent.HEIGHT + SPACING) - scrollHelper.scrollOffset
 
       component
         .updateBounds(x, y)
         .renderComponent()
     }
+
+    Skia.popScissor()
+
+    val buttonX = xPos + width - PADDING - reloadButton.width
+    val buttonY = yPos + height - PADDING - reloadButton.height
+
+    reloadButton
+      .updateBounds(buttonX, buttonY)
+      .renderComponent()
+  }
+
+  override fun mouseScrolled(horizontalAmount: Double, verticalAmount: Double): Boolean {
+    if (MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
+      scrollHelper.scroll(verticalAmount)
+      return true
+    }
+
+    return false
   }
 
   private const val PADDING = 20f

@@ -13,7 +13,6 @@ import org.cobalt.command.CommandManager
 import org.cobalt.event.EventBus
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
-import org.cobalt.script.ScriptManager
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.skia.SkiaPIP
@@ -51,7 +50,6 @@ object Cobalt : ClientModInitializer {
     ThemeManager.loadThemes()
     AddonManager.loadAddons()
 
-    ScriptManager.registerScripts()
     ModuleManager.registerModules()
     CommandManager.registerCommands()
 

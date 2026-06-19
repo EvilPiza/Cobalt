@@ -15,6 +15,14 @@ object WindowUtils {
     get() = minecraft.window.height.toFloat()
 
   @JvmStatic
+  val scaleX: Float
+    get() = windowWidth / 1920f
+
+  @JvmStatic
+  val scaleY: Float
+    get() = windowHeight / 1080f
+
+  @JvmStatic
   fun isKeyDown(key: InputConstants.Key): Boolean {
     val window = minecraft.window
 

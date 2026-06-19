@@ -1,43 +1,45 @@
 package org.cobalt.ui.component.button
 
 import org.cobalt.dsl.updateAlpha
+import org.cobalt.module.ModuleCategory
+import org.cobalt.module.ModuleManager
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
-import org.cobalt.ui.page.PageManager
-import org.cobalt.ui.page.PageType
+import org.cobalt.ui.page.impl.ModulesPage
+import org.cobalt.ui.page.impl.ThemesPage
+import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia
 
-internal class SidebarButton(val pageType: PageType) : UIComponent(
+internal class SidebarButton(val category: ModuleCategory) : UIComponent(
   width = WIDTH,
   height = HEIGHT
 ) {
 
-  private val icon = Skia.createImage(pageType.iconPath)
+  private val icon = Skia.createImage(category.iconPath)
   private val colorAnimation = ColorAnimation(150L)
   private val xOffsetAnimation = EaseOutAnimation(200L)
-  private var previousPageType = PageType.SCRIPTS
 
+  private var wasSelected = false
   private val selected: Boolean
-    get() = PageManager.currentPageType == pageType
+    get() = ModulesPage.selectedCategory == category
 
   override fun renderComponent() {
-    if (previousPageType != PageManager.currentPageType) {
-      if (pageType == previousPageType || pageType == PageManager.currentPageType) {
-        colorAnimation.start()
-        xOffsetAnimation.start()
-      }
+    val isSelectedNow = selected
 
-      previousPageType = PageManager.currentPageType
+    if (wasSelected != isSelectedNow) {
+      colorAnimation.start()
+      xOffsetAnimation.start()
+      wasSelected = isSelectedNow
     }
 
-    val opaqueColor = colorAnimation.get(theme.transparent, theme.accentPrimary.updateAlpha(50), !selected)
-    val mainColor = colorAnimation.get(theme.transparent, theme.accentPrimary, !selected)
-    val textColor = colorAnimation.get(theme.textPrimary, theme.accentPrimary, !selected)
-    val xOffset = xOffsetAnimation.get(0F, TEXT_SELECTED_OFFSET, !selected)
+    val opaqueColor = colorAnimation.get(theme.transparent, theme.accentPrimary.updateAlpha(50), !isSelectedNow)
+    val mainColor = colorAnimation.get(theme.transparent, theme.accentPrimary, !isSelectedNow)
+    val textColor = colorAnimation.get(theme.textPrimary, theme.accentPrimary, !isSelectedNow)
+    val xOffset = xOffsetAnimation.get(0F, TEXT_SELECTED_OFFSET, !isSelectedNow)
 
-    if (selected) {
+    if (isSelectedNow) {
       Skia.roundedRect(
         xPos, yPos,
         width, height,
@@ -62,7 +64,7 @@ internal class SidebarButton(val pageType: PageType) : UIComponent(
       color = textColor
     )
 
-    if (selected) {
+    if (isSelectedNow) {
       Skia.image(
         selectedIcon,
         iconX, iconY(SELECTION_ICON_SIZE),
@@ -76,7 +78,7 @@ internal class SidebarButton(val pageType: PageType) : UIComponent(
 
     Skia.text(
       Skia.regularFont,
-      pageType.label,
+      category.displayName,
       textX + xOffset, textY,
       FONT_SIZE, textColor
     )
@@ -84,7 +86,8 @@ internal class SidebarButton(val pageType: PageType) : UIComponent(
 
   override fun mouseReleased(button: Int): Boolean {
     if (MouseUtils.isHoveringOver(xPos, yPos, width, height) && button == 0) {
-      PageManager.changePage(pageType)
+      ConfigScreen.currentPage = ModulesPage
+      ModulesPage.selectedCategory = category
       return true
     }
 
