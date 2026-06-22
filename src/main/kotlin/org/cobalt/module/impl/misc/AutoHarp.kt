@@ -12,7 +12,7 @@ import org.cobalt.module.Module
 import org.cobalt.util.InventoryUtils
 import org.cobalt.util.MouseButton
 
-internal object AutoHarp : Module(
+object AutoHarp : Module(
   name = "AutoHarp",
   category = ModuleCategory.MISC,
 ) {

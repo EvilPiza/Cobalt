@@ -42,9 +42,8 @@ public abstract class MouseHandlerMixin {
   }
 
   @Inject(method = "onScroll", at = @At("HEAD"))
-  private void onMouseScroll(long handle, double horizontalAmount, double verticalAmount, CallbackInfo callbackInfo) {
-    EventBus.post(new MouseScrollEvent(horizontalAmount, verticalAmount));
-    System.out.println("WHY THE FUCK ISNT IT WORKINGG PLEASE HELP ME");
+  private void onMouseScroll(long handle, double xoffset, double yoffset, CallbackInfo callbackInfo) {
+    EventBus.post(new MouseScrollEvent(xoffset, yoffset));
   }
 
   @Unique

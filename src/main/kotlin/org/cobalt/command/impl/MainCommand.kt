@@ -10,7 +10,7 @@ import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.helper.TickScheduler
 
-internal object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
+object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
 
   private const val DELAY_TICKS = 1L
 

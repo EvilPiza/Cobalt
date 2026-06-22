@@ -13,7 +13,7 @@ import org.cobalt.util.ChatUtils
 
 object CommandManager {
 
-  internal const val PREFIX: Char = '.'
+  const val PREFIX: Char = '.'
 
   @JvmStatic
   internal val dispatcher = CommandDispatcher<ClientSuggestionProvider>()

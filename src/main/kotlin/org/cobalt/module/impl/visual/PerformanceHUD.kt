@@ -6,7 +6,7 @@ import org.cobalt.util.ServerUtils
 import org.cobalt.util.skia.Skia
 import kotlin.math.roundToInt
 
-internal object PerformanceHUD : RenderableModule(
+object PerformanceHUD : RenderableModule(
   name = "PerformanceHUD",
   category = ModuleCategory.VISUAL,
 ) {

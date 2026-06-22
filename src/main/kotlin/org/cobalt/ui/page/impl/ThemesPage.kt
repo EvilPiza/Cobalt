@@ -10,7 +10,7 @@ import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia
 
-internal object ThemesPage : Page() {
+object ThemesPage : Page() {
 
   private val themeComponents = mutableListOf<ThemeComponent>()
   private val scrollHelper = ScrollHelper()

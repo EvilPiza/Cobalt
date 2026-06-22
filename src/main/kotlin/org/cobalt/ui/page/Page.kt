@@ -6,7 +6,7 @@ import org.cobalt.ui.component.TopbarComponent
 import org.cobalt.util.skia.Skia
 import org.cobalt.util.skia.helper.SkiaCorner
 
-internal abstract class Page : UIComponent() {
+abstract class Page : UIComponent() {
 
   abstract val title: String
 

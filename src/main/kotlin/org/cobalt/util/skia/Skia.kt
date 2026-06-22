@@ -281,6 +281,39 @@ object Skia {
     }
   }
 
+  @JvmStatic
+  fun blurredImage(image: SkiaImage, x: Float, y: Float, width: Float, height: Float, radius: Float, cornerRadius: Float = 0f) {
+    val img = getImage(image)
+    val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
+    val dst = Rect.makeXYWH(x, y, width, height)
+
+    val blurPaint = Paint().apply {
+      imageFilter = ImageFilter.makeBlur(radius, radius, FilterTileMode.REPEAT)
+      isAntiAlias = true
+      alphaf = globalAlpha
+    }
+
+    canvas().save()
+    try {
+      canvas().clipRRect(
+        RRect.makeXYWH(x, y, width, height, cornerRadius),
+        ClipMode.INTERSECT,
+        true
+      )
+
+      canvas().drawImageRect(img, src, dst, SamplingMode.MITCHELL, blurPaint, true)
+    } finally {
+      canvas().restore()
+      blurPaint.close()
+    }
+  }
+
+  @JvmStatic
+  fun imageSize(image: SkiaImage): Pair<Int, Int> {
+    val img = getImage(image)
+    return img.width to img.height
+  }
+
   private fun getImage(image: SkiaImage): Image {
     return imageCache[image]?.image ?: throw IllegalStateException("Image (${image.location}) doesn't exist")
   }

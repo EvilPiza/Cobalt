@@ -8,7 +8,7 @@ import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.Skia
 import org.cobalt.util.skia.helper.SkiaCorner
 
-internal class Notification(
+class Notification(
   private val title: String,
   private val description: String,
   private val duration: Duration,

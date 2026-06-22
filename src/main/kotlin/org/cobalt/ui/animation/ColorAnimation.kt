@@ -3,7 +3,7 @@ package org.cobalt.ui.animation
 import java.awt.Color
 import kotlin.math.roundToInt
 
-internal class ColorAnimation(duration: Long) {
+class ColorAnimation(duration: Long) {
 
   private val animation = EaseOutAnimation(duration)
 

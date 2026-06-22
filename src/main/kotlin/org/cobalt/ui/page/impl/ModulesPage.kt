@@ -9,7 +9,7 @@ import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia
 
-internal object ModulesPage : Page() {
+object ModulesPage : Page() {
 
   override val title: String
     get() = "Modules"

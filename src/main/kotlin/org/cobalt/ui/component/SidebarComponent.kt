@@ -18,7 +18,7 @@ object SidebarComponent : UIComponent(
 
   private val buttons = mutableListOf<SidebarButton>()
 
-  fun preload() {
+  internal fun preload() {
     for (category in ModuleCategory.entries) {
       val button = SidebarButton(category)
       this.addChild(button)

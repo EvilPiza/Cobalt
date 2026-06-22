@@ -6,7 +6,7 @@ import org.cobalt.event.impl.TickEvent
 import org.cobalt.module.Module
 import org.cobalt.module.ModuleCategory
 
-internal object AutoSprint : Module(
+object AutoSprint : Module(
   name = "AutoSprint",
   category = ModuleCategory.MISC,
 ) {

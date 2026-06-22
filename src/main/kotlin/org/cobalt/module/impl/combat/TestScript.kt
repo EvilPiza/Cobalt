@@ -5,5 +5,6 @@ import org.cobalt.module.type.Script
 
 object TestScript : Script(
   name = "Test Script",
-  category = ModuleCategory.COMBAT
+  category = ModuleCategory.COMBAT,
+  backgroundResourcePath = "/assets/cobalt/ui/scripts/testscript.png"
 )

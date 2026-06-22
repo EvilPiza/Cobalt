@@ -12,7 +12,7 @@ import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia
 
-internal class SidebarButton(val category: ModuleCategory) : UIComponent(
+class SidebarButton(val category: ModuleCategory) : UIComponent(
   width = WIDTH,
   height = HEIGHT
 ) {

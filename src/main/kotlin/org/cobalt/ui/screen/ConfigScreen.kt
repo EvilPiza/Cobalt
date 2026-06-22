@@ -18,7 +18,7 @@ import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.helper.Multithreading
 import org.cobalt.util.skia.Skia
 
-internal object ConfigScreen : UIScreen() {
+object ConfigScreen : UIScreen() {
 
   private val openAnim = BounceAnimation(400L)
   private val closeAnim = EaseOutAnimation(100L)

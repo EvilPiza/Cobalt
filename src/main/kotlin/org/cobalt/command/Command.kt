@@ -20,7 +20,7 @@ import org.cobalt.command.annotation.SubCommand
 
 abstract class Command(val name: String, val aliases: List<String> = emptyList()) {
 
-  internal fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
+  fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
     val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
 
     for (function in this::class.declaredFunctions) {

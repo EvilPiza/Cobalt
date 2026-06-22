@@ -4,6 +4,7 @@ import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.MouseScrollEvent
+import org.cobalt.module.Module
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.type.RenderableModule
 import org.cobalt.ui.helper.DragHandler
@@ -17,8 +18,9 @@ import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.Skia
 import org.cobalt.ui.UIScreen
+import org.cobalt.util.helper.Multithreading
 
-internal object HudEditorScreen : UIScreen() {
+object HudEditorScreen : UIScreen() {
 
   init {
     EventBus.register(this)
@@ -141,14 +143,18 @@ internal object HudEditorScreen : UIScreen() {
   }
 
   override fun mouseReleased(event: MouseButtonEvent): Boolean {
-    if (dragHandler.isActive) {
-      selectedModule?.saveConfig()
-    }
-
     dragHandler.reset()
     snapHelper.clearGuides()
 
     return super.mouseReleased(event)
+  }
+
+  override fun onClose() {
+    super.onClose()
+
+    Multithreading.runAsync {
+      ModuleManager.modules.forEach(Module::saveConfig)
+    }
   }
 
   private const val SQUARE_SIZE = 10.0f
@@ -158,10 +164,6 @@ internal object HudEditorScreen : UIScreen() {
 
   @SubscribeEvent
   fun onMouseScroll(event: MouseScrollEvent) {
-//    if (dragHandler.isActive) {
-//      return
-//    }
-
     val module = modules.firstOrNull { candidate ->
       val renderX = candidate.xPos * scaleX
       val renderY = candidate.yPos * scaleY
@@ -176,7 +178,6 @@ internal object HudEditorScreen : UIScreen() {
 
     module.scale = (module.scale + (event.verticalAmount.toFloat() * SCALE_STEP))
       .coerceIn(MIN_SCALE, MAX_SCALE)
-    module.saveConfig()
   }
 
 }
