@@ -28,6 +28,9 @@ class TextInputHelper(
   var selectionEnd = -1
     private set
 
+  var selectionAnchor = -1
+    private set
+
   val hasSelection: Boolean
     get() = selectionStart != -1 && selectionStart != selectionEnd
 
@@ -49,43 +52,85 @@ class TextInputHelper(
   fun clearSelection() {
     selectionStart = -1
     selectionEnd = -1
+    selectionAnchor = -1
   }
 
-  fun handleMouse(button: Int, relativeX: Float): Boolean {
+  private fun updateSelectionRange() {
+    if (selectionAnchor != -1 && selectionAnchor != caretIndex) {
+      selectionStart = minOf(selectionAnchor, caretIndex)
+      selectionEnd = maxOf(selectionAnchor, caretIndex)
+    } else {
+      selectionStart = -1
+      selectionEnd = -1
+    }
+  }
+
+  fun mouseClicked(button: Int, relativeX: Float): Boolean {
     if (button != 0) {
       return false
     }
 
     val hoveringOver = MouseUtils.isHoveringOver(xPos, yPos, width, height)
     focused = hoveringOver
+
     if (hoveringOver) {
       caretIndex = calculateCaretIndex(relativeX)
+      selectionAnchor = caretIndex
       clearSelection()
     }
+
     return hoveringOver
+  }
+
+  fun mouseDragged(button: Int, relativeX: Float): Boolean {
+    if (button != 0 || !focused) {
+      return false
+    }
+
+    if (selectionAnchor == -1) {
+      selectionAnchor = caretIndex
+    }
+
+    caretIndex = calculateCaretIndex(relativeX)
+    updateSelectionRange()
+    return true
+  }
+
+  fun mouseReleased(button: Int): Boolean {
+    if (button != 0) {
+      return false
+    }
+
+    focused = MouseUtils.isHoveringOver(xPos, yPos, width, height)
+    return focused
   }
 
   private fun calculateCaretIndex(relativeX: Float): Int {
     if (text.isEmpty()) {
       return 0
     }
+
     var bestIndex = 0
     var minDiff = Float.MAX_VALUE
+
     for (i in 0..text.length) {
       val prefix = if (textInputType == TextInputComponent.Type.PASSWORD) "*".repeat(i) else text.substring(0, i)
       val w = getTextWidth(prefix)
       val diff = kotlin.math.abs(w - relativeX)
+
       if (diff < minDiff) {
         minDiff = diff
         bestIndex = i
       }
     }
+
     return bestIndex
   }
 
   fun charTyped(input: CharacterEvent): Boolean {
     if (focused && input.isAllowedChatCharacter) {
       val str = input.codepointAsString()
+
       if (hasSelection) {
         text = text.substring(0, selectionStart) + str + text.substring(selectionEnd)
         caretIndex = selectionStart + str.length
@@ -94,8 +139,10 @@ class TextInputHelper(
         text = text.substring(0, caretIndex) + str + text.substring(caretIndex)
         caretIndex += str.length
       }
+
       return true
     }
+
     return false
   }
 
@@ -103,44 +150,75 @@ class TextInputHelper(
     if (!focused) {
       return false
     }
+
     var handled = false
     val key = input.key()
-    if (key == GLFW.GLFW_KEY_A && (input.modifiers() and GLFW.GLFW_MOD_CONTROL) != 0) {
-      selectionStart = 0
-      selectionEnd = text.length
-      caretIndex = text.length
-      handled = true
+    val isShiftDown = (input.modifiers() and GLFW.GLFW_MOD_SHIFT) != 0
+    val isCtrlDown = (input.modifiers() and GLFW.GLFW_MOD_CONTROL) != 0
+
+    when (key) {
+      GLFW.GLFW_KEY_A -> {
+        if (isCtrlDown) {
+          selectionAnchor = 0
+          selectionStart = 0
+          selectionEnd = text.length
+          caretIndex = text.length
+          handled = true
+        }
+      }
+
+      GLFW.GLFW_KEY_BACKSPACE -> {
+        if (hasSelection) {
+          text = text.substring(0, selectionStart) + text.substring(selectionEnd)
+          caretIndex = selectionStart
+          clearSelection()
+        } else if (caretIndex > 0) {
+          text = text.substring(0, caretIndex - 1) + text.substring(caretIndex)
+          caretIndex--
+        }
+
+        handled = true
+      }
+
+      GLFW.GLFW_KEY_LEFT -> {
+        if (isShiftDown) {
+          if (selectionAnchor == -1) selectionAnchor = caretIndex
+          if (caretIndex > 0) {
+            caretIndex--
+            updateSelectionRange()
+          }
+        } else {
+          if (hasSelection) {
+            caretIndex = selectionStart
+            clearSelection()
+          } else if (caretIndex > 0) {
+            caretIndex--
+          }
+        }
+
+        handled = true
+      }
+
+      GLFW.GLFW_KEY_RIGHT -> {
+        if (isShiftDown) {
+          if (selectionAnchor == -1) selectionAnchor = caretIndex
+          if (caretIndex < text.length) {
+            caretIndex++
+            updateSelectionRange()
+          }
+        } else {
+          if (hasSelection) {
+            caretIndex = selectionEnd
+            clearSelection()
+          } else if (caretIndex < text.length) {
+            caretIndex++
+          }
+        }
+
+        handled = true
+      }
     }
-    if (key == GLFW.GLFW_KEY_BACKSPACE) {
-      if (hasSelection) {
-        text = text.substring(0, selectionStart) + text.substring(selectionEnd)
-        caretIndex = selectionStart
-        clearSelection()
-        handled = true
-      } else if (caretIndex > 0) {
-        text = text.substring(0, caretIndex - 1) + text.substring(caretIndex)
-        caretIndex--
-        handled = true
-      }
-    } else if (key == GLFW.GLFW_KEY_LEFT) {
-      if (hasSelection) {
-        caretIndex = selectionStart
-        clearSelection()
-        handled = true
-      } else if (caretIndex > 0) {
-        caretIndex--
-        handled = true
-      }
-    } else if (key == GLFW.GLFW_KEY_RIGHT) {
-      if (hasSelection) {
-        caretIndex = selectionEnd
-        clearSelection()
-        handled = true
-      } else if (caretIndex < text.length) {
-        caretIndex++
-        handled = true
-      }
-    }
+
     return handled
   }
 

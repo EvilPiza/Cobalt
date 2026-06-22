@@ -1,8 +1,8 @@
 package org.cobalt.ui.component
 
-import java.awt.Color
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
+import org.cobalt.dsl.updateAlpha
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.helper.TextInputHelper
 import org.cobalt.util.MouseUtils
@@ -89,12 +89,7 @@ class TextInputComponent(
     val selStartX = textX + Skia.textWidth(Skia.regularFont, selStartPrefix, fontSize)
     val selEndX = textX + Skia.textWidth(Skia.regularFont, selEndPrefix, fontSize)
     val selWidth = selEndX - selStartX
-    val selectionColor = Color(
-      theme.textPrimary.red,
-      theme.textPrimary.green,
-      theme.textPrimary.blue,
-      64
-    )
+    val selectionColor = theme.textPrimary.updateAlpha(40)
 
     Skia.rect(
       selStartX, textY,
@@ -107,6 +102,7 @@ class TextInputComponent(
     if (inputHandler.usePlaceholder) {
       return placeholder
     }
+
     return if (type == Type.PASSWORD) {
       "*".repeat(inputHandler.text.length)
     } else {
@@ -120,11 +116,13 @@ class TextInputComponent(
     } else {
       inputHandler.text.substring(0, inputHandler.caretIndex)
     }
+
     return Skia.textWidth(Skia.regularFont, caretPrefix, fontSize)
   }
 
   private fun updateScrollOffset(currentText: String, maxTextWidth: Float, caretOffset: Float) {
     val textWidth = Skia.textWidth(Skia.regularFont, currentText, fontSize)
+
     if (textWidth <= maxTextWidth) {
       xOffset = 0f
     } else {
@@ -138,12 +136,16 @@ class TextInputComponent(
 
   override fun mouseClicked(button: Int): Boolean {
     val relativeX = MouseUtils.mouseX - (xPos + TEXT_PADDING - xOffset)
-    return inputHandler.handleMouse(button, relativeX) || super.mouseClicked(button)
+    return inputHandler.mouseClicked(button, relativeX) || super.mouseClicked(button)
   }
 
   override fun mouseReleased(button: Int): Boolean {
+    return inputHandler.mouseReleased(button) || super.mouseReleased(button)
+  }
+
+  override fun mouseDragged(button: Int, offsetX: Double, offsetY: Double): Boolean {
     val relativeX = MouseUtils.mouseX - (xPos + TEXT_PADDING - xOffset)
-    return inputHandler.handleMouse(button, relativeX) || super.mouseReleased(button)
+    return inputHandler.mouseDragged(button, relativeX) || super.mouseDragged(button, offsetX, offsetY)
   }
 
   override fun charTyped(input: CharacterEvent): Boolean {
@@ -164,4 +166,3 @@ class TextInputComponent(
   }
 
 }
-
