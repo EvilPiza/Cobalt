@@ -2,9 +2,10 @@ package org.cobalt.ui.screen
 
 import net.minecraft.client.input.MouseButtonEvent
 import org.cobalt.event.EventBus
+import org.cobalt.event.annotation.SubscribeEvent
+import org.cobalt.event.impl.MouseScrollEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.type.RenderableModule
-import org.cobalt.ui.UIScreen
 import org.cobalt.ui.helper.DragHandler
 import org.cobalt.ui.helper.SnapHelper
 import org.cobalt.ui.theme.Theme
@@ -15,8 +16,13 @@ import org.cobalt.util.WindowUtils.scaleY
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
 import org.cobalt.util.skia.Skia
+import org.cobalt.ui.UIScreen
 
 internal object HudEditorScreen : UIScreen() {
+
+  init {
+    EventBus.register(this)
+  }
 
   private val modules: List<RenderableModule>
     get() = ModuleManager.modules
@@ -146,5 +152,31 @@ internal object HudEditorScreen : UIScreen() {
   }
 
   private const val SQUARE_SIZE = 10.0f
+  private const val SCALE_STEP = 0.05f
+  private const val MIN_SCALE = 0.75f
+  private const val MAX_SCALE = 2.0f
+
+  @SubscribeEvent
+  fun onMouseScroll(event: MouseScrollEvent) {
+//    if (dragHandler.isActive) {
+//      return
+//    }
+
+    val module = modules.firstOrNull { candidate ->
+      val renderX = candidate.xPos * scaleX
+      val renderY = candidate.yPos * scaleY
+      val resScale = scaleY
+      val scaledWidth = candidate.width * candidate.scale * resScale
+      val scaledHeight = candidate.height * candidate.scale * resScale
+
+      MouseUtils.isHoveringOver(renderX, renderY, scaledWidth, scaledHeight)
+    } ?: return
+
+    selectedModule = module
+
+    module.scale = (module.scale + (event.verticalAmount.toFloat() * SCALE_STEP))
+      .coerceIn(MIN_SCALE, MAX_SCALE)
+    module.saveConfig()
+  }
 
 }

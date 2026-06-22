@@ -4,6 +4,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.MouseEvent;
+import org.cobalt.event.impl.MouseScrollEvent;
 import org.cobalt.util.MouseAction;
 import org.cobalt.util.MouseButton;
 import org.cobalt.util.MouseMode;
@@ -38,6 +39,12 @@ public abstract class MouseHandlerMixin {
     if (event.isCancelled()) {
       callbackInfo.cancel();
     }
+  }
+
+  @Inject(method = "onScroll", at = @At("HEAD"))
+  private void onMouseScroll(long handle, double horizontalAmount, double verticalAmount, CallbackInfo callbackInfo) {
+    EventBus.post(new MouseScrollEvent(horizontalAmount, verticalAmount));
+    System.out.println("WHY THE FUCK ISNT IT WORKINGG PLEASE HELP ME");
   }
 
   @Unique
