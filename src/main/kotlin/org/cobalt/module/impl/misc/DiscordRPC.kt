@@ -24,7 +24,6 @@ internal object DiscordRPC : Module(
   private var client: IPCClient? = null
   private var rpc = RichPresence.Builder()
   private var lastUpdate = 0L
-  private var doNotTryAgain = false
 
   private const val APPLICATION_ID = 1441864552936636519L
 
@@ -38,10 +37,6 @@ internal object DiscordRPC : Module(
     rpc.setStartTimestamp(System.currentTimeMillis())
 
     EventBus.register(this)
-  }
-
-  override fun onEnable() {
-    doNotTryAgain = false
   }
 
   @SubscribeEvent
@@ -68,7 +63,7 @@ internal object DiscordRPC : Module(
   }
 
   private fun connectIpc() {
-    if (doNotTryAgain || client?.status == PipeStatus.CONNECTED) {
+    if (client?.status == PipeStatus.CONNECTED) {
       return
     }
 
@@ -77,7 +72,6 @@ internal object DiscordRPC : Module(
       client?.connect()
     }.onFailure {
       logger.error("Failed to connect to Discord RPC.", it)
-      doNotTryAgain = true
     }
   }
 

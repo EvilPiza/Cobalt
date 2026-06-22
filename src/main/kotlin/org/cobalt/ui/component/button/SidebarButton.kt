@@ -23,7 +23,7 @@ internal class SidebarButton(val category: ModuleCategory) : UIComponent(
 
   private var wasSelected = false
   private val selected: Boolean
-    get() = ModulesPage.selectedCategory == category
+    get() = ConfigScreen.selectedCategory == category && ConfigScreen.currentPage == ModulesPage
 
   override fun renderComponent() {
     val isSelectedNow = selected
@@ -87,7 +87,7 @@ internal class SidebarButton(val category: ModuleCategory) : UIComponent(
   override fun mouseReleased(button: Int): Boolean {
     if (MouseUtils.isHoveringOver(xPos, yPos, width, height) && button == 0) {
       ConfigScreen.currentPage = ModulesPage
-      ModulesPage.selectedCategory = category
+      ConfigScreen.selectedCategory = category
       return true
     }
 

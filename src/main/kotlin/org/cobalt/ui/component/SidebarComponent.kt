@@ -13,7 +13,7 @@ import org.cobalt.util.skia.helper.SkiaCorner
 
 object SidebarComponent : UIComponent(
   width = 250f,
-  height = 600f
+  height = 800f
 ) {
 
   private val buttons = mutableListOf<SidebarButton>()
@@ -119,15 +119,14 @@ object SidebarComponent : UIComponent(
   private const val TITLE_TEXT = "cobalt"
   private const val TITLE_FONT_SIZE = 28f
   private const val TITLE_PADDING = 50f
-
   private const val BUTTONS_SPACING = 5f
-
   private const val USER_INFO_OUTER_PADDING = 15f
   private const val USER_INFO_INNER_PADDING = 12f
   private const val USER_INFO_CORNER_RADIUS = 5f
   private const val USER_INFO_TEXT_SIZE = 12.5f
   private const val USER_INFO_HEIGHT = 55f
   private const val PLAYER_FACE_SIDE_LENGTH = USER_INFO_HEIGHT - (USER_INFO_INNER_PADDING * 2)
+
   private val USER_INFO_WIDTH = width - (USER_INFO_OUTER_PADDING * 2)
 
 }

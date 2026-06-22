@@ -61,7 +61,7 @@ class IconButton(
     )
   }
 
-  override fun mouseClicked(button: Int): Boolean {
+  override fun mouseReleased(button: Int): Boolean {
     if (!MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
       return false
     }

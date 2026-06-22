@@ -1,10 +1,11 @@
 package org.cobalt.ui.page.impl
 
-import org.cobalt.module.ModuleCategory
 import org.cobalt.module.ModuleManager
+import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.component.ModuleComponent
 import org.cobalt.ui.helper.ScrollHelper
 import org.cobalt.ui.page.Page
+import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia
 
@@ -15,25 +16,17 @@ internal object ModulesPage : Page() {
 
   private val moduleComponents = mutableListOf<ModuleComponent>()
   private val scrollHelper = ScrollHelper()
+  private val openingOffset = EaseOutAnimation(200L)
 
-  var selectedCategory: ModuleCategory = ModuleCategory.COMBAT
-    set(value) {
-      if (field == value) {
-        return
-      }
-
-      reloadModules(value)
-      field = value
-    }
-
-  private fun reloadModules(category: ModuleCategory) {
+  override fun initializePage() {
+    openingOffset.start()
     moduleComponents.clear()
     scrollHelper.reset()
 
     removeAllChildren()
 
     ModuleManager.modules
-      .filter { module -> module.category == category }
+      .filter { module -> module.category == ConfigScreen.selectedCategory }
       .forEach { module ->
         val component = ModuleComponent(module)
 
@@ -45,10 +38,12 @@ internal object ModulesPage : Page() {
   override fun renderComponent() {
     super.renderComponent()
 
+    val pageOffset = openingOffset.get(-30f, 0f)
+
     val leftX  = xPos + PADDING
-    var leftY  = yPos + PADDING - scrollHelper.scrollOffset
+    var leftY  = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
     val rightX = xPos + PADDING + ModuleComponent.WIDTH + COLUMN_GAP
-    var rightY = yPos + PADDING - scrollHelper.scrollOffset
+    var rightY = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
 
     Skia.pushScissor(xPos, yPos, width, height)
 
@@ -69,11 +64,18 @@ internal object ModulesPage : Page() {
     }
 
     Skia.popScissor()
+
+    val contentHeight = maxOf(
+      leftY + scrollHelper.scrollOffset,
+      rightY + scrollHelper.scrollOffset
+    ) - yPos
+
+    scrollHelper.updateMaxScroll(contentHeight, height)
   }
 
 
   override fun mouseScrolled(horizontalAmount: Double, verticalAmount: Double): Boolean {
-    if (!MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
+    if (MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
       scrollHelper.scroll(verticalAmount)
       return true
     }

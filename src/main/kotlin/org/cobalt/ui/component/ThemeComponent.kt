@@ -72,14 +72,12 @@ class ThemeComponent(val newTheme: Theme) : UIComponent(
   }
 
   companion object {
-    const val WIDTH = 206f
-    const val HEIGHT = 100f
-
+    val WIDTH = (TopbarComponent.width - 80) / 3f
+    const val HEIGHT = 150f
     private const val INNER_PADDING = 15f
     private const val THEME_NAME_FONT_SIZE = 18f
     private const val TEXT_PADDING = 5f
     private const val STATUS_FONT_SIZE = 12f
-
     private const val SWATCH_WIDTH = 40f
     private const val SWATCH_HEIGHT = 6f
     private const val SWATCH_PADDING = 10f

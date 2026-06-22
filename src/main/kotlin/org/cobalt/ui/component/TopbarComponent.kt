@@ -3,7 +3,6 @@ package org.cobalt.ui.component
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.component.button.IconButton
-import org.cobalt.ui.page.Page
 import org.cobalt.ui.page.impl.ScriptsPage
 import org.cobalt.ui.page.impl.ThemesPage
 import org.cobalt.ui.screen.ConfigScreen
@@ -15,7 +14,7 @@ import org.cobalt.util.skia.helper.SkiaCorner
 object TopbarComponent : UIComponent() {
 
   override val width: Float
-    get() = 700f
+    get() = 1000f
 
   override val height: Float
     get() = 70f

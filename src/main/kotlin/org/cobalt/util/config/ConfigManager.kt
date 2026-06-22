@@ -12,9 +12,8 @@ import org.cobalt.Cobalt.configDir
 import org.cobalt.module.Module
 import org.cobalt.module.type.RenderableModule
 import org.cobalt.module.type.Script
-import org.cobalt.util.setting.SettingsContainer
-import org.cobalt.util.setting.impl.ButtonSetting
-import org.cobalt.util.setting.impl.InfoSetting
+import org.cobalt.ui.component.setting.impl.ButtonSetting
+import org.cobalt.ui.component.setting.impl.InfoSetting
 import org.slf4j.LoggerFactory
 
 object ConfigManager {
@@ -24,17 +23,18 @@ object ConfigManager {
     .setPrettyPrinting()
     .create()
 
-  private fun getConfigFile(container: SettingsContainer): Path =
+  private fun getConfigFile(container: SettingContainer): Path =
     configDir
       .resolve(container.directoryPath)
       .apply(Files::createDirectories)
       .resolve("${container.identifier}.json")
 
   @JvmStatic
-  fun loadConfig(container: SettingsContainer) {
+  fun loadConfig(container: SettingContainer) {
     val configFile = getConfigFile(container)
 
     if (!configFile.exists()) {
+      saveConfig(container)
       return
     }
 
@@ -80,7 +80,7 @@ object ConfigManager {
   }
 
   @JvmStatic
-  fun saveConfig(container: SettingsContainer) {
+  fun saveConfig(container: SettingContainer) {
     val settings = container.getSettings()
       .filterNot { it is InfoSetting || it is ButtonSetting }
 

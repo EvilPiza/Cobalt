@@ -1,22 +1,25 @@
-package org.cobalt.util.setting.impl
+package org.cobalt.ui.component.setting.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import org.cobalt.util.setting.Setting
+import org.cobalt.ui.component.setting.Setting
 
-class ModeSetting(
+class SliderSetting(
   name: String,
   description: String,
   defaultValue: Int,
-  val options: Array<String>,
+  val min: Int,
+  val max: Int,
 ) : Setting<Int>(name, description, defaultValue) {
 
   override fun read(element: JsonElement) {
-    this.value = element.asInt
+    this.value = element.asInt.coerceIn(min, max)
   }
 
   override fun write(): JsonElement {
     return JsonPrimitive(value)
   }
+
+  override fun renderSetting() = Unit
 
 }

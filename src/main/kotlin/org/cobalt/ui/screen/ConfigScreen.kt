@@ -1,8 +1,12 @@
 package org.cobalt.ui.screen
 
 import net.minecraft.client.gui.GuiGraphicsExtractor
+import org.cobalt.module.Module
+import org.cobalt.module.ModuleCategory
+import org.cobalt.module.ModuleManager
 import org.cobalt.ui.UIScreen
 import org.cobalt.ui.animation.BounceAnimation
+import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.component.TopbarComponent
 import org.cobalt.ui.page.Page
@@ -11,11 +15,14 @@ import org.cobalt.ui.theme.Theme
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
+import org.cobalt.util.helper.Multithreading
 import org.cobalt.util.skia.Skia
 
 internal object ConfigScreen : UIScreen() {
 
   private val openAnim = BounceAnimation(400L)
+  private val closeAnim = EaseOutAnimation(100L)
+  private var closing = false
 
   private val theme: Theme
     get() = ThemeManager.activeTheme
@@ -26,9 +33,22 @@ internal object ConfigScreen : UIScreen() {
         return
       }
 
+      value.initializePage()
+
       components.remove(field)
       components.add(value)
+
       field = value
+    }
+
+  var selectedCategory: ModuleCategory = ModuleCategory.COMBAT
+    set(value) {
+      if (field == value) {
+        return
+      }
+
+      field = value
+      currentPage.initializePage()
     }
 
   init {
@@ -38,7 +58,9 @@ internal object ConfigScreen : UIScreen() {
   }
 
   override fun added() {
+    closing = false
     openAnim.start()
+    currentPage.initializePage()
   }
 
   override fun renderSkia() {
@@ -47,9 +69,13 @@ internal object ConfigScreen : UIScreen() {
 
     Skia.push()
 
-    if (openAnim.isAnimating()) {
-      val scale = openAnim.get(0f, 1f)
+    val scale = when {
+      closing -> closeAnim.get(1f, 0f)
+      openAnim.isAnimating() -> openAnim.get(0f, 1f)
+      else -> 1f
+    }
 
+    if (scale != 1f) {
       Skia.translate(centerX, centerY)
       Skia.scale(scale, scale)
       Skia.translate(-centerX, -centerY)
@@ -95,6 +121,28 @@ internal object ConfigScreen : UIScreen() {
     )
 
     Skia.pop()
+
+    if (closing && !closeAnim.isAnimating()) {
+      closing = false
+      super.onClose()
+    }
+  }
+
+  fun closeScreen() {
+    if (closing) {
+      return
+    }
+
+    Multithreading.runAsync {
+      ModuleManager.modules.forEach(Module::saveConfig)
+    }
+
+    closing = true
+    closeAnim.start()
+  }
+
+  override fun onClose() {
+    closeScreen()
   }
 
   override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit

@@ -1,8 +1,8 @@
-package org.cobalt.util.setting.impl
+package org.cobalt.ui.component.setting.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import org.cobalt.util.setting.Setting
+import org.cobalt.ui.component.setting.Setting
 
 class ButtonSetting(
   name: String,
@@ -12,5 +12,7 @@ class ButtonSetting(
 
   override fun read(element: JsonElement) = Unit
   override fun write(): JsonElement = JsonPrimitive("")
+
+  override fun renderSetting() = Unit
 
 }

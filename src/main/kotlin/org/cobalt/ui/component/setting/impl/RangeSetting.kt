@@ -1,9 +1,9 @@
-package org.cobalt.util.setting.impl
+package org.cobalt.ui.component.setting.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import org.cobalt.util.setting.Setting
+import org.cobalt.ui.component.setting.Setting
 
 class RangeSetting(
   name: String,
@@ -38,5 +38,7 @@ class RangeSetting(
       maxOf(clampedStart, clampedEnd)
     )
   }
+
+  override fun renderSetting() = Unit
 
 }

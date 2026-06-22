@@ -104,6 +104,13 @@ object Skia {
   }
 
   @JvmStatic
+  fun circle(x: Float, y: Float, radius: Float, color: Color) {
+    paint(color).use {
+      canvas().drawCircle(x, y, radius, it)
+    }
+  }
+
+  @JvmStatic
   fun rect(x: Float, y: Float, width: Float, height: Float, color: Color) {
     paint(color).use {
       canvas().drawRect(Rect.makeXYWH(x, y, width, height), it)
@@ -249,6 +256,8 @@ object Skia {
     val dst = Rect.makeXYWH(x, y, width, height)
 
     Paint().use { paint ->
+      paint.isAntiAlias = true
+
       if (color != null && image.isSvg) {
         paint.colorFilter = ColorFilter.makeBlend(color.rgb, BlendMode.MODULATE)
       }
@@ -271,7 +280,6 @@ object Skia {
       }
     }
   }
-
 
   private fun getImage(image: SkiaImage): Image {
     return imageCache[image]?.image ?: throw IllegalStateException("Image (${image.location}) doesn't exist")

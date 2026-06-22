@@ -5,7 +5,7 @@ import java.awt.Color
 import java.nio.file.Files
 import kotlin.io.path.notExists
 import org.cobalt.Cobalt.configDir
-import org.cobalt.util.config.Config
+import org.cobalt.util.config.BasicConfig
 
 object ThemeManager {
 
@@ -19,7 +19,7 @@ object ThemeManager {
     "/assets/cobalt/themes/arcticFrost.json",
   )
 
-  private val settingsConfig = Config(
+  private val settingsConfig = BasicConfig(
     configDir.resolve("settings.json").toString(),
     Settings::class.java
   )

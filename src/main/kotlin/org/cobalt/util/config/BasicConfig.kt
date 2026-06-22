@@ -3,7 +3,7 @@ package org.cobalt.util.config
 import com.google.gson.GsonBuilder
 import java.io.File
 
-class Config<T>(private val path: String, private val clazz: Class<T>) {
+class BasicConfig<T>(path: String, private val clazz: Class<T>) {
 
   private val file = File(path)
 
@@ -21,11 +21,9 @@ class Config<T>(private val path: String, private val clazz: Class<T>) {
   }
 
   companion object {
-
     private val gson = GsonBuilder()
       .setPrettyPrinting()
       .create()
-
   }
 
 }

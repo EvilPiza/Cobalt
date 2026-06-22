@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt
 import org.cobalt.util.helper.CustomRenderTypes
 
-object RenderUtils {
+object WorldRenderUtils {
 
   @JvmStatic
   fun drawBlockPos(

@@ -1,6 +1,7 @@
 package org.cobalt.ui.page.impl
 
 import kotlin.math.ceil
+import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.component.ThemeComponent
 import org.cobalt.ui.component.button.IconButton
 import org.cobalt.ui.helper.ScrollHelper
@@ -13,6 +14,7 @@ internal object ThemesPage : Page() {
 
   private val themeComponents = mutableListOf<ThemeComponent>()
   private val scrollHelper = ScrollHelper()
+  private val openingOffset = EaseOutAnimation(200L)
 
   override val title: String
     get() = "Themes"
@@ -20,14 +22,15 @@ internal object ThemesPage : Page() {
   val reloadButton = IconButton("/assets/cobalt/ui/reload.svg") {
     scrollHelper.reset()
     ThemeManager.reloadThemes()
-    reloadComponents()
+    initializePage()
   }
 
   init {
-    reloadComponents()
+    initializePage()
   }
 
-  private fun reloadComponents() {
+  override fun initializePage() {
+    openingOffset.start()
     themeComponents.clear()
     scrollHelper.reset()
 
@@ -45,8 +48,10 @@ internal object ThemesPage : Page() {
   override fun renderComponent() {
     super.renderComponent()
 
+    val pageOffset = openingOffset.get(-30f, 0f)
+
     val rows = ceil(themeComponents.size.toDouble() / COLUMNS).toFloat()
-    val contentHeight = PADDING * 2 + rows * ThemeComponent.HEIGHT + (rows - 1) * SPACING
+    val contentHeight = pageOffset + PADDING * 2 + rows * ThemeComponent.HEIGHT + (rows - 1) * SPACING
 
     scrollHelper.updateMaxScroll(contentHeight, height)
     Skia.pushScissor(xPos, yPos, width, height)
@@ -56,7 +61,7 @@ internal object ThemesPage : Page() {
       val row = index / COLUMNS
 
       val x = xPos + PADDING + col * (ThemeComponent.WIDTH + SPACING)
-      val y = yPos + PADDING + row * (ThemeComponent.HEIGHT + SPACING) - scrollHelper.scrollOffset
+      val y = yPos + PADDING + pageOffset + row * (ThemeComponent.HEIGHT + SPACING) - scrollHelper.scrollOffset
 
       component
         .updateBounds(x, y)

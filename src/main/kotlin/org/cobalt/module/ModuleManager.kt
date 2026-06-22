@@ -7,6 +7,8 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.HudEvent
+import org.cobalt.module.impl.combat.TestModule
+import org.cobalt.module.impl.combat.TestScript
 import org.cobalt.module.impl.misc.AutoHarp
 import org.cobalt.module.impl.misc.AutoSprint
 import org.cobalt.module.impl.misc.DiscordRPC
@@ -32,6 +34,9 @@ object ModuleManager {
 
   internal fun registerModules() {
     val builtIn = arrayOf(
+      TestScript,
+      TestModule,
+
       PerformanceHUD,
       AutoSprint,
       DiscordRPC,
@@ -79,11 +84,10 @@ object ModuleManager {
       return
     }
 
-    currentScript?.startScript().also {
+    currentScript?.stopScript().also {
       currentScript = null
     }
   }
-
 
   fun stopAllScripts() {
     modules

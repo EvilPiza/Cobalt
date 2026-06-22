@@ -1,8 +1,8 @@
-package org.cobalt.util.setting
+package org.cobalt.util.config
 
-import org.cobalt.util.config.ConfigManager
+import org.cobalt.ui.component.setting.Setting
 
-interface SettingsContainer {
+interface SettingContainer {
 
   val identifier: String
   val directoryPath: String

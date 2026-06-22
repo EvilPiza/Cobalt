@@ -1,9 +1,9 @@
-package org.cobalt.util.setting.impl
+package org.cobalt.ui.component.setting.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
-import org.cobalt.util.setting.Setting
+import org.cobalt.ui.component.setting.Setting
 
 class KeyBindSetting(
   name: String,
@@ -30,5 +30,7 @@ class KeyBindSetting(
   override fun write(): JsonElement {
     return JsonPrimitive(value.name)
   }
+
+  override fun renderSetting() = Unit
 
 }

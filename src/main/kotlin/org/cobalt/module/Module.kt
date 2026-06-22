@@ -1,17 +1,14 @@
 package org.cobalt.module
 
-import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import org.cobalt.ui.theme.Theme
-import org.cobalt.ui.theme.ThemeManager
-import org.cobalt.util.ChatUtils
-import org.cobalt.util.setting.Setting
-import org.cobalt.util.setting.SettingsContainer
+import org.cobalt.ui.component.setting.Setting
+import org.cobalt.util.config.SettingContainer
 
 abstract class Module(
   val name: String,
   val category: ModuleCategory,
-) : SettingsContainer {
+  startValue: Boolean = false,
+) : SettingContainer {
 
   protected val minecraft
     get() = Minecraft.getInstance()
@@ -20,7 +17,7 @@ abstract class Module(
   override val identifier: String = name.replace(" ", "")
   override val directoryPath: String = "modules"
 
-  var enabled: Boolean = true
+  var enabled: Boolean = startValue
     set(value) {
       if (field == value) {
         return
@@ -45,6 +42,22 @@ abstract class Module(
 
   override fun getSettings(): List<Setting<*>> {
     return settingsList
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
+      return true
+    }
+
+    if (other !is Module) {
+      return false
+    }
+
+    return this.name.replace(" ", "").equals(other.name.replace(" ", ""), ignoreCase = true)
+  }
+
+  override fun hashCode(): Int {
+    return name.replace(" ", "").lowercase().hashCode()
   }
 
 }

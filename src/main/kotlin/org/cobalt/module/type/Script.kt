@@ -8,7 +8,11 @@ import org.cobalt.util.ChatUtils
 abstract class Script(
   name: String,
   category: ModuleCategory,
-) : Module(name, category) {
+  val backgroundResourcePath: String = ""
+) : Module(
+  name, category,
+  startValue = false
+) {
 
   override val identifier: String = name.replace(" ", "")
   override val directoryPath: String = "scripts"

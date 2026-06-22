@@ -9,26 +9,30 @@ class BounceAnimation(duration: Long) : Animation<Float>(duration) {
       return if (reverse) start else end
     }
 
-    return if (reverse) end + (start - end) * ease() else start + (end - start) * ease()
+    val t = ease()
+
+    return if (reverse) {
+      end + (start - end) * t
+    } else {
+      start + (end - start) * t
+    }
   }
 
   private fun ease(): Float {
     val x = getPercent() / 100f
 
     return when {
-      x < 0.3f -> {
-        val t = x / 0.3f
-        val easeOut = 1f - (1f - t).pow(3f)
-        easeOut * 1.05f
+      x < 0.34f -> {
+        val t = x / 0.34f
+        val easeOut = 1f - (1f - t).pow(2.3f)
+        easeOut * 1.12f
       }
 
       else -> {
-        val t = (x - 0.3f) / 0.7f
-        val easeOut = 1f - (1f - t).pow(2f)
-        1.05f - (0.05f * easeOut)
+        val t = (x - 0.34f) / 0.66f
+        val easeOut = 1f - (1f - t).pow(2.0f)
+        1.12f - (0.12f * easeOut)
       }
     }
   }
-
 }
-

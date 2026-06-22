@@ -21,7 +21,4 @@ class ScrollHelper(private val scrollSpeed: Float = 10f) {
     scrollOffset = 0f
   }
 
-  val canScroll: Boolean
-    get() = maxScroll > 0f
-
 }

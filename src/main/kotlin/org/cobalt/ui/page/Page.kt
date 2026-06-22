@@ -26,6 +26,9 @@ internal abstract class Page : UIComponent() {
     )
   }
 
+  open fun initializePage() = Unit
+  open fun onSearchQueryChanged(query: String) = Unit
+
   companion object {
     protected const val CORNER_RADIUS = 10f
   }
