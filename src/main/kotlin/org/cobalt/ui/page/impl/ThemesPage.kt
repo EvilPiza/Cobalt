@@ -25,17 +25,14 @@ internal object ThemesPage : Page() {
     initializePage()
   }
 
-  init {
-    initializePage()
-  }
-
   override fun initializePage() {
-    openingOffset.start()
     themeComponents.clear()
     scrollHelper.reset()
 
     removeAllChildren()
     addChild(reloadButton)
+
+    openingOffset.start()
 
     ThemeManager.themes.values.forEach { theme ->
       val component = ThemeComponent(theme)
