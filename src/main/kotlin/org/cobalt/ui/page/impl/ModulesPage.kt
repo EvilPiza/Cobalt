@@ -20,13 +20,31 @@ object ModulesPage : Page() {
 
   override fun initializePage() {
     openingOffset.start()
+    resetComponents()
+  }
+
+  override fun onSearchQueryChanged(query: String) {
+    resetComponents(query)
+  }
+
+  private fun resetComponents(query: String = "") {
     moduleComponents.clear()
     scrollHelper.reset()
 
     removeAllChildren()
 
     ModuleManager.modules
-      .filter { module -> module.category == ConfigScreen.selectedCategory }
+      .filter { module ->
+        val matchesCategory = module.category == ConfigScreen.selectedCategory
+        val matchesQuery = query.isBlank() ||
+          module.name.contains(query, ignoreCase = true) ||
+          module.getSettings().any { setting ->
+            setting.name.contains(query, ignoreCase = true) ||
+              setting.description.contains(query, ignoreCase = true)
+          }
+
+        matchesCategory && matchesQuery
+      }
       .forEach { module ->
         val component = ModuleComponent(module)
 

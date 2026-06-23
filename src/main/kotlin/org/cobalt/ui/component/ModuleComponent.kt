@@ -16,17 +16,24 @@ class ModuleComponent(
   private val settings = module.getSettings()
   private val switch: UIComponent? = if (module is Script) null else SwitchComponent(module)
   private val expandAnimation = EaseOutAnimation(150L)
+  private var lastEnabledState = module.enabled
 
   private val expandedSettingsHeight: Float
     get() = settings.fold(0f) { acc, setting -> acc + setting.height } +
       if (settings.isNotEmpty()) 11f else 0f
 
   private val expandProgress: Float
-    get() = expandAnimation.get(
-      if (module.enabled) 0f else 1f,
-      if (module.enabled) 1f else 0f,
-      false
-    )
+    get() {
+      if (module is Script) {
+        return 1f
+      }
+
+      return expandAnimation.get(
+        if (module.enabled) 0f else 1f,
+        if (module.enabled) 1f else 0f,
+        false
+      )
+    }
 
   override val height: Float
     get() = BASE_HEIGHT + expandedSettingsHeight * expandProgress
@@ -88,8 +95,9 @@ class ModuleComponent(
   override fun mouseReleased(button: Int): Boolean {
     val consumed = super.mouseReleased(button)
 
-    if (consumed) {
+    if (module !is Script && consumed && lastEnabledState != module.enabled) {
       expandAnimation.start()
+      lastEnabledState = module.enabled
     }
 
     return consumed

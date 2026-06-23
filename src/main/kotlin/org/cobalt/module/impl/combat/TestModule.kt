@@ -18,19 +18,19 @@ object TestModule : Module(
 
   var testText by TextSetting(
     name = "Test Text Setting",
-    description = "Your new nickname",
-    defaultValue = "CobaltUser"
+    description = "Test Text Setting Description",
+    defaultValue = "Cobalt"
   )
 
   var testCheckbox by CheckboxSetting(
     name = "Test Checkbox Setting",
-    description = "Enable a feature",
+    description = "Test Checkbox Setting Description",
     defaultValue = true
   )
 
   var testSlider by SliderSetting(
     name = "Test Slider Setting",
-    description = "Movement speed",
+    description = "Test Slider Setting Description",
     defaultValue = 5,
     min = 1,
     max = 10
@@ -38,7 +38,7 @@ object TestModule : Module(
 
   var testRange by RangeSetting(
     name = "Test Range Setting",
-    description = "Attack range",
+    description = "Test Range Setting Description",
     default = Pair(1, 3),
     min = 0,
     max = 10
@@ -46,21 +46,24 @@ object TestModule : Module(
 
   var testMode by ModeSetting(
     name = "Test Mode Setting",
-    description = "Operating mode",
+    description = "Test Mode Setting Description",
     defaultValue = 0,
-    options = arrayOf("Aggressive", "Passive", "Balanced")
+    options = arrayOf("Mode 1", "Mode 2", "Mode 3")
   )
 
   var testKeyBind by KeyBindSetting(
     name = "Test KeyBind Setting",
-    description = "Activate module",
+    description = "Test KeyBind Setting Description",
     defaultKeyCode = 32
   )
 
   var testButton by ButtonSetting(
     name = "Test Button Setting",
-    description = "Reset settings to defaults",
-    buttonLabel = "Reset"
+    description = "Test Button Setting Description",
+    buttonLabel = "Reset",
+    onClick = {
+      println("Test Button Clicked")
+    }
   )
 
   val testInfo by InfoSetting(

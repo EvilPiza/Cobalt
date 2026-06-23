@@ -1,5 +1,6 @@
 package org.cobalt.ui.component
 
+import java.util.function.Consumer
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import org.cobalt.dsl.updateAlpha
@@ -11,15 +12,17 @@ import org.cobalt.util.skia.Skia
 class TextInputComponent(
   width: Float,
   height: Float,
+  onChange: Consumer<String>,
   val placeholder: String,
   val fontSize: Float,
   val type: Type = Type.DEFAULT,
+  startText: String = "",
 ) : UIComponent(
   width = width,
   height = height
 ) {
 
-  private val inputHandler = TextInputHelper(fontSize, type)
+  private val inputHandler = TextInputHelper(fontSize, type, onChange, startText)
   private var xOffset: Float = 0f
 
   override fun renderComponent() {

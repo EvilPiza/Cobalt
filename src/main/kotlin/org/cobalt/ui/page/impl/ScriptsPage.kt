@@ -14,12 +14,20 @@ object ScriptsPage : Page() {
   override val title: String
     get() = "Scripts"
 
-  private val scriptComponents = mutableListOf<ScriptComponent>()
+  private val scriptComponents = mutableListOf<Pair<ScriptComponent, String>>()
   private val scrollHelper = ScrollHelper()
   private val openingOffset = EaseOutAnimation(200L)
 
   override fun initializePage() {
     openingOffset.start()
+    resetComponents()
+  }
+
+  override fun onSearchQueryChanged(query: String) {
+    resetComponents(query)
+  }
+
+  private fun resetComponents(query: String = "") {
     scriptComponents.clear()
     scrollHelper.reset()
 
@@ -27,13 +35,21 @@ object ScriptsPage : Page() {
 
     ModuleManager.modules
       .filterIsInstance<Script>()
-      .forEach { script ->
-        val component = ScriptComponent(script)
-
-        println(script.name)
-
-        scriptComponents.add(component)
-        addChild(component)
+      .filter { script ->
+        query.isBlank() ||
+          script.name.contains(query, ignoreCase = true) ||
+          script.getSettings().any { setting ->
+            setting.name.contains(query, ignoreCase = true) ||
+              setting.description.contains(query, ignoreCase = true)
+          }
+      }
+      .groupBy { it.category }
+      .forEach { (category, scripts) ->
+        scripts.forEach { script ->
+          val component = ScriptComponent(script)
+          scriptComponents.add(Pair(component, category.name))
+          addChild(component)
+        }
       }
   }
 
@@ -41,25 +57,43 @@ object ScriptsPage : Page() {
     super.renderComponent()
 
     val pageOffset = openingOffset.get(-30f, 0f)
-    val baseY = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
-    val columnX = floatArrayOf(xPos + PADDING, xPos + PADDING + ScriptComponent.WIDTH + COLUMN_GAP)
-    val columnY = floatArrayOf(baseY, baseY)
+    var currentY = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
 
     Skia.pushScissor(xPos, yPos, width, height)
 
-    scriptComponents.forEachIndexed { index, component ->
-      val col = index % 2
+    scriptComponents
+      .groupBy { (_, category) -> category }
+      .forEach { (category, components) ->
+        Skia.text(
+          Skia.regularFont, category,
+          xPos + PADDING, currentY,
+          CATEGORY_FONT_SIZE, theme.textMuted
+        )
 
-      component
-        .updateBounds(columnX[col], columnY[col])
-        .renderComponent()
+        currentY += CATEGORY_FONT_SIZE + CATEGORY_MARGIN
 
-      columnY[col] += component.height + PADDING
-    }
+        val columnY = floatArrayOf(currentY, currentY)
+        val columnX = floatArrayOf(
+          xPos + PADDING,
+          xPos + PADDING + ScriptComponent.WIDTH + COLUMN_GAP
+        )
+
+        components.forEachIndexed { index, (component, _) ->
+          val col = index % 2
+
+          component
+            .updateBounds(columnX[col], columnY[col])
+            .renderComponent()
+
+          columnY[col] += component.height + PADDING
+        }
+
+        currentY = columnY.max() + GROUP_GAP
+      }
 
     Skia.popScissor()
 
-    val contentHeight = columnY.max() + scrollHelper.scrollOffset - yPos
+    val contentHeight = currentY + scrollHelper.scrollOffset - yPos
     scrollHelper.updateMaxScroll(contentHeight, height)
   }
 
@@ -74,5 +108,8 @@ object ScriptsPage : Page() {
 
   private const val PADDING = 20f
   private const val COLUMN_GAP = 20f
+  private const val GROUP_GAP = 28f
+  private const val CATEGORY_FONT_SIZE = 12f
+  private const val CATEGORY_MARGIN = 20f
 
 }

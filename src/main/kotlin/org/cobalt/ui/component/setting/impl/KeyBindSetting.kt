@@ -3,7 +3,11 @@ package org.cobalt.ui.component.setting.impl
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.input.KeyEvent
 import org.cobalt.ui.component.setting.Setting
+import org.cobalt.util.MouseUtils
+import org.cobalt.util.skia.Skia
+import org.lwjgl.glfw.GLFW
 
 class KeyBindSetting(
   name: String,
@@ -11,16 +15,10 @@ class KeyBindSetting(
   defaultValue: InputConstants.Key,
 ) : Setting<InputConstants.Key>(name, description, defaultValue) {
 
-  val keyName: String
-    get() = value.displayName.string
-
-  val keyCode: Int
-    get() = value.value
-
   constructor(
     name: String,
     description: String,
-    defaultKeyCode: Int
+    defaultKeyCode: Int,
   ) : this(name, description, InputConstants.Type.KEYSYM.getOrCreate(defaultKeyCode))
 
   override fun read(element: JsonElement) {
@@ -31,6 +29,74 @@ class KeyBindSetting(
     return JsonPrimitive(value.name)
   }
 
-  override fun renderSetting() = Unit
+  private var listening = false
+
+  private val displayText: String
+    get() = if (listening) "..." else value.displayName.string
+
+  private val buttonWidth: Float
+    get() = Skia.textWidth(Skia.regularFont, displayText, FONT_SIZE) + 30f
+
+  override fun renderSetting() {
+    val startX = xPos + width - buttonWidth - PADDING
+    val startY = yPos + (height - BUTTON_HEIGHT) / 2
+
+    Skia.roundedRect(
+      startX, startY,
+      buttonWidth, BUTTON_HEIGHT,
+      5f, theme.backgroundPrimary
+    )
+
+    Skia.roundedOutline(
+      startX, startY,
+      buttonWidth, BUTTON_HEIGHT,
+      1f, 5f, theme.border
+    )
+
+    val textWidth = Skia.textWidth(Skia.regularFont, displayText, FONT_SIZE)
+
+    Skia.text(
+      Skia.regularFont, displayText,
+      startX + (buttonWidth - textWidth) / 2,
+      startY + (BUTTON_HEIGHT - FONT_SIZE) / 2,
+      FONT_SIZE, theme.textPrimary
+    )
+  }
+
+  override fun mouseReleased(button: Int): Boolean {
+    val startX = xPos + width - buttonWidth - PADDING
+    val startY = yPos + (height - BUTTON_HEIGHT) / 2
+
+    if (button == 0 && MouseUtils.isHoveringOver(startX, startY, buttonWidth, BUTTON_HEIGHT)) {
+      listening = !listening
+      return true
+    }
+
+    if (listening && button == 0) {
+      listening = false
+      return true
+    }
+
+    return false
+  }
+
+  override fun keyPressed(input: KeyEvent): Boolean {
+    if (!listening) {
+      return false
+    }
+
+    value = when (input.key) {
+      GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_BACKSPACE -> InputConstants.UNKNOWN
+      else -> InputConstants.getKey(input)
+    }
+
+    listening = false
+    return true
+  }
+
+  companion object {
+    private const val BUTTON_HEIGHT = 35f
+    private const val FONT_SIZE = 12f
+  }
 
 }

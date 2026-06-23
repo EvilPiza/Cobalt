@@ -23,7 +23,10 @@ object TopbarComponent : UIComponent() {
     width = SEARCHBAR_WIDTH,
     height = SEARCHBAR_HEIGHT,
     fontSize = 14f,
-    placeholder = "Search"
+    placeholder = "Search",
+    onChange = { query ->
+      ConfigScreen.currentPage.onSearchQueryChanged(query)
+    }
   )
 
   private val actionButtons = listOf(

@@ -1,5 +1,6 @@
 package org.cobalt.ui.helper
 
+import java.util.function.Consumer
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import org.cobalt.ui.component.TextInputComponent
@@ -9,12 +10,20 @@ import org.lwjgl.glfw.GLFW
 
 class TextInputHelper(
   private val fontSize: Float,
-  val textInputType: TextInputComponent.Type,
+  private val textInputType: TextInputComponent.Type,
+  private val onChange: Consumer<String>,
   startText: String = "",
 ) {
 
   var text = startText
-    private set
+    private set(value) {
+      if (field == value) {
+        return
+      }
+
+      onChange.accept(value)
+      field = value
+    }
 
   var focused = false
     private set

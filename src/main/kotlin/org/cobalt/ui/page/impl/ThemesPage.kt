@@ -26,15 +26,26 @@ object ThemesPage : Page() {
   }
 
   override fun initializePage() {
+    openingOffset.start()
+    resetComponents()
+  }
+
+  override fun onSearchQueryChanged(query: String) {
+    resetComponents(query)
+  }
+
+  private fun resetComponents(query: String = "") {
     themeComponents.clear()
     scrollHelper.reset()
 
     removeAllChildren()
     addChild(reloadButton)
 
-    openingOffset.start()
-
-    ThemeManager.themes.values.forEach { theme ->
+    ThemeManager.themes.values
+      .filter { theme ->
+        query.isBlank() || theme.name.contains(query, ignoreCase = true)
+      }
+      .forEach { theme ->
       val component = ThemeComponent(theme)
 
       addChild(component)
