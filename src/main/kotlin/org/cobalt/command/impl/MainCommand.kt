@@ -17,14 +17,14 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
   @DefaultHandler
   fun main() {
     TickScheduler.schedule(DELAY_TICKS) {
-      minecraft.setScreen(ConfigScreen)
+      minecraft.gui.setScreen(ConfigScreen)
     }
   }
 
   @SubCommand
   fun hud() {
     TickScheduler.schedule(DELAY_TICKS) {
-      minecraft.setScreen(HudEditorScreen)
+      minecraft.gui.setScreen(HudEditorScreen)
     }
   }
 

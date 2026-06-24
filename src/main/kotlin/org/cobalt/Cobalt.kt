@@ -53,13 +53,13 @@ object Cobalt : ClientModInitializer {
     ModuleManager.registerModules()
     CommandManager.registerCommands()
 
-    LevelRenderEvents.END_MAIN.register { context ->
-      val event = WorldRenderEvent(context)
+    LevelRenderEvents.BEFORE_GIZMOS.register {
+      val event = WorldRenderEvent()
       EventBus.post(event)
     }
 
     PictureInPictureRendererRegistry.register {
-      SkiaPIP(it.bufferSource())
+      SkiaPIP()
     }
 
     SidebarComponent.preload()

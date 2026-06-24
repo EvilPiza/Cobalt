@@ -3,6 +3,7 @@ package org.cobalt.command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.ChatFormatting
+import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.command.impl.MainCommand
@@ -55,7 +56,7 @@ object CommandManager {
 
     try {
       dispatcher.execute(commandLine, player.connection.suggestionsProvider)
-      minecraft.commandHistory().addCommand(content)
+      minecraft.gui.hud.chat.commandHistory.addCommand(content)
     } catch (exception: CommandSyntaxException) {
       ChatUtils.sendSystemMessage("${ChatFormatting.RED}${exception.message}")
     }

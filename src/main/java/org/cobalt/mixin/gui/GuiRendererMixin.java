@@ -20,7 +20,7 @@ public class GuiRendererMixin {
   private static final CubeMap cobalt$cubeMap = new CubeMap(Identifier.fromNamespaceAndPath(Cobalt.MOD_NAME.toLowerCase(), "panorama/panorama"));
 
   @Redirect(
-    method = "render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+    method = "render",
     at = @At(
       value = "FIELD",
       target = "Lnet/minecraft/client/gui/render/GuiRenderer;cubeMap:Lnet/minecraft/client/renderer/CubeMap;",

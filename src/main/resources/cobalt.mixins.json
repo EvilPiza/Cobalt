@@ -9,8 +9,8 @@
     "gui.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
     "gui.FontMixin",
-    "gui.GuiMixin",
     "gui.GuiRendererMixin",
+    "gui.HudMixin",
     "gui.SplashManagerMixin"
   ],
   "mixins": [

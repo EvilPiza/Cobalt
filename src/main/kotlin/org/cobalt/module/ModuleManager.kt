@@ -111,11 +111,11 @@ object ModuleManager {
     get() {
       return minecraft.level == null ||
         minecraft.player == null ||
-        minecraft.options.hideGui ||
+        minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden ||
         minecraft.debugOverlay.showDebugScreen() ||
-        minecraft.screen is LevelLoadingScreen ||
-        minecraft.screen is ProgressScreen ||
-        minecraft.screen is HudEditorScreen
+        minecraft.gui.screen() is LevelLoadingScreen ||
+        minecraft.gui.screen() is ProgressScreen ||
+        minecraft.gui.screen() is HudEditorScreen
     }
 
   @SubscribeEvent
