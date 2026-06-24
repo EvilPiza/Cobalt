@@ -84,8 +84,8 @@ class SidebarButton(val category: ModuleCategory) : UIComponent(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
-    if (MouseUtils.isHoveringOver(xPos, yPos, width, height) && button == 0) {
+  override fun mouseClicked(button: Int): Boolean {
+    if (button == 0 && MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
       ConfigScreen.currentPage = ModulesPage
       ConfigScreen.selectedCategory = category
       return true

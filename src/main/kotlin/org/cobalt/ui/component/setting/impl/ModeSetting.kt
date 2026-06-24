@@ -3,6 +3,8 @@ package org.cobalt.ui.component.setting.impl
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import org.cobalt.ui.component.setting.Setting
+import org.cobalt.util.MouseUtils
+import org.cobalt.util.skia.Skia
 
 class ModeSetting(
   name: String,
@@ -15,10 +17,63 @@ class ModeSetting(
     this.value = element.asInt
   }
 
-  override fun write(): JsonElement {
-    return JsonPrimitive(value)
+  override fun write(): JsonElement = JsonPrimitive(value)
+
+  override fun renderSetting() {
+    val display = options.getOrNull(value) ?: ""
+    val buttonWidth = Skia.textWidth(Skia.regularFont, display, FONT_SIZE) + 30f
+    val startX = xPos + width - buttonWidth - PADDING
+    val startY = yPos + (height - BUTTON_HEIGHT) / 2
+
+    val borderColor = theme.border
+    val textColor = theme.textPrimary
+
+    Skia.roundedRect(
+      startX, startY,
+      buttonWidth, BUTTON_HEIGHT,
+      5f, theme.backgroundPrimary
+    )
+
+    Skia.roundedOutline(
+      startX, startY,
+      buttonWidth, BUTTON_HEIGHT,
+      1f, 5f, borderColor
+    )
+
+    val textWidth = Skia.textWidth(Skia.regularFont, display, FONT_SIZE)
+
+    Skia.text(
+      Skia.regularFont, display,
+      startX + (buttonWidth - textWidth) / 2,
+      startY + (BUTTON_HEIGHT - FONT_SIZE) / 2,
+      FONT_SIZE, textColor
+    )
   }
 
-  override fun renderSetting() = Unit
+  override fun mouseClicked(button: Int): Boolean {
+    val display = options.getOrNull(value) ?: ""
+    val buttonWidth = Skia.textWidth(Skia.regularFont, display, FONT_SIZE) + 30f
+    val startX = xPos + width - buttonWidth - PADDING
+    val startY = yPos + (height - BUTTON_HEIGHT) / 2
+
+    if (!MouseUtils.isHoveringOver(startX, startY, buttonWidth, BUTTON_HEIGHT)) {
+      return false
+    }
+
+    value = when (button) {
+      0 -> (value + 1) % options.size
+      1 -> (value - 1).mod(options.size)
+      else -> return false
+    }
+
+    return true
+  }
+
+  companion object {
+    private const val BUTTON_HEIGHT = 35f
+    private const val FONT_SIZE = 12f
+  }
 
 }
+
+

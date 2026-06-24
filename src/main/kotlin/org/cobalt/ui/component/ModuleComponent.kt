@@ -92,8 +92,8 @@ class ModuleComponent(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
-    val consumed = super.mouseReleased(button)
+  override fun mouseClicked(button: Int): Boolean {
+    val consumed = super.mouseClicked(button)
 
     if (module !is Script && consumed && lastEnabledState != module.enabled) {
       expandAnimation.start()

@@ -71,7 +71,7 @@ class ButtonSetting(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
+  override fun mouseClicked(button: Int): Boolean {
     val startX = xPos + width - buttonWidth - PADDING
     val startY = yPos + (height - BUTTON_HEIGHT) / 2
 

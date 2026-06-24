@@ -63,17 +63,17 @@ class KeyBindSetting(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
+  override fun mouseClicked(button: Int): Boolean {
     val startX = xPos + width - buttonWidth - PADDING
     val startY = yPos + (height - BUTTON_HEIGHT) / 2
+    val isHovered = MouseUtils.isHoveringOver(startX, startY, buttonWidth, BUTTON_HEIGHT)
 
-    if (button == 0 && MouseUtils.isHoveringOver(startX, startY, buttonWidth, BUTTON_HEIGHT)) {
-      listening = !listening
-      return true
-    }
-
-    if (listening && button == 0) {
+    if (listening) {
+      value = InputConstants.Type.MOUSE.getOrCreate(button)
       listening = false
+      return true
+    } else if (button == 0 && isHovered) {
+      listening = true
       return true
     }
 

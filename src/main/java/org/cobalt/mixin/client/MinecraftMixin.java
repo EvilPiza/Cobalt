@@ -27,6 +27,9 @@ import org.cobalt.addon.AddonManager;
 import org.cobalt.addon.AddonMetadata;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.TickEvent;
+import org.cobalt.module.ModuleManager;
+import org.cobalt.util.config.SettingContainer;
+import org.cobalt.util.helper.Multithreading;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -66,6 +69,10 @@ public class MinecraftMixin {
 
     addonsList.forEach((addon) -> {
       addon.getSecond().onUnload();
+    });
+
+    Multithreading.runAsync(() -> {
+      ModuleManager.INSTANCE.getModules().forEach(SettingContainer::saveConfig);
     });
   }
 

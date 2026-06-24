@@ -20,7 +20,9 @@ class ScriptComponent(val script: Script) : UIComponent(
   private val alphaAnim = EaseOutAnimation(200L)
   private val backgroundPicture: SkiaImage? = if (script.backgroundResourcePath.isNotBlank()) {
     Skia.createImage(script.backgroundResourcePath)
-  } else null
+  } else {
+    null
+  }
 
   override fun renderComponent() {
     backgroundPicture?.let {
@@ -70,7 +72,7 @@ class ScriptComponent(val script: Script) : UIComponent(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
+  override fun mouseClicked(button: Int): Boolean {
     if (button == 0 && MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
       colorAnim.start()
 
@@ -84,7 +86,7 @@ class ScriptComponent(val script: Script) : UIComponent(
       return true
     }
 
-    return super.mouseReleased(button)
+    return false
   }
 
   companion object {

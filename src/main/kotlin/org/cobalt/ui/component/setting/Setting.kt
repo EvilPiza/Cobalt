@@ -19,7 +19,7 @@ abstract class Setting<T>(
   PropertyDelegateProvider<SettingContainer, ReadWriteProperty<SettingContainer, T>>,
   UIComponent(
     width = ModuleComponent.WIDTH,
-    height = 60f
+    height = BASE_HEIGHT
   ) {
 
   val defaultValue: T = value
@@ -30,7 +30,7 @@ abstract class Setting<T>(
     if (this !is InfoSetting) {
       val extraHeight = if (description.isNotBlank()) DESCRIPTION_SIZE + TEXT_SPACING_Y else 0f
       val totalTextHeight = NAME_SIZE + extraHeight
-      val textStartY = yPos + (height - totalTextHeight) / 2
+      val textStartY = yPos + (BASE_HEIGHT - totalTextHeight) / 2
 
       Skia.text(
         Skia.regularFont, name,
@@ -70,6 +70,7 @@ abstract class Setting<T>(
   abstract fun write(): JsonElement
 
   companion object {
+    protected const val BASE_HEIGHT = 60f
     protected const val PADDING = 20f
     protected const val NAME_SIZE = 14f
     protected const val DESCRIPTION_SIZE = 12f

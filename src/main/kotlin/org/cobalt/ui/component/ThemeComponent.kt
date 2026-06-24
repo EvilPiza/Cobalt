@@ -60,11 +60,11 @@ class ThemeComponent(val newTheme: Theme) : UIComponent(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
+  override fun mouseClicked(button: Int): Boolean {
     val isHovered = MouseUtils.isHoveringOver(xPos, yPos, width, height)
 
     if (button != 0 || !isHovered) {
-      return super.mouseReleased(button)
+      return false
     }
 
     ThemeManager.changeTheme(newTheme)

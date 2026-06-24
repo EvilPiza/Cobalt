@@ -282,7 +282,15 @@ object Skia {
   }
 
   @JvmStatic
-  fun blurredImage(image: SkiaImage, x: Float, y: Float, width: Float, height: Float, radius: Float, cornerRadius: Float = 0f) {
+  fun blurredImage(
+    image: SkiaImage,
+    x: Float,
+    y: Float,
+    width: Float,
+    height: Float,
+    radius: Float,
+    cornerRadius: Float = 0f
+  ) {
     val img = getImage(image)
     val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
     val dst = Rect.makeXYWH(x, y, width, height)

@@ -32,8 +32,8 @@ class SwitchComponent(val module: Module) : UIComponent(
     )
   }
 
-  override fun mouseReleased(button: Int): Boolean {
-    if (MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
+  override fun mouseClicked(button: Int): Boolean {
+    if (button == 0 && MouseUtils.isHoveringOver(xPos, yPos, width, height)) {
       module.enabled = !module.enabled
       colorAnimation.start()
       xOffsetAnimation.start()

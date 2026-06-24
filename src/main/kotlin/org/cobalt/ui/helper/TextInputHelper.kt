@@ -1,6 +1,7 @@
 package org.cobalt.ui.helper
 
 import java.util.function.Consumer
+import kotlin.math.abs
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import org.cobalt.ui.component.TextInputComponent
@@ -124,8 +125,8 @@ class TextInputHelper(
 
     for (i in 0..text.length) {
       val prefix = if (textInputType == TextInputComponent.Type.PASSWORD) "*".repeat(i) else text.substring(0, i)
-      val w = getTextWidth(prefix)
-      val diff = kotlin.math.abs(w - relativeX)
+      val w = Skia.textWidth(Skia.regularFont, prefix, fontSize)
+      val diff = abs(w - relativeX)
 
       if (diff < minDiff) {
         minDiff = diff
@@ -160,20 +161,20 @@ class TextInputHelper(
       return false
     }
 
-    var handled = false
-    val key = input.key()
     val isShiftDown = (input.modifiers() and GLFW.GLFW_MOD_SHIFT) != 0
     val isCtrlDown = (input.modifiers() and GLFW.GLFW_MOD_CONTROL) != 0
 
-    when (key) {
+    return when (input.key()) {
       GLFW.GLFW_KEY_A -> {
-        if (isCtrlDown) {
-          selectionAnchor = 0
-          selectionStart = 0
-          selectionEnd = text.length
-          caretIndex = text.length
-          handled = true
+        if (!isCtrlDown) {
+          return false
         }
+
+        selectionAnchor = 0
+        selectionStart = 0
+        selectionEnd = text.length
+        caretIndex = text.length
+        true
       }
 
       GLFW.GLFW_KEY_BACKSPACE -> {
@@ -186,52 +187,51 @@ class TextInputHelper(
           caretIndex--
         }
 
-        handled = true
+        true
       }
 
-      GLFW.GLFW_KEY_LEFT -> {
-        if (isShiftDown) {
-          if (selectionAnchor == -1) selectionAnchor = caretIndex
-          if (caretIndex > 0) {
-            caretIndex--
-            updateSelectionRange()
-          }
-        } else {
-          if (hasSelection) {
-            caretIndex = selectionStart
-            clearSelection()
-          } else if (caretIndex > 0) {
-            caretIndex--
-          }
-        }
+      GLFW.GLFW_KEY_LEFT -> handleMoveLeft(isShiftDown)
+      GLFW.GLFW_KEY_RIGHT -> handleMoveRight(isShiftDown)
+      else -> false
+    }
+  }
 
-        handled = true
+  private fun handleMoveLeft(isShiftDown: Boolean): Boolean {
+    if (isShiftDown) {
+      if (selectionAnchor == -1) selectionAnchor = caretIndex
+      if (caretIndex > 0) {
+        caretIndex--
+        updateSelectionRange()
       }
-
-      GLFW.GLFW_KEY_RIGHT -> {
-        if (isShiftDown) {
-          if (selectionAnchor == -1) selectionAnchor = caretIndex
-          if (caretIndex < text.length) {
-            caretIndex++
-            updateSelectionRange()
-          }
-        } else {
-          if (hasSelection) {
-            caretIndex = selectionEnd
-            clearSelection()
-          } else if (caretIndex < text.length) {
-            caretIndex++
-          }
-        }
-
-        handled = true
+    } else {
+      if (hasSelection) {
+        caretIndex = selectionStart
+        clearSelection()
+      } else if (caretIndex > 0) {
+        caretIndex--
       }
     }
 
-    return handled
+    return true
   }
 
-  private fun getTextWidth(str: String) =
-    Skia.textWidth(Skia.regularFont, str, fontSize)
+  private fun handleMoveRight(isShiftDown: Boolean): Boolean {
+    if (isShiftDown) {
+      if (selectionAnchor == -1) selectionAnchor = caretIndex
+      if (caretIndex < text.length) {
+        caretIndex++
+        updateSelectionRange()
+      }
+    } else {
+      if (hasSelection) {
+        caretIndex = selectionEnd
+        clearSelection()
+      } else if (caretIndex < text.length) {
+        caretIndex++
+      }
+    }
+
+    return true
+  }
 
 }
