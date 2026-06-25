@@ -5,7 +5,6 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.HudEvent
 import org.cobalt.util.WindowUtils.windowHeight
-import org.cobalt.util.skia.SkiaPIP
 
 object NotificationManager {
 
@@ -53,10 +52,8 @@ object NotificationManager {
       notification.moveTo(computeTargetY(windowHeight, index, notification.height))
     }
 
-    SkiaPIP.drawSkia(event.graphics) {
-      activeNotifications.forEach { notification ->
-        notification.renderComponent()
-      }
+    activeNotifications.forEach { notification ->
+      notification.renderComponent()
     }
   }
 

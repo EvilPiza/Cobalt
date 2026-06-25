@@ -11,7 +11,9 @@
     "gui.FontMixin",
     "gui.GuiRendererMixin",
     "gui.HudMixin",
-    "gui.SplashManagerMixin"
+    "gui.SplashManagerMixin",
+    "renderer.GameRendererMixin",
+    "renderer.GuiRendererMixin"
   ],
   "mixins": [
     "mojang.YggdrasilServicesKeyInfoMixin",

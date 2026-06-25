@@ -6,7 +6,6 @@ import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import org.cobalt.util.skia.SkiaPIP
 
 abstract class UIScreen : Screen(Component.empty()) {
 
@@ -15,11 +14,7 @@ abstract class UIScreen : Screen(Component.empty()) {
   abstract fun renderSkia()
 
   override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-    super.extractRenderState(graphics, mouseX, mouseY, a)
-
-    SkiaPIP.drawSkia(graphics) {
-      renderSkia()
-    }
+    renderSkia()
   }
 
   override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
@@ -58,5 +53,8 @@ abstract class UIScreen : Screen(Component.empty()) {
   }
 
   override fun isPauseScreen(): Boolean = false
+
+  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit
+  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) = Unit
 
 }

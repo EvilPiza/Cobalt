@@ -3,7 +3,6 @@
 package org.cobalt.util.skia
 
 import io.github.humbleui.skija.*
-import io.github.humbleui.skija.paragraph.*
 import io.github.humbleui.skija.svg.SVGDOM
 import io.github.humbleui.skija.svg.SVGLengthContext
 import io.github.humbleui.types.RRect
@@ -13,18 +12,15 @@ import kotlin.math.max
 import org.cobalt.util.skia.helper.SkiaCorner
 import org.cobalt.util.skia.helper.SkiaFont
 import org.cobalt.util.skia.helper.SkiaImage
-import org.joml.Matrix3x2fc
 
 object Skia {
 
   private val imageCache = HashMap<SkiaImage, CachedImage>()
   private val typefaces = HashMap<SkiaFont, Typeface>()
+  private val fonts = HashMap<FontKey, Font>()
   private var canvas: Canvas? = null
   private var globalAlpha = 1f
-
-  private val fontCollection: FontCollection by lazy {
-    FontCollection().apply { setDefaultFontManager(FontMgr.getDefault()) }
-  }
+  private val batch = ArrayList<() -> Unit>()
 
   @JvmStatic
   val regularFont = SkiaFont("/assets/cobalt/fonts/ProductSans-Regular.ttf")
@@ -43,59 +39,48 @@ object Skia {
   }
 
   @JvmStatic
-  fun push() {
+  fun push() = dispatch {
     canvas().save()
   }
 
   @JvmStatic
-  fun pop() {
+  fun pop() = dispatch {
     canvas().restore()
   }
 
   @JvmStatic
-  fun scale(x: Float, y: Float) {
+  fun scale(x: Float, y: Float) = dispatch {
     canvas().scale(x, y)
   }
 
   @JvmStatic
-  fun translate(x: Float, y: Float) {
+  fun translate(x: Float, y: Float) = dispatch {
     canvas().translate(x, y)
   }
 
   @JvmStatic
-  fun transform(matrix: Matrix3x2fc) {
-    val skiaMatrix = Matrix33(
-      matrix.m00(), matrix.m10(), matrix.m20(),
-      matrix.m01(), matrix.m11(), matrix.m21(),
-      0f, 0f, 1f
-    )
-
-    canvas().concat(skiaMatrix)
-  }
-
-  @JvmStatic
-  fun rotate(degrees: Float) {
+  fun rotate(degrees: Float) = dispatch {
     canvas().rotate(degrees)
   }
 
   @JvmStatic
-  fun globalAlpha(amount: Float) {
+  fun globalAlpha(amount: Float) = dispatch {
     globalAlpha = amount.coerceIn(0f, 1f)
   }
 
   @JvmStatic
-  fun pushScissor(x: Float, y: Float, width: Float, height: Float, radius: Float = 0f) {
+  fun pushScissor(x: Float, y: Float, width: Float, height: Float, radius: Float = 0f) = dispatch {
     canvas().save()
     canvas().clipRRect(RRect.makeXYWH(x, y, width, height, radius), ClipMode.INTERSECT, true)
   }
 
   @JvmStatic
-  fun popScissor() {
+  fun popScissor() = dispatch {
     canvas().restore()
   }
 
   @JvmStatic
-  fun line(x1: Float, y1: Float, x2: Float, y2: Float, thickness: Float, color: Color) {
+  fun line(x1: Float, y1: Float, x2: Float, y2: Float, thickness: Float, color: Color) = dispatch {
     paint(color, PaintMode.STROKE).use {
       it.strokeWidth = thickness
       it.strokeCap = PaintStrokeCap.ROUND
@@ -104,21 +89,21 @@ object Skia {
   }
 
   @JvmStatic
-  fun circle(x: Float, y: Float, radius: Float, color: Color) {
+  fun circle(x: Float, y: Float, radius: Float, color: Color) = dispatch {
     paint(color).use {
       canvas().drawCircle(x, y, radius, it)
     }
   }
 
   @JvmStatic
-  fun rect(x: Float, y: Float, width: Float, height: Float, color: Color) {
+  fun rect(x: Float, y: Float, width: Float, height: Float, color: Color) = dispatch {
     paint(color).use {
       canvas().drawRect(Rect.makeXYWH(x, y, width, height), it)
     }
   }
 
   @JvmStatic
-  fun outline(x: Float, y: Float, width: Float, height: Float, thickness: Float, color: Color) {
+  fun outline(x: Float, y: Float, width: Float, height: Float, thickness: Float, color: Color) = dispatch {
     paint(color, PaintMode.STROKE).use {
       it.strokeWidth = thickness
       canvas().drawRect(Rect.makeXYWH(x, y, width, height), it)
@@ -134,7 +119,7 @@ object Skia {
     radius: Float,
     color: Color,
     corners: Array<SkiaCorner> = SkiaCorner.ALL,
-  ) {
+  ) = dispatch {
     val radii = radii(radius, corners)
 
     paint(color).use {
@@ -151,8 +136,8 @@ object Skia {
     thickness: Float,
     radius: Float,
     color: Color,
-    corners: Array<SkiaCorner> = SkiaCorner.ALL
-  ) {
+    corners: Array<SkiaCorner> = SkiaCorner.ALL,
+  ) = dispatch {
     val radii = radii(radius, corners)
 
     paint(color, PaintMode.STROKE).use {
@@ -162,25 +147,16 @@ object Skia {
   }
 
   @JvmStatic
-  fun text(font: SkiaFont, text: String, x: Float, y: Float, size: Float, color: Color) {
-    val skiaFont = font(font, size)
-
-    TextLine.make(text, skiaFont).use { line ->
-      val baseline = y - line.ascent
-
-      paint(color).use { fill ->
-        canvas().drawTextLine(line, x, baseline, fill)
-      }
+  fun text(font: SkiaFont, text: String, x: Float, y: Float, size: Float, color: Color) = dispatch {
+    paint(color).use { fill ->
+      val skijaFont = font(font, size)
+      canvas().drawString(text, x, y - skijaFont.metrics.ascent, skijaFont, fill)
     }
   }
 
   @JvmStatic
   fun textWidth(font: SkiaFont, text: String, size: Float): Float {
-    val skiaFont = font(font, size)
-
-    TextLine.make(text, skiaFont).use { line ->
-      return line.width
-    }
+    return font(font, size).measureTextWidth(text)
   }
 
   @JvmStatic
@@ -191,9 +167,16 @@ object Skia {
     y: Float,
     width: Float,
     size: Float,
-    color: Color
-  ) {
-    buildParagraph(typeface(font), text, width, color, size).paint(canvas(), x, y)
+    color: Color,
+    lineHeight: Float = 1f,
+  ) = dispatch {
+    var cursorY = y
+    val spacing = size * lineHeight
+
+    wrap(font, text, width, size).forEach { line ->
+      text(font, line, x, cursorY, size, color)
+      cursorY += spacing
+    }
   }
 
   @JvmStatic
@@ -201,24 +184,43 @@ object Skia {
     font: SkiaFont,
     text: String,
     maxWidth: Float,
-    fontSize: Float
+    fontSize: Float,
+    lineHeight: Float = 1f,
   ): Float {
-    return buildParagraph(typeface(font), text, maxWidth, Color.BLACK, fontSize).height
+    val lines = wrap(font, text, maxWidth, fontSize)
+    return lines.size * (fontSize * lineHeight)
   }
 
   @JvmStatic
-  fun buildParagraph(typeface: Typeface, text: String, maxWidth: Float, color: Color, fontSize: Float): Paragraph {
-    return ParagraphBuilder(ParagraphStyle(), fontCollection)
-      .pushStyle(
-        TextStyle().apply {
-          this.color = color.rgb
-          this.fontSize = fontSize
-          this.typeface = typeface
+  fun wrap(font: SkiaFont, text: String, maxWidth: Float, size: Float): List<String> {
+    val words = text.split(' ')
+    val lines = mutableListOf<String>()
+    var line = StringBuilder()
+
+    fun flush() {
+      if (line.isNotEmpty()) {
+        lines.add(line.toString())
+        line = StringBuilder()
+      }
+    }
+
+    for (word in words) {
+      val candidate = if (line.isEmpty()) word else "$line $word"
+
+      if (textWidth(font, candidate, size) <= maxWidth || line.isEmpty()) {
+        if (line.isNotEmpty()) {
+          line.append(' ')
         }
-      )
-      .addText(text)
-      .build()
-      .apply { layout(maxWidth) }
+
+        line.append(word)
+      } else {
+        flush()
+        line.append(word)
+      }
+    }
+
+    flush()
+    return lines
   }
 
   @JvmStatic
@@ -251,7 +253,7 @@ object Skia {
     height: Float,
     radius: Float? = null,
     color: Color? = null,
-  ) {
+  ) = dispatch {
     val img = getImage(image)
     val dst = Rect.makeXYWH(x, y, width, height)
 
@@ -289,8 +291,8 @@ object Skia {
     width: Float,
     height: Float,
     radius: Float,
-    cornerRadius: Float = 0f
-  ) {
+    cornerRadius: Float = 0f,
+  ) = dispatch {
     val img = getImage(image)
     val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
     val dst = Rect.makeXYWH(x, y, width, height)
@@ -357,19 +359,13 @@ object Skia {
     return snapshot
   }
 
-  private fun typeface(font: SkiaFont): Typeface {
-    return typefaces.getOrPut(font) {
-      FontMgr.getDefault().makeFromData(
-        Data.makeFromBytes(font.bytes)
-      ) ?: error("Failed to load font: ${font.location}")
-    }
-  }
-
   private fun font(font: SkiaFont, size: Float): Font {
-    return Font(typeface(font), size)
-      .setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS)
-      .setSubpixel(true)
-      .setHinting(FontHinting.FULL)
+    return fonts.getOrPut(FontKey(font, size)) {
+      Font(typefaces.getOrPut(font) {
+        FontMgr.getDefault().makeFromData(Data.makeFromBytes(font.bytes))
+          ?: error("Failed to load font ('${font.location})")
+      }, size).setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS)
+    }
   }
 
   private fun paint(color: Color, mode: PaintMode = PaintMode.FILL): Paint {
@@ -396,10 +392,23 @@ object Skia {
     )
   }
 
+  internal fun hasBatch(): Boolean =
+    batch.isNotEmpty()
+
+  internal fun flush() {
+    for (op in batch) op()
+    batch.clear()
+  }
+
+  private fun dispatch(op: () -> Unit) {
+    batch.add(op)
+  }
+
   private fun canvas(): Canvas {
     return canvas ?: throw IllegalStateException("Skia frame has not started")
   }
 
   private data class CachedImage(var count: Int, val image: Image)
+  private data class FontKey(val font: SkiaFont, val size: Float)
 
 }

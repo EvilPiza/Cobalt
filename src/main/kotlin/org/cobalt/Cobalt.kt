@@ -15,7 +15,6 @@ import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.module.ModuleManager
 import org.cobalt.ui.component.SidebarComponent
 import org.cobalt.ui.theme.ThemeManager
-import org.cobalt.util.skia.SkiaPIP
 import org.slf4j.LoggerFactory
 
 object Cobalt : ClientModInitializer {
@@ -56,10 +55,6 @@ object Cobalt : ClientModInitializer {
     LevelRenderEvents.BEFORE_GIZMOS.register {
       val event = WorldRenderEvent()
       EventBus.post(event)
-    }
-
-    PictureInPictureRendererRegistry.register {
-      SkiaPIP()
     }
 
     SidebarComponent.preload()
