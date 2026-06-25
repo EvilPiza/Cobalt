@@ -59,8 +59,6 @@ internal class VulkanSurface : SkiaSurface {
     directContext.flushAndSubmit(skijaSurface, false)
   }
 
-
-
   private fun makeContext(): DirectContext {
     val vkDevice = (RenderSystem.getDevice() as GpuDeviceAccessor).getBackend() as VulkanDevice
 
