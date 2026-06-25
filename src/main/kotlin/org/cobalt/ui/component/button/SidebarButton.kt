@@ -2,12 +2,10 @@ package org.cobalt.ui.component.button
 
 import org.cobalt.dsl.updateAlpha
 import org.cobalt.module.ModuleCategory
-import org.cobalt.module.ModuleManager
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.ColorAnimation
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.ui.page.impl.ModulesPage
-import org.cobalt.ui.page.impl.ThemesPage
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.util.MouseUtils
 import org.cobalt.util.skia.Skia

@@ -102,7 +102,7 @@ class RangeSetting(
         geometry.trackY - KNOB_RADIUS,
         KNOB_RADIUS * 2,
         KNOB_RADIUS * 2
-      )-> Knob.START
+      ) -> Knob.START
 
       MouseUtils.isHoveringOver(
         geometry.endKnobX - KNOB_RADIUS,
@@ -185,7 +185,7 @@ class RangeSetting(
     val trackY = yPos + BASE_HEIGHT + TRACK_MARGIN
     val range = (max - min).toFloat().takeIf { it != 0f } ?: 1f
     val startKnobX = startX + (rawStart - min) / range * trackWidth
-    val endKnobX  = startX + (rawEnd - min) / range * trackWidth
+    val endKnobX = startX + (rawEnd - min) / range * trackWidth
 
     return TrackGeometry(startX, trackWidth, trackY, startKnobX, endKnobX)
   }

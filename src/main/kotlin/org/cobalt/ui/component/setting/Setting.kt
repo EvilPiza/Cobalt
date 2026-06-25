@@ -1,7 +1,6 @@
 package org.cobalt.ui.component.setting
 
 import com.google.gson.JsonElement
-import java.awt.Color
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

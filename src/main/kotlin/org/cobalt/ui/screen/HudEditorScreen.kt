@@ -7,6 +7,7 @@ import org.cobalt.event.impl.MouseScrollEvent
 import org.cobalt.module.Module
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.type.RenderableModule
+import org.cobalt.ui.UIScreen
 import org.cobalt.ui.helper.DragHandler
 import org.cobalt.ui.helper.SnapHelper
 import org.cobalt.ui.theme.Theme
@@ -16,9 +17,8 @@ import org.cobalt.util.WindowUtils.scaleX
 import org.cobalt.util.WindowUtils.scaleY
 import org.cobalt.util.WindowUtils.windowHeight
 import org.cobalt.util.WindowUtils.windowWidth
-import org.cobalt.util.skia.Skia
-import org.cobalt.ui.UIScreen
 import org.cobalt.util.helper.Multithreading
+import org.cobalt.util.skia.Skia
 
 object HudEditorScreen : UIScreen() {
 

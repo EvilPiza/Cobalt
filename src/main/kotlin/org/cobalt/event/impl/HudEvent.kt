@@ -6,5 +6,5 @@ import org.cobalt.event.Event
 
 class HudEvent(
   val graphics: GuiGraphicsExtractor,
-  val deltaTracker: DeltaTracker
+  val deltaTracker: DeltaTracker,
 ) : Event()

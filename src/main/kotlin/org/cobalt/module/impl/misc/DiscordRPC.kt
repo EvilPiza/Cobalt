@@ -4,8 +4,6 @@ import com.jagrosh.discordipc.IPCClient
 import com.jagrosh.discordipc.entities.ActivityType
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
-import java.time.OffsetDateTime
-import java.time.OffsetTime
 import org.cobalt.Cobalt
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -22,21 +20,12 @@ object DiscordRPC : Module(
   private val logger = LoggerFactory.getLogger(this::class.java)
 
   private var client: IPCClient? = null
-  private var rpc = RichPresence.Builder()
   private var lastUpdate = 0L
   private var doNotTryAgain = false
 
   private const val APPLICATION_ID = 1441864552936636519L
 
   init {
-    val minecraftVersion = "Minecraft ${Cobalt.MINECRAFT_VERSION}"
-
-    rpc.setActivityType(ActivityType.Playing)
-    rpc.setLargeImage("logo", "${Cobalt.MOD_NAME} ${Cobalt.MOD_VERSION}", null)
-    rpc.setSmallImage("minecraft", minecraftVersion, null)
-    rpc.setDetails("Playing $minecraftVersion")
-    rpc.setStartTimestamp(System.currentTimeMillis())
-
     EventBus.register(this)
   }
 
@@ -62,8 +51,7 @@ object DiscordRPC : Module(
       return
     }
 
-    rpc.setState(states.random())
-    client.sendRichPresence(rpc.build())
+    client.sendRichPresence(buildRichPresence())
     lastUpdate = System.currentTimeMillis()
   }
 
@@ -89,6 +77,20 @@ object DiscordRPC : Module(
     }
 
     client.close()
+  }
+
+  private fun buildRichPresence(): RichPresence {
+    val rpc = RichPresence.Builder()
+    val minecraftVersion = "Minecraft ${Cobalt.MINECRAFT_VERSION}"
+
+    rpc.setActivityType(ActivityType.Playing)
+    rpc.setLargeImage("logo", "${Cobalt.MOD_NAME} ${Cobalt.MOD_VERSION}", null)
+    rpc.setSmallImage("minecraft", minecraftVersion, null)
+    rpc.setDetails("Playing $minecraftVersion")
+    rpc.setStartTimestamp(System.currentTimeMillis())
+    rpc.setState(states.random())
+
+    return rpc.build()
   }
 
   private val states = listOf(

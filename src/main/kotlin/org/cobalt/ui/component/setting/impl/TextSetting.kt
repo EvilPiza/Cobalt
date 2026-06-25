@@ -9,7 +9,7 @@ class TextSetting(
   name: String,
   description: String,
   defaultValue: String,
-  val placeholder: String = "Enter text..."
+  val placeholder: String = "Enter text...",
 ) : Setting<String>(name, description, defaultValue) {
 
   private val inputBox = TextInputComponent(

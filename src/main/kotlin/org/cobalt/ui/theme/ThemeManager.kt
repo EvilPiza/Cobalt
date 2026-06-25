@@ -86,14 +86,14 @@ object ThemeManager {
   }
 
   private data class Settings(
-    val activeThemeName: String
+    val activeThemeName: String,
   )
 
   private data class ColorJson(
     val red: Int,
     val green: Int,
     val blue: Int,
-    val alpha: Int = 255
+    val alpha: Int = 255,
   ) {
 
     fun toColor() =
@@ -115,7 +115,7 @@ object ThemeManager {
     val success: ColorJson,
     val warning: ColorJson,
     val error: ColorJson,
-    val info: ColorJson
+    val info: ColorJson,
   ) {
 
     fun toTheme() = Theme(

@@ -4,7 +4,11 @@
   "version": "${version}",
   "name": "Cobalt",
   "description": "A Hypixel Skyblock QoL mod for Fabric 1.21.10",
-  "authors": ["quiteboring", "Twiston", "oblongboot"],
+  "authors": [
+    "quiteboring",
+    "Twiston",
+    "oblongboot"
+  ],
   "contact": {
     "homepage": "https://cobalt.quiteboring.dev/",
     "sources": "https://github.com/CobaltScripts/Cobalt"
@@ -20,7 +24,9 @@
       }
     ]
   },
-  "mixins": ["cobalt.mixins.json"],
+  "mixins": [
+    "cobalt.mixins.json"
+  ],
   "accessWidener": "cobalt.accesswidener",
   "depends": {
     "java": ">=25",

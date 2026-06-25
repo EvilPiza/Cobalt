@@ -4,8 +4,6 @@ import io.netty.channel.ChannelFutureListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
-import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.PacketEvent;
 import org.spongepowered.asm.mixin.Mixin;

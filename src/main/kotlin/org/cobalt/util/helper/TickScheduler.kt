@@ -7,8 +7,10 @@ import org.cobalt.event.impl.TickEvent
 
 object TickScheduler {
 
-  private val taskQueue = PriorityQueue<ScheduledTask>(Comparator.comparingLong(ScheduledTask::executeTick))
   private var currentTick: Long = 0
+  private val taskQueue = PriorityQueue<ScheduledTask>(
+    Comparator.comparingLong(ScheduledTask::executeTick)
+  )
 
   init {
     EventBus.register(this)

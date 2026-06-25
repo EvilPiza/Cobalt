@@ -1,7 +1,6 @@
 package org.cobalt.mixin.gui;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import org.cobalt.command.CommandManager;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.ChatSendEvent;
 import org.spongepowered.asm.mixin.Mixin;

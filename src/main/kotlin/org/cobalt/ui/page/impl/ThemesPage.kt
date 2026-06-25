@@ -46,11 +46,11 @@ object ThemesPage : Page() {
         query.isBlank() || theme.name.contains(query, ignoreCase = true)
       }
       .forEach { theme ->
-      val component = ThemeComponent(theme)
+        val component = ThemeComponent(theme)
 
-      addChild(component)
-      themeComponents.add(component)
-    }
+        addChild(component)
+        themeComponents.add(component)
+      }
   }
 
   override fun renderComponent() {

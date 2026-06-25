@@ -8,7 +8,7 @@ import org.cobalt.util.ChatUtils
 abstract class Script(
   name: String,
   category: ModuleCategory,
-  val backgroundResourcePath: String = ""
+  val backgroundResourcePath: String = "",
 ) : Module(
   name, category,
   startValue = false

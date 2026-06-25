@@ -58,8 +58,8 @@ object ModulesPage : Page() {
 
     val pageOffset = openingOffset.get(-30f, 0f)
 
-    val leftX  = xPos + PADDING
-    var leftY  = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
+    val leftX = xPos + PADDING
+    var leftY = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
     val rightX = xPos + PADDING + ModuleComponent.WIDTH + COLUMN_GAP
     var rightY = yPos + PADDING + pageOffset - scrollHelper.scrollOffset
 

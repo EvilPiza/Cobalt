@@ -1,9 +1,5 @@
 package org.cobalt.ui.component
 
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.module.ModuleCategory
 import org.cobalt.ui.UIComponent
@@ -97,14 +93,8 @@ object SidebarComponent : UIComponent(
       textX, textY, USER_INFO_TEXT_SIZE, theme.textPrimary
     )
 
-    val currentTime = ZonedDateTime.now()
-    val formatter = DateTimeFormatter
-      .ofLocalizedTime(FormatStyle.SHORT)
-      .withLocale(Locale.getDefault())
-
     Skia.text(
-      Skia.regularFont,
-      currentTime.format(formatter),
+      Skia.regularFont, "User",
       textX, textY + USER_INFO_TEXT_SIZE + 2f,
       USER_INFO_TEXT_SIZE, theme.textSecondary,
     )

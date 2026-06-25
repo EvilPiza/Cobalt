@@ -6,5 +6,5 @@ import org.cobalt.util.MouseButton
 
 class MouseEvent(
   val button: MouseButton,
-  val action: MouseAction
+  val action: MouseAction,
 ) : Event.Cancellable()

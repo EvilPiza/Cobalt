@@ -17,21 +17,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(Font.class)
 public class FontMixin {
 
-  @ModifyVariable(
-    method = "prepareText(Lnet/minecraft/util/FormattedCharSequence;FFIZZI)Lnet/minecraft/client/gui/Font$PreparedText;",
-    at = @At("HEAD"),
-    argsOnly = true,
-    name = "text"
-  )
-  private FormattedCharSequence modifyCharSequence(FormattedCharSequence text) {
-    if (NickHider.INSTANCE.getEnabled()) {
-      MutableComponent component = Component.literal(NickHider.INSTANCE.getNickname());
-      return cobalt$replaceWordWithText(text, PlayerUtils.getIgn(), component);
-    }
-
-    return text;
-  }
-
   @Unique
   private static FormattedCharSequence cobalt$replaceWordWithText(
     FormattedCharSequence text,
@@ -73,6 +58,21 @@ public class FontMixin {
     }
 
     return rebuilt.getVisualOrderText();
+  }
+
+  @ModifyVariable(
+    method = "prepareText(Lnet/minecraft/util/FormattedCharSequence;FFIZZI)Lnet/minecraft/client/gui/Font$PreparedText;",
+    at = @At("HEAD"),
+    argsOnly = true,
+    name = "text"
+  )
+  private FormattedCharSequence modifyCharSequence(FormattedCharSequence text) {
+    if (NickHider.INSTANCE.getEnabled()) {
+      MutableComponent component = Component.literal(NickHider.INSTANCE.getNickname());
+      return cobalt$replaceWordWithText(text, PlayerUtils.getIgn(), component);
+    }
+
+    return text;
   }
 
 }

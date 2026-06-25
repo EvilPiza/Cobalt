@@ -1,10 +1,10 @@
 package org.cobalt.module.impl.visual
 
+import kotlin.math.roundToInt
 import org.cobalt.module.ModuleCategory
 import org.cobalt.module.type.RenderableModule
 import org.cobalt.util.ServerUtils
 import org.cobalt.util.skia.Skia
-import kotlin.math.roundToInt
 
 object PerformanceHUD : RenderableModule(
   name = "PerformanceHUD",

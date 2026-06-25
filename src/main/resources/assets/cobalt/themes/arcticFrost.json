@@ -1,20 +1,81 @@
 {
   "name": "Arctic Frost",
-
-  "backgroundPrimary": { "red": 236, "green": 242, "blue": 248, "alpha": 255 },
-  "backgroundSecondary": { "red": 224, "green": 232, "blue": 240, "alpha": 255 },
-  "border": { "red": 190, "green": 202, "blue": 214, "alpha": 255 },
-
-  "accentPrimary": { "red": 0, "green": 132, "blue": 255, "alpha": 255 },
-  "accentSecondary": { "red": 88, "green": 166, "blue": 255, "alpha": 255 },
-
-  "textPrimary": { "red": 30, "green": 38, "blue": 48, "alpha": 255 },
-  "textSecondary": { "red": 85, "green": 95, "blue": 110, "alpha": 255 },
-  "textMuted": { "red": 120, "green": 130, "blue": 145, "alpha": 255 },
-  "textDisabled": { "red": 160, "green": 168, "blue": 180, "alpha": 255 },
-
-  "success": { "red": 35, "green": 180, "blue": 110, "alpha": 255 },
-  "warning": { "red": 230, "green": 165, "blue": 70, "alpha": 255 },
-  "error": { "red": 220, "green": 70, "blue": 70, "alpha": 255 },
-  "info": { "red": 0, "green": 145, "blue": 255, "alpha": 255 }
+  "backgroundPrimary": {
+    "red": 236,
+    "green": 242,
+    "blue": 248,
+    "alpha": 255
+  },
+  "backgroundSecondary": {
+    "red": 224,
+    "green": 232,
+    "blue": 240,
+    "alpha": 255
+  },
+  "border": {
+    "red": 190,
+    "green": 202,
+    "blue": 214,
+    "alpha": 255
+  },
+  "accentPrimary": {
+    "red": 0,
+    "green": 132,
+    "blue": 255,
+    "alpha": 255
+  },
+  "accentSecondary": {
+    "red": 88,
+    "green": 166,
+    "blue": 255,
+    "alpha": 255
+  },
+  "textPrimary": {
+    "red": 30,
+    "green": 38,
+    "blue": 48,
+    "alpha": 255
+  },
+  "textSecondary": {
+    "red": 85,
+    "green": 95,
+    "blue": 110,
+    "alpha": 255
+  },
+  "textMuted": {
+    "red": 120,
+    "green": 130,
+    "blue": 145,
+    "alpha": 255
+  },
+  "textDisabled": {
+    "red": 160,
+    "green": 168,
+    "blue": 180,
+    "alpha": 255
+  },
+  "success": {
+    "red": 35,
+    "green": 180,
+    "blue": 110,
+    "alpha": 255
+  },
+  "warning": {
+    "red": 230,
+    "green": 165,
+    "blue": 70,
+    "alpha": 255
+  },
+  "error": {
+    "red": 220,
+    "green": 70,
+    "blue": 70,
+    "alpha": 255
+  },
+  "info": {
+    "red": 0,
+    "green": 145,
+    "blue": 255,
+    "alpha": 255
+  }
 }

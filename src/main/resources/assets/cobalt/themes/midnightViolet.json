@@ -1,20 +1,81 @@
 {
   "name": "Midnight Violet",
-
-  "backgroundPrimary": { "red": 12, "green": 10, "blue": 18, "alpha": 255 },
-  "backgroundSecondary": { "red": 20, "green": 17, "blue": 28, "alpha": 255 },
-  "border": { "red": 42, "green": 36, "blue": 58, "alpha": 255 },
-
-  "accentPrimary": { "red": 168, "green": 85, "blue": 247, "alpha": 255 },
-  "accentSecondary": { "red": 192, "green": 132, "blue": 252, "alpha": 255 },
-
-  "textPrimary": { "red": 236, "green": 232, "blue": 240, "alpha": 255 },
-  "textSecondary": { "red": 190, "green": 184, "blue": 200, "alpha": 255 },
-  "textMuted": { "red": 130, "green": 124, "blue": 140, "alpha": 255 },
-  "textDisabled": { "red": 92, "green": 88, "blue": 102, "alpha": 255 },
-
-  "success": { "red": 80, "green": 210, "blue": 140, "alpha": 255 },
-  "warning": { "red": 245, "green": 190, "blue": 95, "alpha": 255 },
-  "error": { "red": 240, "green": 90, "blue": 110, "alpha": 255 },
-  "info": { "red": 100, "green": 180, "blue": 255, "alpha": 255 }
+  "backgroundPrimary": {
+    "red": 12,
+    "green": 10,
+    "blue": 18,
+    "alpha": 255
+  },
+  "backgroundSecondary": {
+    "red": 20,
+    "green": 17,
+    "blue": 28,
+    "alpha": 255
+  },
+  "border": {
+    "red": 42,
+    "green": 36,
+    "blue": 58,
+    "alpha": 255
+  },
+  "accentPrimary": {
+    "red": 168,
+    "green": 85,
+    "blue": 247,
+    "alpha": 255
+  },
+  "accentSecondary": {
+    "red": 192,
+    "green": 132,
+    "blue": 252,
+    "alpha": 255
+  },
+  "textPrimary": {
+    "red": 236,
+    "green": 232,
+    "blue": 240,
+    "alpha": 255
+  },
+  "textSecondary": {
+    "red": 190,
+    "green": 184,
+    "blue": 200,
+    "alpha": 255
+  },
+  "textMuted": {
+    "red": 130,
+    "green": 124,
+    "blue": 140,
+    "alpha": 255
+  },
+  "textDisabled": {
+    "red": 92,
+    "green": 88,
+    "blue": 102,
+    "alpha": 255
+  },
+  "success": {
+    "red": 80,
+    "green": 210,
+    "blue": 140,
+    "alpha": 255
+  },
+  "warning": {
+    "red": 245,
+    "green": 190,
+    "blue": 95,
+    "alpha": 255
+  },
+  "error": {
+    "red": 240,
+    "green": 90,
+    "blue": 110,
+    "alpha": 255
+  },
+  "info": {
+    "red": 100,
+    "green": 180,
+    "blue": 255,
+    "alpha": 255
+  }
 }

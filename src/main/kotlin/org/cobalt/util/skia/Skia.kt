@@ -3,7 +3,6 @@
 package org.cobalt.util.skia
 
 import io.github.humbleui.skija.*
-import io.github.humbleui.skija.paragraph.*
 import io.github.humbleui.skija.svg.SVGDOM
 import io.github.humbleui.skija.svg.SVGLengthContext
 import io.github.humbleui.types.RRect
@@ -18,13 +17,10 @@ import org.joml.Matrix3x2fc
 object Skia {
 
   private val imageCache = HashMap<SkiaImage, CachedImage>()
+  private val fonts = HashMap<FontKey, Font>()
   private val typefaces = HashMap<SkiaFont, Typeface>()
   private var canvas: Canvas? = null
   private var globalAlpha = 1f
-
-  private val fontCollection: FontCollection by lazy {
-    FontCollection().apply { setDefaultFontManager(FontMgr.getDefault()) }
-  }
 
   @JvmStatic
   val regularFont = SkiaFont("/assets/cobalt/fonts/ProductSans-Regular.ttf")
@@ -151,7 +147,7 @@ object Skia {
     thickness: Float,
     radius: Float,
     color: Color,
-    corners: Array<SkiaCorner> = SkiaCorner.ALL
+    corners: Array<SkiaCorner> = SkiaCorner.ALL,
   ) {
     val radii = radii(radius, corners)
 
@@ -163,24 +159,15 @@ object Skia {
 
   @JvmStatic
   fun text(font: SkiaFont, text: String, x: Float, y: Float, size: Float, color: Color) {
-    val skiaFont = font(font, size)
-
-    TextLine.make(text, skiaFont).use { line ->
-      val baseline = y - line.ascent
-
-      paint(color).use { fill ->
-        canvas().drawTextLine(line, x, baseline, fill)
-      }
+    paint(color).use { fill ->
+      val skijaFont = font(font, size)
+      canvas().drawString(text, x, y - skijaFont.metrics.ascent, skijaFont, fill)
     }
   }
 
   @JvmStatic
   fun textWidth(font: SkiaFont, text: String, size: Float): Float {
-    val skiaFont = font(font, size)
-
-    TextLine.make(text, skiaFont).use { line ->
-      return line.width
-    }
+    return font(font, size).measureTextWidth(text)
   }
 
   @JvmStatic
@@ -191,9 +178,16 @@ object Skia {
     y: Float,
     width: Float,
     size: Float,
-    color: Color
+    color: Color,
+    lineHeight: Float = 1f,
   ) {
-    buildParagraph(typeface(font), text, width, color, size).paint(canvas(), x, y)
+    var cursorY = y
+    val spacing = size * lineHeight
+
+    wrap(font, text, width, size).forEach { line ->
+      text(font, line, x, cursorY, size, color)
+      cursorY += spacing
+    }
   }
 
   @JvmStatic
@@ -201,24 +195,43 @@ object Skia {
     font: SkiaFont,
     text: String,
     maxWidth: Float,
-    fontSize: Float
+    fontSize: Float,
+    lineHeight: Float = 1f,
   ): Float {
-    return buildParagraph(typeface(font), text, maxWidth, Color.BLACK, fontSize).height
+    val lines = wrap(font, text, maxWidth, fontSize)
+    return lines.size * (fontSize * lineHeight)
   }
 
   @JvmStatic
-  fun buildParagraph(typeface: Typeface, text: String, maxWidth: Float, color: Color, fontSize: Float): Paragraph {
-    return ParagraphBuilder(ParagraphStyle(), fontCollection)
-      .pushStyle(
-        TextStyle().apply {
-          this.color = color.rgb
-          this.fontSize = fontSize
-          this.typeface = typeface
+  fun wrap(font: SkiaFont, text: String, maxWidth: Float, size: Float): List<String> {
+    val words = text.split(' ')
+    val lines = mutableListOf<String>()
+    var line = StringBuilder()
+
+    fun flush() {
+      if (line.isNotEmpty()) {
+        lines.add(line.toString())
+        line = StringBuilder()
+      }
+    }
+
+    for (word in words) {
+      val candidate = if (line.isEmpty()) word else "$line $word"
+
+      if (textWidth(font, candidate, size) <= maxWidth || line.isEmpty()) {
+        if (line.isNotEmpty()) {
+          line.append(' ')
         }
-      )
-      .addText(text)
-      .build()
-      .apply { layout(maxWidth) }
+
+        line.append(word)
+      } else {
+        flush()
+        line.append(word)
+      }
+    }
+
+    flush()
+    return lines
   }
 
   @JvmStatic
@@ -289,7 +302,7 @@ object Skia {
     width: Float,
     height: Float,
     radius: Float,
-    cornerRadius: Float = 0f
+    cornerRadius: Float = 0f,
   ) {
     val img = getImage(image)
     val src = Rect.makeWH(img.width.toFloat(), img.height.toFloat())
@@ -357,19 +370,13 @@ object Skia {
     return snapshot
   }
 
-  private fun typeface(font: SkiaFont): Typeface {
-    return typefaces.getOrPut(font) {
-      FontMgr.getDefault().makeFromData(
-        Data.makeFromBytes(font.bytes)
-      ) ?: error("Failed to load font: ${font.location}")
-    }
-  }
-
   private fun font(font: SkiaFont, size: Float): Font {
-    return Font(typeface(font), size)
-      .setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS)
-      .setSubpixel(true)
-      .setHinting(FontHinting.FULL)
+    return fonts.getOrPut(FontKey(font, size)) {
+      Font(typefaces.getOrPut(font) {
+        FontMgr.getDefault().makeFromData(Data.makeFromBytes(font.bytes))
+          ?: error("Failed to load font ('${font.location})")
+      }, size).setEdging(FontEdging.SUBPIXEL_ANTI_ALIAS)
+    }
   }
 
   private fun paint(color: Color, mode: PaintMode = PaintMode.FILL): Paint {
@@ -401,5 +408,6 @@ object Skia {
   }
 
   private data class CachedImage(var count: Int, val image: Image)
+  private data class FontKey(val font: SkiaFont, val size: Float)
 
 }
