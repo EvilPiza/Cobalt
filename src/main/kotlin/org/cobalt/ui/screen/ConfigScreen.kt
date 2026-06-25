@@ -145,4 +145,7 @@ object ConfigScreen : UIScreen() {
     closeScreen()
   }
 
+  override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) = Unit
+  override fun extractMenuBackground(graphics: GuiGraphicsExtractor) = Unit
+
 }

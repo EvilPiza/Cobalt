@@ -21,6 +21,7 @@ import org.cobalt.util.ChatUtils
 import org.cobalt.util.WindowUtils.scaleX
 import org.cobalt.util.WindowUtils.scaleY
 import org.cobalt.util.skia.Skia
+import org.cobalt.util.skia.SkiaPIP
 
 object ModuleManager {
 
@@ -123,23 +124,25 @@ object ModuleManager {
       return
     }
 
-    modules.filterIsInstance<RenderableModule>()
-      .filter { module -> module.enabled }
-      .forEach { module ->
-        Skia.push()
+    SkiaPIP.drawSkia(event.graphics) {
+      modules.filterIsInstance<RenderableModule>()
+        .filter { module -> module.enabled }
+        .forEach { module ->
+          Skia.push()
 
-        val renderX = module.xPos * scaleX
-        val renderY = module.yPos * scaleY
-        val finalScale = module.scale * scaleY
+          val renderX = module.xPos * scaleX
+          val renderY = module.yPos * scaleY
+          val finalScale = module.scale * scaleY
 
-        Skia.translate(renderX, renderY)
-        Skia.scale(finalScale, finalScale)
-        Skia.translate(-module.xPos, -module.yPos)
+          Skia.translate(renderX, renderY)
+          Skia.scale(finalScale, finalScale)
+          Skia.translate(-module.xPos, -module.yPos)
 
-        module.renderComponent()
+          module.renderComponent()
 
-        Skia.pop()
-      }
+          Skia.pop()
+        }
+    }
   }
 
 }
