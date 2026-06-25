@@ -12,7 +12,6 @@ discordIpc = "0.6.0-SNAPSHOT"
 # Plugins Versions
 kotlin = "2.3.10"
 loom = "1.16-SNAPSHOT"
-shadow = "9.3.0"
 detekt = "2.0.0-alpha.2"
 
 [libraries]
@@ -32,11 +31,9 @@ skija-macos = { group = "io.github.humbleui", name = "skija-macos-x64", version.
 skija-macos-arm = { group = "io.github.humbleui", name = "skija-macos-arm64", version.ref = "skija-version" }
 
 [bundles]
-fabric = ["fabric-api", "fabric-loader", "fabric-kotlin"]
 skija-natives = ["skija-windows", "skija-linux", "skija-linux-arm", "skija-macos", "skija-macos-arm"]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
-shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }

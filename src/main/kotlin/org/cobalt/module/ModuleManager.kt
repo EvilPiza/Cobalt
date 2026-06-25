@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.ProgressScreen
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.HudEvent
+import org.cobalt.event.impl.RenderEvent
 import org.cobalt.module.impl.combat.TestModule
 import org.cobalt.module.impl.combat.TestScript
 import org.cobalt.module.impl.misc.AutoHarp
@@ -119,7 +119,7 @@ object ModuleManager {
     }
 
   @SubscribeEvent
-  fun onHudEvent(event: HudEvent) {
+  fun onHudRender(event: RenderEvent.Hud) {
     if (shouldSkipRender) {
       return
     }
