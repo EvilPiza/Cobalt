@@ -24,36 +24,51 @@ public class FontMixin {
     MutableComponent replacement
   ) {
     MutableComponent rebuilt = Component.empty();
-    StringBuilder rawBuilder = new StringBuilder();
 
+    List<Integer> codepoints = new ArrayList<>();
     List<Style> styles = new ArrayList<>();
 
-    text.accept((index, style, codePoint) -> {
-      rawBuilder.appendCodePoint(codePoint);
+    text.accept((_, style, codePoint) -> {
+      codepoints.add(codePoint);
       styles.add(style);
       return true;
     });
 
+    StringBuilder rawBuilder = new StringBuilder();
+
+    for (int cp : codepoints) {
+      rawBuilder.appendCodePoint(cp);
+    }
+
     String raw = rawBuilder.toString();
     int targetLen = target.length();
+
     int i = 0;
 
-    while (i < raw.length()) {
+    while (i < codepoints.size()) {
       int found = raw.indexOf(target, i);
 
       if (found == -1) {
-        for (int j = i; j < raw.length(); j++) {
-          rebuilt.append(Component.literal(new String(Character.toChars(raw.codePointAt(j)))).setStyle(styles.get(j)));
+        for (int j = i; j < codepoints.size(); j++) {
+          rebuilt.append(
+            Component.literal(new String(Character.toChars(codepoints.get(j))))
+              .setStyle(styles.get(j))
+          );
         }
-
         break;
       }
 
       for (int j = i; j < found; j++) {
-        rebuilt.append(Component.literal(new String(Character.toChars(raw.codePointAt(j)))).setStyle(styles.get(j)));
+        rebuilt.append(
+          Component.literal(new String(Character.toChars(codepoints.get(j))))
+            .setStyle(styles.get(j))
+        );
       }
 
-      rebuilt.append(replacement.copy().setStyle(styles.get(found)));
+      rebuilt.append(
+        replacement.copy().setStyle(styles.get(found))
+      );
+
       i = found + targetLen;
     }
 

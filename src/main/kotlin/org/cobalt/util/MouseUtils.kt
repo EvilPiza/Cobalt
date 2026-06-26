@@ -1,6 +1,5 @@
 package org.cobalt.util
 
-import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 
 object MouseUtils {
@@ -22,18 +21,6 @@ object MouseUtils {
       mouseX <= x + width &&
       mouseY >= y &&
       mouseY <= y + height
-  }
-
-  @JvmStatic
-  fun leftClick() {
-    val key = minecraft.options.keyAttack.key
-    KeyMapping.click(key)
-  }
-
-  @JvmStatic
-  fun rightClick() {
-    val key = minecraft.options.keyUse.key
-    KeyMapping.click(key)
   }
 
 }
