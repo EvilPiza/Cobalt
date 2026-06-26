@@ -7,18 +7,19 @@ import org.cobalt.Cobalt.minecraft
 object TablistUtils {
 
   @JvmStatic
-  fun getLines(): List<Component> {
-    val connection = minecraft.connection ?: return emptyList()
+  val lines: List<Component>
+    get() {
+      val connection = minecraft.connection ?: return emptyList()
 
-    return connection.listedOnlinePlayers
-      .sortedWith(
-        compareBy(
-          { it.gameMode == GameType.SPECTATOR },
-          { it.team?.name ?: "" },
-          { it.profile.name }
+      return connection.listedOnlinePlayers
+        .sortedWith(
+          compareBy(
+            { it.gameMode == GameType.SPECTATOR },
+            { it.team?.name ?: "" },
+            { it.profile.name }
+          )
         )
-      )
-      .map { it.tabListDisplayName ?: Component.literal(it.profile.name) }
-  }
+        .map { it.tabListDisplayName ?: Component.literal(it.profile.name) }
+    }
 
 }

@@ -1,13 +1,12 @@
 package org.cobalt.command.impl
 
-import net.minecraft.network.chat.Component
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.command.Command
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
-import org.cobalt.util.TablistUtils.getLines
+import org.cobalt.util.ScoreboardUtils
 import org.cobalt.util.helper.TickScheduler
 
 object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
