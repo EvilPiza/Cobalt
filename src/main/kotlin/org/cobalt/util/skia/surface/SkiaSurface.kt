@@ -13,7 +13,6 @@ interface SkiaSurface {
     width: Int,
     height: Int,
     texture: GpuTexture,
-    clear: Boolean,
     draw: (Canvas) -> Unit,
   )
 

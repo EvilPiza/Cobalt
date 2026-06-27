@@ -31,7 +31,6 @@ internal class GlSurface : SkiaSurface {
     width: Int,
     height: Int,
     texture: GpuTexture,
-    clear: Boolean,
     draw: (Canvas) -> Unit,
   ) {
     val colorTexId = (texture as? GlTexture)?.glId() ?: return
@@ -48,10 +47,6 @@ internal class GlSurface : SkiaSurface {
     directContext.resetGLAll()
 
     val skijaSurface = surfaceFor(width, height, colorTexId)
-
-    if (clear) {
-      skijaSurface.canvas.clear(0)
-    }
 
     Skia.beginFrame(skijaSurface.canvas)
 

@@ -45,7 +45,7 @@ object ConfigManager {
       )
     }.onSuccess { json ->
       (container as? Module)
-        ?.takeIf { module -> module !is Script }
+        ?.takeIf { module -> module.toggleable }
         ?.let { module ->
           json.get("enabled")?.asBoolean?.let {
             module.enabled = it
@@ -90,7 +90,7 @@ object ConfigManager {
 
     val jsonObject = JsonObject().apply {
       (container as? Module)
-        ?.takeIf { module -> module !is Script }
+        ?.takeIf { module -> module.toggleable }
         ?.let {
           addProperty("enabled", it.enabled)
         }

@@ -7,12 +7,11 @@ import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.RenderEvent
-import org.cobalt.module.impl.combat.TestModule
-import org.cobalt.module.impl.combat.TestScript
 import org.cobalt.module.impl.misc.AutoHarp
 import org.cobalt.module.impl.misc.AutoSprint
 import org.cobalt.module.impl.misc.DiscordRPC
 import org.cobalt.module.impl.misc.NickHider
+import org.cobalt.module.impl.misc.Rotations
 import org.cobalt.module.impl.visual.PerformanceHUD
 import org.cobalt.module.type.RenderableModule
 import org.cobalt.module.type.Script
@@ -34,9 +33,7 @@ object ModuleManager {
 
   internal fun registerModules() {
     val builtIn = arrayOf(
-      TestScript,
-      TestModule,
-
+      Rotations,
       PerformanceHUD,
       AutoSprint,
       DiscordRPC,

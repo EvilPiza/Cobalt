@@ -11,8 +11,12 @@ object AutoSprint : Module(
   category = ModuleCategory.MISC,
 ) {
 
-  init {
+  override fun onEnable() {
     EventBus.register(this)
+  }
+
+  override fun onDisable() {
+    EventBus.unregister(this)
   }
 
   @SubscribeEvent

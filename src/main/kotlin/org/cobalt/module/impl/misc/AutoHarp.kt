@@ -19,8 +19,12 @@ object AutoHarp : Module(
 
   private var lastInv = 0
 
-  init {
+  override fun onEnable() {
     EventBus.register(this)
+  }
+
+  override fun onDisable() {
+    EventBus.unregister(this)
   }
 
   @SubscribeEvent

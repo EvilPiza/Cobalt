@@ -18,10 +18,6 @@ object CommandManager {
   @JvmStatic
   internal val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
 
-  init {
-    EventBus.register(this)
-  }
-
   @JvmStatic
   internal fun registerCommands() {
     val builtIn = arrayOf(
@@ -38,19 +34,17 @@ object CommandManager {
     command.build().forEach { dispatcher.register(it) }
   }
 
-  @SubscribeEvent
-  fun handleCommandExecution(event: ChatSendEvent) {
-    val content = event.message
-
+  @JvmStatic
+  internal fun handleCommandExecution(content: String): Boolean {
     if (!content.startsWith(PREFIX)) {
-      return
+      return false
     }
 
-    val player = minecraft.player ?: return
+    val player = minecraft.player ?: return false
     val commandLine = content.removePrefix(PREFIX.toString()).trim()
 
     if (commandLine.isEmpty()) {
-      return
+      return false
     }
 
     try {
@@ -60,7 +54,7 @@ object CommandManager {
       ChatUtils.sendSystemMessage("${ChatFormatting.RED}${exception.message}")
     }
 
-    event.setCancelled(true)
+    return true
   }
 
 }

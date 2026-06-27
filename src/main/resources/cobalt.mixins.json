@@ -6,7 +6,7 @@
   "client": [
     "client.MinecraftMixin",
     "client.MouseHandlerMixin",
-    "gui.ClientPacketListenerMixin",
+    "multiplayer.ClientPacketListenerMixin",
     "gui.CommandSuggestionsMixin",
     "gui.FontMixin",
     "gui.GuiMixin",

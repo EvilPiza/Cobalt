@@ -9,7 +9,7 @@ object NickHider : Module(
   category = ModuleCategory.MISC,
 ) {
 
-  var nickname by TextSetting(
+  val nickname by TextSetting(
     name = "Nickname",
     description = "Your new nickname",
     defaultValue = "CobaltUser"

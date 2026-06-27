@@ -11,6 +11,7 @@ abstract class Script(
   val backgroundResourcePath: String = "",
 ) : Module(
   name, category,
+  toggleable = false,
   startValue = false
 ) {
 

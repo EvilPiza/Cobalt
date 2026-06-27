@@ -1,6 +1,8 @@
 package org.cobalt.util
 
+import net.minecraft.core.BlockPos
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.util.rotation.Rotation
 
 object PlayerUtils {
 
@@ -17,12 +19,39 @@ object PlayerUtils {
     get() = minecraft.player?.inventory?.nonEquipmentItems?.none { it.isEmpty } ?: false
 
   @JvmStatic
-  fun isSuffocating(): Boolean {
-    val player = minecraft.player ?: return false
-    val level = minecraft.level ?: return false
+  val rotation: Rotation
+    get() {
+      val player = minecraft.player!!
+      return Rotation(player.yRot, player.xRot, true)
+    }
 
-    val playerBox = player.boundingBox.inflate(-0.15)
-    return level.noCollision(player, playerBox).not()
+  @JvmStatic
+  val position: BlockPos
+    get() = minecraft.player!!.blockPosition()
+
+  @JvmStatic
+  val isSuffocating: Boolean
+    get() {
+      val player = minecraft.player ?: return false
+      val level = minecraft.level ?: return false
+
+      val playerBox = player.boundingBox.inflate(-0.15)
+      return level.noCollision(player, playerBox).not()
+    }
+
+  @JvmStatic
+  fun setRotation(rotation: Rotation) {
+    val player = minecraft.player ?: return
+
+    rotation.normalize().let { rot ->
+      player.xRotO = player.xRot
+      player.yRotO = player.yRot
+      player.yBob = player.yRot
+      player.yBobO = player.yRot
+
+      player.yRot = rot.yaw
+      player.xRot = rot.pitch
+    }
   }
 
   @JvmStatic

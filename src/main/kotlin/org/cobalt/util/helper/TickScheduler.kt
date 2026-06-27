@@ -23,6 +23,10 @@ object TickScheduler {
 
   @SubscribeEvent
   fun onClientTick(ignored: TickEvent.End) {
+    if (taskQueue.isEmpty()) {
+      return
+    }
+
     currentTick++
     var task: ScheduledTask?
 

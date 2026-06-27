@@ -7,6 +7,7 @@ import org.cobalt.util.config.SettingContainer
 abstract class Module(
   val name: String,
   val category: ModuleCategory,
+  val toggleable: Boolean = true,
   startValue: Boolean = false,
 ) : SettingContainer {
 
@@ -19,7 +20,7 @@ abstract class Module(
 
   var enabled: Boolean = startValue
     set(value) {
-      if (field == value) {
+      if (!toggleable || field == value) {
         return
       }
 

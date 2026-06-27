@@ -26,7 +26,7 @@ class SkiaPIP : PictureInPictureRenderer<SkiaPIP.SkiaRenderState>() {
 
     surface.render(
       width, height,
-      colorView.texture(), clear = false
+      colorView.texture()
     ) {
       state.runnable.run()
     }

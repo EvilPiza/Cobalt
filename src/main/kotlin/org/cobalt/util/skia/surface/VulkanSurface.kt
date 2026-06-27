@@ -33,7 +33,6 @@ internal class VulkanSurface : SkiaSurface {
     width: Int,
     height: Int,
     texture: GpuTexture,
-    clear: Boolean,
     draw: (Canvas) -> Unit,
   ) {
     val vkTexture = texture as? VulkanGpuTexture ?: return
@@ -47,11 +46,8 @@ internal class VulkanSurface : SkiaSurface {
 
     val skijaSurface = surfaceFor(directContext, width, height, vkImage, vkFormat)
 
-    if (clear) {
-      skijaSurface.canvas.clear(0)
-    }
-
     Skia.beginFrame(skijaSurface.canvas)
+
     try {
       draw(skijaSurface.canvas)
     } finally {

@@ -25,12 +25,13 @@ object DiscordRPC : Module(
 
   private const val APPLICATION_ID = 1441864552936636519L
 
-  init {
+  override fun onEnable() {
+    doNotTryAgain = false
     EventBus.register(this)
   }
 
-  override fun onEnable() {
-    doNotTryAgain = false
+  override fun onDisable() {
+    EventBus.unregister(this)
   }
 
   @SubscribeEvent

@@ -14,7 +14,7 @@ class ModuleComponent(
 ) {
 
   private val settings = module.getSettings()
-  private val switch: UIComponent? = if (module is Script) null else SwitchComponent(module)
+  private val switch: UIComponent? = if (module.toggleable) SwitchComponent(module) else null
   private val expandAnimation = EaseOutAnimation(150L)
   private var lastEnabledState = module.enabled
 
@@ -24,7 +24,7 @@ class ModuleComponent(
 
   private val expandProgress: Float
     get() {
-      if (module is Script) {
+      if (!module.toggleable) {
         return 1f
       }
 
@@ -95,7 +95,7 @@ class ModuleComponent(
   override fun mouseClicked(button: Int): Boolean {
     val consumed = super.mouseClicked(button)
 
-    if (module !is Script && consumed && lastEnabledState != module.enabled) {
+    if (module.toggleable && consumed && lastEnabledState != module.enabled) {
       expandAnimation.start()
       lastEnabledState = module.enabled
     }

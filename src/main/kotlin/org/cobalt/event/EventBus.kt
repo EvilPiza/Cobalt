@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 
 object EventBus {
 
-  private val handlers = CopyOnWriteArrayList<Handler>()
+  val handlers = CopyOnWriteArrayList<Handler>()
   private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -91,7 +91,7 @@ object EventBus {
     return event
   }
 
-  private data class Handler(
+  data class Handler(
     val listener: Any,
     val eventType: Class<*>,
     val priority: Event.Priority,
