@@ -45,13 +45,21 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
   }
 
   @SubCommand
-  fun pathfind(x: Int, y: Int, z: Int) {
+  fun walk(x: Int, y: Int, z: Int) {
+    pathfind(PathMode.WALK, x, y, z)
+  }
+
+  @SubCommand
+  fun fly(x: Int, y: Int, z: Int) {
+    pathfind(PathMode.FLY, x, y, z)
+  }
+
+  private fun pathfind(mode: PathMode, x: Int, y: Int, z: Int) {
     val playerPos = PlayerUtils.position
-    val movements = PathMode.WALK.movements
 
     val pathfinder = AStarPathfinder(
       playerPos.x, playerPos.y, playerPos.z,
-      GoalBlock(x, y, z), movements
+      GoalBlock(x, y, z), mode.movements
     )
 
     path = pathfinder.findPath()

@@ -4,9 +4,9 @@ import org.cobalt.pathfinder.calculate.PathMode
 
 class MovementResult {
 
-  private var x: Int = 0
-  private var y: Int = 0
-  private var z: Int = 0
+  var x: Int = 0
+  var y: Int = 0
+  var z: Int = 0
 
   var type: PathMode = PathMode.WALK
   var cost: Double = 1e6

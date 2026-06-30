@@ -13,13 +13,13 @@ class FlyDescendMovement : Movement() {
     currNode: PathNode,
     res: MovementResult,
   ) {
-    res.set(currNode.x, currNode.y + 1, currNode.z)
+    res.set(currNode.x, currNode.y - 1, currNode.z)
     res.type = PathMode.FLY
     res.cost = 1.0
   }
 
   companion object {
-    val DEFAULT = FlyAscendMovement()
+    val DEFAULT = FlyDescendMovement()
   }
 
 }
