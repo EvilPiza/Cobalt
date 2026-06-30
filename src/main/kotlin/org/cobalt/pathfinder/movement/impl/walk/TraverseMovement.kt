@@ -20,15 +20,7 @@ class TraverseMovement(
     val y = currNode.y
     val z = currNode.z + dz
 
-    if (!MovementHelper.canStandOn(ctx, x, y - 1, z)) {
-      return
-    }
-
-    if (!MovementHelper.canPassThrough(ctx, x, y, z)) {
-      return
-    }
-
-    if (!MovementHelper.canPassThrough(ctx, x, y + 1, z)) {
+    if (!MovementHelper.canWalkOn(ctx, x, y - 1, z)) {
       return
     }
 

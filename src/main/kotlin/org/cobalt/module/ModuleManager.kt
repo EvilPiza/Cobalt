@@ -9,6 +9,7 @@ import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.RenderEvent
 import org.cobalt.module.impl.misc.AutoHarp
 import org.cobalt.module.impl.misc.AutoSprint
+import org.cobalt.module.impl.misc.Debug
 import org.cobalt.module.impl.misc.DiscordRPC
 import org.cobalt.module.impl.misc.NickHider
 import org.cobalt.module.impl.misc.Rotations
@@ -38,7 +39,8 @@ object ModuleManager {
       AutoSprint,
       DiscordRPC,
       AutoHarp,
-      NickHider
+      NickHider,
+      Debug
     )
 
     builtIn.forEach { module ->

@@ -19,7 +19,7 @@ class BlockStateAccessor(val level: ClientLevel) {
   fun get(x: Int, y: Int, z: Int): BlockState {
     val y0 = y - level.dimensionType().minY()
 
-    if (y0 !in 0..<level.dimensionType().height()) {
+    if (y0 !in 0 until level.dimensionType().height()) {
       return air
     }
 

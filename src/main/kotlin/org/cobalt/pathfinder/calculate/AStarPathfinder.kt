@@ -96,7 +96,8 @@ class AStarPathfinder(
 
     return Path(
       nodes = path,
-      timeElapsed = (System.currentTimeMillis() - startTime).milliseconds
+      timeElapsed = (System.currentTimeMillis() - startTime).milliseconds,
+      goal = goal
     )
   }
 

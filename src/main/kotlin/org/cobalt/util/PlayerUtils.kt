@@ -1,5 +1,8 @@
 package org.cobalt.util
 
+import kotlin.math.ceil
+import kotlin.math.floor
+import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.rotation.Rotation
@@ -26,8 +29,16 @@ object PlayerUtils {
     }
 
   @JvmStatic
+  val player: LocalPlayer
+    get() = minecraft.player!!
+
+  @JvmStatic
   val position: BlockPos
-    get() = minecraft.player!!.blockPosition()
+    get() = BlockPos(
+      floor(player.x).toInt(),
+      ceil(player.y - 0.25).toInt(),
+      floor(player.z).toInt()
+    )
 
   @JvmStatic
   val isSuffocating: Boolean
@@ -35,8 +46,9 @@ object PlayerUtils {
       val player = minecraft.player ?: return false
       val level = minecraft.level ?: return false
 
-      val playerBox = player.boundingBox.inflate(-0.15)
-      return level.noCollision(player, playerBox).not()
+      return !level.noCollision(
+        player, player.boundingBox.inflate(-0.15)
+      )
     }
 
   @JvmStatic

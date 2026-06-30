@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.module.impl.misc.Debug
 import org.slf4j.LoggerFactory
 
 object ChatUtils {
@@ -36,6 +37,10 @@ object ChatUtils {
       MessageType.DEFAULT -> defaultPrefix.copy().append(stringToComponent(message))
       MessageType.RAW -> stringToComponent(message)
       MessageType.DEBUG -> {
+        if (!Debug.enabled) {
+          return
+        }
+
         if (lastDebugMessage == message) {
           return
         }
@@ -45,7 +50,9 @@ object ChatUtils {
       }
     }
 
-    player.sendSystemMessage(component)
+    minecraft.execute {
+      player.sendSystemMessage(component)
+    }
   }
 
   @JvmStatic
@@ -62,7 +69,9 @@ object ChatUtils {
       return
     }
 
-    player.connection.sendChat(message)
+    minecraft.execute {
+      player.connection.sendChat(message)
+    }
   }
 
   @JvmStatic
@@ -74,7 +83,9 @@ object ChatUtils {
       return
     }
 
-    player.connection.sendCommand(command)
+    minecraft.execute {
+      player.connection.sendCommand(command)
+    }
   }
 
 }

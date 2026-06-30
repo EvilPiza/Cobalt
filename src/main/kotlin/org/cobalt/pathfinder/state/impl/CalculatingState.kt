@@ -1,0 +1,42 @@
+package org.cobalt.pathfinder.state.impl
+
+import net.minecraft.ChatFormatting
+import org.cobalt.pathfinder.PathExecutor
+import org.cobalt.pathfinder.calculate.AStarPathfinder
+import org.cobalt.pathfinder.state.ExecutorState
+import org.cobalt.util.ChatUtils
+import org.cobalt.util.MessageType
+import org.cobalt.util.PlayerUtils
+import org.cobalt.util.helper.Multithreading
+
+class CalculatingState : ExecutorState {
+
+  override fun enter() {
+    val config = PathExecutor.config ?: return
+    val startPos = PlayerUtils.position
+
+    val pathFinder = AStarPathfinder(
+      startPos.x, startPos.y, startPos.z,
+      config.goal, config.mode.movements
+    )
+
+    Multithreading.runAsync {
+      val path = pathFinder.findPath()
+
+      if (path == null) {
+        ChatUtils.sendSystemMessage("${ChatFormatting.RED}Unable to find a path.")
+        PathExecutor.stop()
+        return@runAsync
+      }
+
+      PathExecutor.path = path
+      PathExecutor.changeState(WalkingState())
+
+      ChatUtils.sendSystemMessage(
+        "Found ${path.nodes.size} node path in ${path.timeElapsed.inWholeMilliseconds}ms",
+        MessageType.DEBUG
+      )
+    }
+  }
+
+}

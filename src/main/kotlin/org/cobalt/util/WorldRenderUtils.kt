@@ -77,7 +77,7 @@ object WorldRenderUtils {
       GizmoStyle.strokeAndFill(
         ARGB.color(color.alpha, color.red, color.green, color.blue),
         lineWidth,
-        ARGB.color(100, color.red, color.green, color.blue)
+        ARGB.color(50, color.red, color.green, color.blue)
       )
     )
 

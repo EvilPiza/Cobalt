@@ -1,5 +1,7 @@
 package org.cobalt.pathfinder.calculate
 
+import net.minecraft.core.BlockPos
+import net.minecraft.world.phys.Vec3
 import org.cobalt.pathfinder.goal.IGoal
 
 data class PathNode(
@@ -14,8 +16,11 @@ data class PathNode(
   var totalCost = 1.0
   var heapPosition = -1
   var type = PathMode.WALK
-
   var parent: PathNode? = null
+
+  val blockPos: BlockPos = BlockPos(x, y, z)
+  val blockBelow: BlockPos = BlockPos(x, y - 1, z)
+  val centerVec: Vec3 = Vec3(x + 0.5, y.toDouble(), z + 0.5)
 
   override fun equals(other: Any?): Boolean {
     val otherNode = other as PathNode

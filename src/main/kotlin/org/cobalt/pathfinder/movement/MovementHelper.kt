@@ -35,7 +35,7 @@ object MovementHelper {
     state: BlockState = ctx.bsa.get(x, y, z),
   ): Boolean {
     return canPassThrough(ctx, x, y, z, state) &&
-      canPassThrough(ctx, x, y + 1, z, state)
+      canPassThrough(ctx, x, y + 1, z)
   }
 
   fun canPassThrough(
