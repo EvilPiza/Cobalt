@@ -1,7 +1,6 @@
 package org.cobalt.command.impl
 
 import java.awt.Color
-import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.command.Command
@@ -11,9 +10,12 @@ import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.pathfinder.calculate.AStarPathfinder
+import org.cobalt.pathfinder.calculate.Path
+import org.cobalt.pathfinder.calculate.PathMode
 import org.cobalt.pathfinder.goal.GoalBlock
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
+import org.cobalt.util.ChatUtils
 import org.cobalt.util.PlayerUtils
 import org.cobalt.util.WorldRenderUtils
 import org.cobalt.util.helper.TickScheduler
@@ -36,7 +38,7 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
     }
   }
 
-  private var path: List<BlockPos>? = null
+  private var path: Path? = null
 
   init {
     EventBus.register(this)
@@ -45,18 +47,25 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
   @SubCommand
   fun pathfind(x: Int, y: Int, z: Int) {
     val playerPos = PlayerUtils.position
+    val movements = PathMode.WALK.movements
+
     val pathfinder = AStarPathfinder(
       playerPos.x, playerPos.y, playerPos.z,
-      GoalBlock(x, y, z)
+      GoalBlock(x, y, z), movements
     )
 
-    // todo: add debug message
     path = pathfinder.findPath()
+
+    if (path != null) {
+      ChatUtils.sendSystemMessage("Path found with ${path!!.nodes.size} nodes in ${path!!.timeElapsed.inWholeMilliseconds} ms")
+    } else {
+      ChatUtils.sendSystemMessage("No path found")
+    }
   }
 
   @SubscribeEvent
   fun onRender(event: WorldRenderEvent) {
-    path?.let { path ->
+    path?.nodes?.let { path ->
       for (index in 1 until path.size) {
         val prev = path[index - 1]
         val current = path[index]

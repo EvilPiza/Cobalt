@@ -1,5 +1,7 @@
 package org.cobalt.pathfinder.goal
 
+import kotlin.math.abs
+
 class GoalBlock(
   val goalX: Int,
   val goalY: Int,
@@ -7,7 +9,11 @@ class GoalBlock(
 ) : IGoal {
 
   override fun heuristic(x: Int, y: Int, z: Int): Double {
-    return 1.0 // todo: implement good heuristic
+    val dx = abs(goalX - x).toDouble()
+    val dy = abs(goalY - y) * 3.0
+    val dz = abs(goalZ - z).toDouble()
+
+    return dx + dy + dz
   }
 
   override fun isAtGoal(x: Int, y: Int, z: Int): Boolean {

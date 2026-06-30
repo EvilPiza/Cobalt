@@ -20,10 +20,13 @@ class BinaryHeapOpenSet(initialSize: Int = 1024) {
   fun relocate(node: PathNode) {
     var parent = node.heapPosition ushr 1
     var parentNode = items[parent]
+
     while (node.heapPosition > 1 && node.totalCost < parentNode!!.totalCost) {
       items[node.heapPosition] = parentNode
       items[parent] = node
+
       node.heapPosition = parent
+
       parent = parent ushr 1
       parentNode = items[parent]
     }

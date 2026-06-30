@@ -1,61 +1,103 @@
 package org.cobalt.pathfinder.calculate
 
-import net.minecraft.core.BlockPos
-import org.cobalt.Cobalt.minecraft
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import kotlin.time.Duration.Companion.milliseconds
 import org.cobalt.pathfinder.calculate.openset.BinaryHeapOpenSet
 import org.cobalt.pathfinder.goal.IGoal
-import org.cobalt.pathfinder.helper.BlockStateAccessor
 import org.cobalt.pathfinder.movement.CalculationContext
+import org.cobalt.pathfinder.movement.Movement
+import org.cobalt.pathfinder.movement.MovementResult
 
 class AStarPathfinder(
-  startX: Int,
-  startY: Int,
-  startZ: Int,
-  goal: IGoal,
-) : Pathfinder(startX, startY, startZ, goal) {
+  val startX: Int,
+  val startY: Int,
+  val startZ: Int,
+  val goal: IGoal,
+  val movements: Array<out Movement>,
+) {
 
-  override fun findPath(): List<BlockPos>? {
+  private val closedSet = Long2ObjectOpenHashMap<PathNode>()
+  private var startTime = 0L
+
+  fun findPath(): Path? {
     val ctx = CalculationContext()
     val openSet = BinaryHeapOpenSet()
-    val visited = HashMap<Long, PathNode>()
+    val res = MovementResult()
 
-    val startNode = PathNode(startX, startY, startZ, goal).also {
+    val startNode = PathNode(
+      startX, startY, startZ, goal
+    ).also {
       it.costSoFar = 0.0
       it.totalCost = it.costToEnd
     }
 
     openSet.add(startNode)
-    visited[startNode.key()] = startNode
+
+    startTime = System.currentTimeMillis()
 
     while (!openSet.isEmpty()) {
-      val current = openSet.poll()
+      val currentNode = openSet.poll()
 
-      if (goal.isAtGoal(current.x, current.y, current.z)) {
-        return reconstruct(current)
+      if (goal.isAtGoal(currentNode.x, currentNode.y, currentNode.z)) {
+        return reconstruct(currentNode)
       }
 
+      for (move in movements) {
+        res.reset()
+        move.calculateCost(ctx, currentNode, res)
 
+        if (res.cost >= ctx.INF_COST) {
+          continue
+        }
+
+        val neighborCostSoFar = currentNode.costSoFar + res.cost
+        val neighborNode = getNode(
+          res.x, res.y, res.z,
+          PathNode.longHash(res.x, res.y, res.z)
+        )
+
+        if (neighborCostSoFar < neighborNode.costSoFar) {
+          neighborNode.parent = currentNode
+          neighborNode.costSoFar = neighborCostSoFar
+          neighborNode.totalCost = neighborCostSoFar + neighborNode.costToEnd
+          neighborNode.type = res.type
+
+          if (neighborNode.heapPosition == -1) {
+            openSet.add(neighborNode)
+          } else {
+            openSet.relocate(neighborNode)
+          }
+        }
+      }
     }
 
     return null
   }
 
-  fun PathNode.key(): Long {
-    return (x.toLong() and 0x3FFFFFF) shl 38 or
-      (z.toLong() and 0x3FFFFFF) shl 12 or
-      (y.toLong() and 0xFFF)
+  fun getNode(x: Int, y: Int, z: Int, hash: Long): PathNode {
+    var node: PathNode? = closedSet.get(hash)
+
+    if (node == null) {
+      node = PathNode(x, y, z, goal)
+      closedSet.put(hash, node)
+    }
+
+    return node
   }
 
-  private fun reconstruct(end: PathNode): List<BlockPos> {
-    val path = ArrayDeque<BlockPos>()
-    var node: PathNode? = end
+  private fun reconstruct(endNode: PathNode): Path {
+    val path = mutableListOf<PathNode>()
+    var node: PathNode? = endNode
 
     while (node != null) {
-      path.addFirst(BlockPos(node.x, node.y, node.z))
+      path.addFirst(node)
       node = node.parent
     }
 
-    return path
+    return Path(
+      nodes = path,
+      timeElapsed = (System.currentTimeMillis() - startTime).milliseconds
+    )
   }
 
 }

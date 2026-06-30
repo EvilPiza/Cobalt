@@ -6,6 +6,8 @@ import org.cobalt.pathfinder.helper.BlockStateAccessor
 
 class CalculationContext {
 
+  val INF_COST = 1e6
+
   val level = minecraft.level!!
   val player = minecraft.player!!
 
