@@ -3,6 +3,7 @@ package org.cobalt.pathfinder.movement.impl.walk
 import org.cobalt.pathfinder.calculate.PathNode
 import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
+import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.pathfinder.movement.MovementResult
 
 class DescendMovement(
@@ -15,7 +16,19 @@ class DescendMovement(
     currNode: PathNode,
     res: MovementResult,
   ) {
-    res.set(currNode.x + dx, currNode.y - 1, currNode.z + dz)
+    val x = currNode.x + dx
+    val y = currNode.y - 1
+    val z = currNode.z + dz
+
+    if (!MovementHelper.canWalkThrough(ctx, x, currNode.y, z)) {
+      return
+    }
+
+    if (!MovementHelper.canWalkOn(ctx, x, y - 1, z)) {
+      return
+    }
+
+    res.set(x, y, z)
     res.cost = 1.0
   }
 

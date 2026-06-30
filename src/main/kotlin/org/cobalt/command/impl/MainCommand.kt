@@ -13,6 +13,8 @@ import org.cobalt.pathfinder.calculate.AStarPathfinder
 import org.cobalt.pathfinder.calculate.Path
 import org.cobalt.pathfinder.calculate.PathMode
 import org.cobalt.pathfinder.goal.GoalBlock
+import org.cobalt.pathfinder.movement.CalculationContext
+import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
 import org.cobalt.util.ChatUtils
@@ -54,6 +56,26 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
     pathfind(PathMode.FLY, x, y, z)
   }
 
+  @SubCommand
+  fun test(pass: Boolean) {
+    val ctx = CalculationContext()
+    val playerPos = PlayerUtils.position
+
+    val pos = if (pass) {
+      playerPos
+    } else {
+      playerPos.atY(playerPos.y - 1)
+    }
+
+    val bool = if (pass) {
+      MovementHelper.canPassThrough(ctx, pos.x, pos.y, pos.z)
+    } else {
+      MovementHelper.canStandOn(ctx, pos.x, pos.y, pos.z)
+    }
+
+    ChatUtils.sendSystemMessage("$bool")
+  }
+
   private fun pathfind(mode: PathMode, x: Int, y: Int, z: Int) {
     val playerPos = PlayerUtils.position
 
@@ -65,14 +87,16 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
     path = pathfinder.findPath()
 
     if (path != null) {
-      ChatUtils.sendSystemMessage("Path found with ${path!!.nodes.size} nodes in ${path!!.timeElapsed.inWholeMilliseconds} ms")
+      ChatUtils.sendSystemMessage(
+        "Path found with ${path!!.nodes.size} nodes in ${path!!.timeElapsed.inWholeMilliseconds} ms"
+      )
     } else {
       ChatUtils.sendSystemMessage("No path found")
     }
   }
 
   @SubscribeEvent
-  fun onRender(event: WorldRenderEvent) {
+  fun onRender(ignored: WorldRenderEvent) {
     path?.nodes?.let { path ->
       for (index in 1 until path.size) {
         val prev = path[index - 1]

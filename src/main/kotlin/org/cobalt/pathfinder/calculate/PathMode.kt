@@ -46,13 +46,5 @@ enum class PathMode(vararg val movements: Movement) {
 
     FlyAscendMovement.DEFAULT,
     FlyDescendMovement.DEFAULT,
-  ),
-
-  AOTV(
-
-  ),
-
-  ETHERWARP(
-
   )
 }

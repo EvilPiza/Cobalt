@@ -46,7 +46,7 @@ class AStarPathfinder(
         res.reset()
         move.calculateCost(ctx, currentNode, res)
 
-        if (res.cost >= ctx.INF_COST) {
+        if (res.cost >= ctx.infCost) {
           continue
         }
 

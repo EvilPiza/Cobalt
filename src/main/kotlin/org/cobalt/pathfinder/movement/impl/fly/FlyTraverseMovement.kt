@@ -4,6 +4,7 @@ import org.cobalt.pathfinder.calculate.PathMode
 import org.cobalt.pathfinder.calculate.PathNode
 import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
+import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.pathfinder.movement.MovementResult
 
 class FlyTraverseMovement(
@@ -16,7 +17,19 @@ class FlyTraverseMovement(
     currNode: PathNode,
     res: MovementResult,
   ) {
-    res.set(currNode.x + dx, currNode.y, currNode.z + dz)
+    val x = currNode.x + dx
+    val y = currNode.y
+    val z = currNode.z + dz
+
+    if (!MovementHelper.canPassThrough(ctx, x, y, z)) {
+      return
+    }
+
+    if (!MovementHelper.canPassThrough(ctx, x, y + 1, z)) {
+      return
+    }
+
+    res.set(x, y, z)
     res.type = PathMode.FLY
     res.cost = 1.0
   }

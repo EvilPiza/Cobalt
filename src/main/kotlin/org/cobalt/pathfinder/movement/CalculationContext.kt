@@ -3,10 +3,11 @@ package org.cobalt.pathfinder.movement
 import net.minecraft.world.effect.MobEffects
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.pathfinder.helper.BlockStateAccessor
+import org.cobalt.pathfinder.precompute.PrecomputedData
 
 class CalculationContext {
 
-  val INF_COST = 1e6
+  val infCost = 1e6
 
   val level = minecraft.level!!
   val player = minecraft.player!!
@@ -15,5 +16,6 @@ class CalculationContext {
   val jumpAmplifier = player.getEffect(MobEffects.JUMP_BOOST)?.amplifier ?: -1
 
   val bsa = BlockStateAccessor(level)
+  val precomputedData = PrecomputedData()
 
 }
