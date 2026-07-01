@@ -20,8 +20,7 @@ data class PathNode(
   var parent: PathNode? = null
 
   val blockPos: BlockPos = BlockPos(x, y, z)
-  val blockBelow: BlockPos = BlockPos(x, y - 1, z)
-  val centerVec: Vec3 = Vec3(x + 0.5, y.toDouble(), z + 0.5)
+  val centerVec: Vec3 = Vec3(x + 0.5, y + 0.5, z + 0.5)
 
   override fun equals(other: Any?): Boolean {
     val otherNode = other as PathNode

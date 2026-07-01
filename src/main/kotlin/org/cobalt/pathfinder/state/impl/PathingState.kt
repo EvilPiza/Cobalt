@@ -10,6 +10,7 @@ import org.cobalt.pathfinder.state.ExecutorState
 import org.cobalt.util.KeybindUtils
 import org.cobalt.util.PlayerUtils
 
+// todo: fix movement & rotations
 class PathingState : ExecutorState {
 
   private val path = PathExecutor.path
@@ -73,11 +74,11 @@ class PathingState : ExecutorState {
       val diffY = nodePos.y - playerPos.y
 
       when {
-        diffY > 0.5 -> {
+        diffY > 0 -> {
           keys.add(minecraft.options.keyJump)
         }
 
-        diffY < -0.5 -> {
+        diffY < 0 -> {
           keys.add(minecraft.options.keyShift)
         }
       }

@@ -52,7 +52,7 @@ object PlayerUtils {
   val position: BlockPos
     get() = BlockPos(
       floor(player!!.x).toInt(),
-      floor(player!!.y).toInt(),
+      player!!.blockPosition().y,
       floor(player!!.z).toInt()
     )
 

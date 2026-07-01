@@ -91,13 +91,28 @@ object PathExecutor {
     val theme = ThemeManager.activeTheme
     val nodes = path?.nodes ?: return
 
+    val targetNode = nodes[pathIndex].blockPos
+    val playerPos = PlayerUtils.position
+
+    WorldRenderUtils.drawBlockPos(
+      playerPos,
+      color = theme.success
+    )
+
+    WorldRenderUtils.drawBlockPos(
+      targetNode,
+      color = theme.error
+    )
+
     for (index in nodes.indices) {
       val node = nodes[index]
 
-      WorldRenderUtils.drawBlockPos(
-        node.blockBelow,
-        color = theme.accentPrimary
-      )
+      if (node.blockPos !in listOf(targetNode, playerPos)) {
+        WorldRenderUtils.drawBlockPos(
+          node.blockPos,
+          color = theme.accentPrimary
+        )
+      }
 
       if (index > 0) {
         val prev = nodes[index - 1]

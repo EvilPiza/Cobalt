@@ -26,6 +26,7 @@ object KeybindUtils {
     minecraft.options.keyLeft,
     minecraft.options.keyRight,
     minecraft.options.keyJump,
+    minecraft.options.keyShift,
   )
 
   @JvmStatic

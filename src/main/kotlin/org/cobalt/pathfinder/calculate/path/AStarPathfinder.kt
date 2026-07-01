@@ -9,6 +9,8 @@ import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementResult
 import kotlin.time.Duration.Companion.milliseconds
+import org.cobalt.pathfinder.movement.MovementHelper
+import org.cobalt.util.PlayerUtils
 
 class AStarPathfinder(
     val startX: Int,
@@ -31,6 +33,10 @@ class AStarPathfinder(
     val startNode = PathNode(
         startX, startY, startZ, goal
     ).also {
+      if (PlayerUtils.isFlying) {
+        it.type = Movement.Type.FLY
+      }
+
       it.costSoFar = 0.0
       it.totalCost = it.costToEnd
     }
@@ -109,6 +115,10 @@ class AStarPathfinder(
   private fun reconstruct(endNode: PathNode): Path {
     val path = mutableListOf<PathNode>()
     var node: PathNode? = endNode
+
+    endNode.parent?.let {
+      endNode.type = it.type
+    }
 
     while (node != null) {
       path.addFirst(node)
