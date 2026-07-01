@@ -1,27 +1,15 @@
 package org.cobalt.command.impl
 
-import java.awt.Color
-import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.command.Command
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
-import org.cobalt.event.EventBus
-import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.pathfinder.PathConfig
 import org.cobalt.pathfinder.PathExecutor
-import org.cobalt.pathfinder.calculate.AStarPathfinder
-import org.cobalt.pathfinder.calculate.Path
 import org.cobalt.pathfinder.calculate.PathMode
 import org.cobalt.pathfinder.goal.GoalBlock
-import org.cobalt.pathfinder.movement.CalculationContext
-import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.ui.screen.ConfigScreen
 import org.cobalt.ui.screen.HudEditorScreen
-import org.cobalt.util.ChatUtils
-import org.cobalt.util.PlayerUtils
-import org.cobalt.util.WorldRenderUtils
 import org.cobalt.util.helper.TickScheduler
 
 object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
@@ -43,10 +31,11 @@ object MainCommand : Command(name = "cobalt", aliases = listOf("cb")) {
   }
 
   @SubCommand
-  fun goTo(x: Int, y: Int, z: Int, fly: Boolean = false) {
+  fun goTo(x: Int, y: Int, z: Int, fly: Boolean) {
+    val mode = if (fly) PathMode.FLY else PathMode.WALK
     val config = PathConfig(
       goal = GoalBlock(x, y, z),
-      mode = if (fly) PathMode.FLY else PathMode.WALK
+      movements = mode.movements
     )
 
     PathExecutor.goTo(config)

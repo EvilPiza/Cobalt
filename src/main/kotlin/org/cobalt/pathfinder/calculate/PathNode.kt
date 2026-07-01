@@ -3,6 +3,7 @@ package org.cobalt.pathfinder.calculate
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import org.cobalt.pathfinder.goal.IGoal
+import org.cobalt.pathfinder.movement.Movement
 
 data class PathNode(
   val x: Int,
@@ -15,7 +16,7 @@ data class PathNode(
   val costToEnd = goal.heuristic(x, y, z)
   var totalCost = 1.0
   var heapPosition = -1
-  var type = PathMode.WALK
+  var type = Movement.Type.WALK
   var parent: PathNode? = null
 
   val blockPos: BlockPos = BlockPos(x, y, z)

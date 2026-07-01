@@ -1,6 +1,5 @@
 package org.cobalt.util
 
-import javax.swing.text.JTextComponent.KeyBinding
 import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 
@@ -65,6 +64,15 @@ object KeybindUtils {
     } else if (keyMapping.isDown) {
       keyMapping.isDown = false
     }
+  }
+
+  @JvmStatic
+  fun stopMovement(vararg ignoreKeys: KeyMapping) {
+    movementKeys
+      .filter { it !in ignoreKeys }
+      .forEach {
+        setKeyState(it, false)
+      }
   }
 
   @JvmStatic

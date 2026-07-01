@@ -8,7 +8,6 @@ class MovementResult {
   var y: Int = 0
   var z: Int = 0
 
-  var type: PathMode = PathMode.WALK
   var cost: Double = 1e6
 
   fun set(x: Int, y: Int, z: Int) {

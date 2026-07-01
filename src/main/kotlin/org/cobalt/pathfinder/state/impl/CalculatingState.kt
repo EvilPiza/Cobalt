@@ -2,7 +2,7 @@ package org.cobalt.pathfinder.state.impl
 
 import net.minecraft.ChatFormatting
 import org.cobalt.pathfinder.PathExecutor
-import org.cobalt.pathfinder.calculate.AStarPathfinder
+import org.cobalt.pathfinder.calculate.path.AStarPathfinder
 import org.cobalt.pathfinder.state.ExecutorState
 import org.cobalt.util.ChatUtils
 import org.cobalt.util.MessageType
@@ -17,7 +17,8 @@ class CalculatingState : ExecutorState {
 
     val pathFinder = AStarPathfinder(
       startPos.x, startPos.y, startPos.z,
-      config.goal, config.mode.movements
+      config.goal, config.movements,
+      config.returnBestNode
     )
 
     Multithreading.runAsync {
@@ -30,7 +31,7 @@ class CalculatingState : ExecutorState {
       }
 
       PathExecutor.path = path
-      PathExecutor.changeState(WalkingState())
+      PathExecutor.changeState(PathingState())
 
       ChatUtils.sendSystemMessage(
         "Found ${path.nodes.size} node path in ${path.timeElapsed.inWholeMilliseconds}ms",

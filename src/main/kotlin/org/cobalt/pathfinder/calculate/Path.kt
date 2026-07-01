@@ -7,4 +7,12 @@ data class Path(
   val nodes: List<PathNode>,
   val timeElapsed: Duration,
   val goal: IGoal
-)
+) {
+
+  val keyNodes: List<PathNode>
+
+  init {
+    keyNodes = emptyList()
+  }
+
+}

@@ -1,5 +1,6 @@
 package org.cobalt.pathfinder
 
+import net.minecraft.ChatFormatting
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -8,8 +9,12 @@ import org.cobalt.event.impl.WorldRenderEvent
 import org.cobalt.pathfinder.calculate.Path
 import org.cobalt.pathfinder.state.ExecutorState
 import org.cobalt.pathfinder.state.impl.CalculatingState
+import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.ChatUtils
+import org.cobalt.util.KeybindUtils
 import org.cobalt.util.MessageType
+import org.cobalt.util.PlayerUtils
+import org.cobalt.util.WorldRenderUtils
 
 object PathExecutor {
 
@@ -28,6 +33,11 @@ object PathExecutor {
   fun goTo(config: PathConfig) {
     stop()
 
+    if (config.useFlyMovement && !PlayerUtils.canFly) {
+      ChatUtils.sendSystemMessage("${ChatFormatting.RED} Invalid path config, since player cannot fly!")
+      return
+    }
+
     this.config = config
     this.running = true
 
@@ -36,9 +46,11 @@ object PathExecutor {
 
   fun stop() {
     state?.exit()
-    running = false
-
     state = null
+
+    KeybindUtils.stopMovement()
+
+    running = false
     config = null
 
     path = null
@@ -72,7 +84,30 @@ object PathExecutor {
 
   @SubscribeEvent
   fun onRender(ignored: WorldRenderEvent) {
-    state?.onRender()
+    if (state is CalculatingState) {
+      return
+    }
+
+    val theme = ThemeManager.activeTheme
+    val nodes = path?.nodes ?: return
+
+    for (index in nodes.indices) {
+      val node = nodes[index]
+
+      WorldRenderUtils.drawBlockPos(
+        node.blockBelow,
+        color = theme.accentPrimary
+      )
+
+      if (index > 0) {
+        val prev = nodes[index - 1]
+
+        WorldRenderUtils.drawLine(
+          prev.centerVec, node.centerVec,
+          theme.accentSecondary
+        )
+      }
+    }
   }
 
 }

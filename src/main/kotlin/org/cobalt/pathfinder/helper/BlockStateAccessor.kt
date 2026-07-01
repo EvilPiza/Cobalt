@@ -23,8 +23,6 @@ class BlockStateAccessor(val level: ClientLevel) {
       return air
     }
 
-    // todo: add cached world support
-
     prevChunk?.takeIf { it.pos.x == x shr 4 && it.pos.z == z shr 4 }
       ?.let { return getFromChunk(it, x, y0, z) }
 

@@ -1,11 +1,16 @@
 package org.cobalt.util
 
 import kotlin.math.abs
+import kotlin.math.sqrt
 import net.minecraft.util.Mth
+import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.util.rotation.Rotation
 
+
 object RotationUtils {
+
+  const val RAD_TO_DEG: Double = 180.0 / Math.PI
 
   @JvmStatic
   val gcd: Double

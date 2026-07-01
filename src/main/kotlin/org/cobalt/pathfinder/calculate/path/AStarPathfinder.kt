@@ -1,31 +1,35 @@
-package org.cobalt.pathfinder.calculate
+package org.cobalt.pathfinder.calculate.path
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import kotlin.time.Duration.Companion.milliseconds
+import org.cobalt.pathfinder.calculate.Path
+import org.cobalt.pathfinder.calculate.PathNode
 import org.cobalt.pathfinder.calculate.openset.BinaryHeapOpenSet
 import org.cobalt.pathfinder.goal.IGoal
 import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementResult
+import kotlin.time.Duration.Companion.milliseconds
 
 class AStarPathfinder(
-  val startX: Int,
-  val startY: Int,
-  val startZ: Int,
-  val goal: IGoal,
-  val movements: Array<out Movement>,
+    val startX: Int,
+    val startY: Int,
+    val startZ: Int,
+    val goal: IGoal,
+    val movements: Array<out Movement>,
+    val returnBestNode: Boolean,
 ) {
 
   private val closedSet = Long2ObjectOpenHashMap<PathNode>()
   private var startTime = 0L
 
+  @Suppress("CognitiveComplexMethod")
   fun findPath(): Path? {
     val ctx = CalculationContext()
     val openSet = BinaryHeapOpenSet()
     val res = MovementResult()
 
     val startNode = PathNode(
-      startX, startY, startZ, goal
+        startX, startY, startZ, goal
     ).also {
       it.costSoFar = 0.0
       it.totalCost = it.costToEnd
@@ -34,9 +38,22 @@ class AStarPathfinder(
     openSet.add(startNode)
 
     startTime = System.currentTimeMillis()
+    var bestNode = startNode
 
     while (!openSet.isEmpty()) {
+      if (System.currentTimeMillis() - startTime >= 5_000) {
+        break
+      }
+
       val currentNode = openSet.poll()
+
+      if (
+        currentNode.costToEnd < bestNode.costToEnd ||
+        (currentNode.costToEnd == bestNode.costToEnd &&
+          currentNode.costSoFar < bestNode.costSoFar)
+      ) {
+        bestNode = currentNode
+      }
 
       if (goal.isAtGoal(currentNode.x, currentNode.y, currentNode.z)) {
         return reconstruct(currentNode)
@@ -60,7 +77,7 @@ class AStarPathfinder(
           neighborNode.parent = currentNode
           neighborNode.costSoFar = neighborCostSoFar
           neighborNode.totalCost = neighborCostSoFar + neighborNode.costToEnd
-          neighborNode.type = res.type
+          currentNode.type = move.type
 
           if (neighborNode.heapPosition == -1) {
             openSet.add(neighborNode)
@@ -71,7 +88,11 @@ class AStarPathfinder(
       }
     }
 
-    return null
+    return if (returnBestNode) {
+      reconstruct(bestNode)
+    } else {
+      null
+    }
   }
 
   fun getNode(x: Int, y: Int, z: Int, hash: Long): PathNode {
@@ -95,9 +116,9 @@ class AStarPathfinder(
     }
 
     return Path(
-      nodes = path,
-      timeElapsed = (System.currentTimeMillis() - startTime).milliseconds,
-      goal = goal
+        nodes = path,
+        timeElapsed = (System.currentTimeMillis() - startTime).milliseconds,
+        goal = goal
     )
   }
 

@@ -6,6 +6,7 @@ import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import org.cobalt.event.EventBus;
 import org.cobalt.event.impl.PacketEvent;
+import org.cobalt.util.PlayerUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

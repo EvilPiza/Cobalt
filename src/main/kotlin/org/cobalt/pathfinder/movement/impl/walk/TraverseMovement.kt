@@ -9,7 +9,7 @@ import org.cobalt.pathfinder.movement.MovementResult
 class TraverseMovement(
   val dx: Int,
   val dz: Int,
-) : Movement() {
+) : Movement(Type.WALK) {
 
   override fun calculateCost(
     ctx: CalculationContext,

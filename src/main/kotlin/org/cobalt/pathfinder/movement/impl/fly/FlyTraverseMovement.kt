@@ -1,6 +1,5 @@
 package org.cobalt.pathfinder.movement.impl.fly
 
-import org.cobalt.pathfinder.calculate.PathMode
 import org.cobalt.pathfinder.calculate.PathNode
 import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
@@ -10,7 +9,7 @@ import org.cobalt.pathfinder.movement.MovementResult
 class FlyTraverseMovement(
   val dx: Int,
   val dz: Int,
-) : Movement() {
+) : Movement(Type.FLY) {
 
   override fun calculateCost(
     ctx: CalculationContext,
@@ -21,16 +20,11 @@ class FlyTraverseMovement(
     val y = currNode.y
     val z = currNode.z + dz
 
-    if (!MovementHelper.canPassThrough(ctx, x, y, z)) {
-      return
-    }
-
-    if (!MovementHelper.canPassThrough(ctx, x, y + 1, z)) {
+    if (!MovementHelper.canWalkThrough(ctx, x, y, z)) {
       return
     }
 
     res.set(x, y, z)
-    res.type = PathMode.FLY
     res.cost = 1.0
   }
 

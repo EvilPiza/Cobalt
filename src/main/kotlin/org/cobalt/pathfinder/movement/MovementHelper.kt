@@ -2,7 +2,10 @@
 
 package org.cobalt.pathfinder.movement
 
+import kotlin.math.sqrt
+import net.minecraft.client.KeyMapping
 import net.minecraft.core.BlockPos
+import net.minecraft.util.Mth
 import net.minecraft.world.level.EmptyBlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.piston.MovingPistonBlock
@@ -11,12 +14,17 @@ import net.minecraft.world.level.material.FlowingFluid
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.level.material.WaterFluid
 import net.minecraft.world.level.pathfinder.PathComputationType
+import net.minecraft.world.phys.Vec3
+import org.cobalt.Cobalt.minecraft
 import org.cobalt.pathfinder.helper.BlockStateAccessor
 import org.cobalt.pathfinder.precompute.Ternary
 import org.cobalt.pathfinder.precompute.Ternary.*
+import org.cobalt.util.RotationUtils.RAD_TO_DEG
+import org.cobalt.util.rotation.Rotation
 
 object MovementHelper {
 
+  @JvmStatic
   fun canWalkOn(
     ctx: CalculationContext,
     x: Int, y: Int, z: Int,
@@ -29,6 +37,7 @@ object MovementHelper {
     return canStandOn(ctx, x, y, z, state)
   }
 
+  @JvmStatic
   fun canWalkThrough(
     ctx: CalculationContext,
     x: Int, y: Int, z: Int,
@@ -38,6 +47,7 @@ object MovementHelper {
       canPassThrough(ctx, x, y + 1, z)
   }
 
+  @JvmStatic
   fun canPassThrough(
     ctx: CalculationContext,
     x: Int, y: Int, z: Int,
@@ -46,6 +56,7 @@ object MovementHelper {
     return ctx.precomputedData.canPassThrough(ctx, x, y, z, state)
   }
 
+  @JvmStatic
   fun canStandOn(
     ctx: CalculationContext,
     x: Int, y: Int, z: Int,
@@ -54,6 +65,7 @@ object MovementHelper {
     return ctx.precomputedData.canStandOn(ctx, x, y, z, state)
   }
 
+  @JvmStatic
   fun canPassThrough(
     bsa: BlockStateAccessor,
     x: Int, y: Int, z: Int,
@@ -72,6 +84,7 @@ object MovementHelper {
     return canPassThroughPosition(bsa, x, y, z, state)
   }
 
+  @JvmStatic
   fun canStandOn(
     bsa: BlockStateAccessor,
     x: Int, y: Int, z: Int,
@@ -90,6 +103,7 @@ object MovementHelper {
     return canStandOnPosition(bsa, x, y, z, state)
   }
 
+  @JvmStatic
   fun canPassThroughState(state: BlockState): Ternary {
     val block = state.block
 
@@ -130,6 +144,7 @@ object MovementHelper {
     }
   }
 
+  @JvmStatic
   fun canStandOnState(state: BlockState): Ternary {
     val block = state.block
 
@@ -216,11 +231,18 @@ object MovementHelper {
     return false
   }
 
+  @JvmStatic
+  fun isLiquid(state: BlockState): Boolean {
+    return !state.fluidState.isEmpty
+  }
+
+  @JvmStatic
   fun isWater(state: BlockState): Boolean {
     val fluid = state.fluidState.type
     return fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER
   }
 
+  @JvmStatic
   fun isLava(state: BlockState): Boolean {
     val fluid = state.fluidState.type
     return fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA
@@ -233,6 +255,7 @@ object MovementHelper {
       fluidState.type.getAmount(fluidState) != 8
   }
 
+  @JvmStatic
   private fun isFlowing(x: Int, y: Int, z: Int, state: BlockState, bsa: BlockStateAccessor): Boolean {
     val fluidState = state.fluidState
 
@@ -250,6 +273,7 @@ object MovementHelper {
       || possiblyFlowing(bsa.get(x, y, z - 1))
   }
 
+  @JvmStatic
   fun isBlockNormalCube(state: BlockState): Boolean {
     val block = state.block
 
@@ -273,6 +297,50 @@ object MovementHelper {
       Block.isShapeFullBlock(state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO))
     } catch (_: Exception) {
       false
+    }
+  }
+
+  @JvmStatic
+  fun getRotation(orig: Vec3, dest: Vec3): Rotation {
+    val delta = doubleArrayOf(orig.x - dest.x, orig.y - dest.y, orig.z - dest.z)
+    val yaw = Mth.atan2(delta[0], -delta[2])
+    val dist = sqrt(delta[0] * delta[0] + delta[2] * delta[2])
+    val pitch = Mth.atan2(delta[1], dist)
+
+    return Rotation(
+      (yaw * RAD_TO_DEG).toFloat(),
+      (pitch * RAD_TO_DEG).toFloat()
+    )
+  }
+
+  @JvmStatic
+  fun getNeededKeys(playerYaw: Float, idealYaw: Float): Array<KeyMapping> {
+    val diff = Mth.wrapDegrees(idealYaw - playerYaw)
+
+    return when {
+      diff >= -22.5f && diff < 22.5f ->
+        arrayOf(minecraft.options.keyUp)
+
+      diff in 22.5f..<67.5f ->
+        arrayOf(minecraft.options.keyUp, minecraft.options.keyRight)
+
+      diff in 67.5f..<112.5f ->
+        arrayOf(minecraft.options.keyRight)
+
+      diff in 112.5f..<157.5f ->
+        arrayOf(minecraft.options.keyDown, minecraft.options.keyRight)
+
+      diff >= 157.5f || diff < -157.5f ->
+        arrayOf(minecraft.options.keyDown)
+
+      diff >= -157.5f && diff < -112.5f ->
+        arrayOf(minecraft.options.keyDown, minecraft.options.keyLeft)
+
+      diff >= -112.5f && diff < -67.5f ->
+        arrayOf(minecraft.options.keyLeft)
+
+      else ->
+        arrayOf(minecraft.options.keyUp, minecraft.options.keyLeft)
     }
   }
 

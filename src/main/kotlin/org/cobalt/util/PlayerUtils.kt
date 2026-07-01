@@ -10,16 +10,36 @@ import org.cobalt.util.rotation.Rotation
 object PlayerUtils {
 
   @JvmStatic
+  val player: LocalPlayer?
+    get() = minecraft.player
+
+  @JvmStatic
   val ign: String
     get() = minecraft.player?.gameProfile?.name ?: "Undefined"
 
-  @JvmStatic
+  @get:JvmName("isInventoryEmpty")
   val isInventoryEmpty: Boolean
     get() = minecraft.player?.inventory?.nonEquipmentItems?.all { it.isEmpty } ?: true
 
+  @get:JvmName("isInventoryFull")
   @JvmStatic
   val isInventoryFull: Boolean
-    get() = minecraft.player?.inventory?.nonEquipmentItems?.none { it.isEmpty } ?: false
+    get() = player?.inventory?.nonEquipmentItems?.none { it.isEmpty } ?: false
+
+  @get:JvmName("canFly")
+  @JvmStatic
+  val canFly: Boolean
+    get() = player?.abilities?.mayfly ?: false
+
+  @get:JvmName("isFlying")
+  @JvmStatic
+  val isFlying: Boolean
+    get() = player?.abilities?.flying ?: false
+
+  @get:JvmName("isOnGround")
+  @JvmStatic
+  val isOnGround: Boolean
+    get() = player?.onGround() ?: false
 
   @JvmStatic
   val rotation: Rotation
@@ -29,15 +49,11 @@ object PlayerUtils {
     }
 
   @JvmStatic
-  val player: LocalPlayer
-    get() = minecraft.player!!
-
-  @JvmStatic
   val position: BlockPos
     get() = BlockPos(
-      floor(player.x).toInt(),
-      ceil(player.y - 0.25).toInt(),
-      floor(player.z).toInt()
+      floor(player!!.x).toInt(),
+      floor(player!!.y).toInt(),
+      floor(player!!.z).toInt()
     )
 
   @JvmStatic
