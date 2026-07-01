@@ -33,10 +33,6 @@ class AStarPathfinder(
     val startNode = PathNode(
         startX, startY, startZ, goal
     ).also {
-      if (PlayerUtils.isFlying) {
-        it.type = Movement.Type.FLY
-      }
-
       it.costSoFar = 0.0
       it.totalCost = it.costToEnd
     }
@@ -83,7 +79,7 @@ class AStarPathfinder(
           neighborNode.parent = currentNode
           neighborNode.costSoFar = neighborCostSoFar
           neighborNode.totalCost = neighborCostSoFar + neighborNode.costToEnd
-          currentNode.type = move.type
+          neighborNode.type = move.type
 
           if (neighborNode.heapPosition == -1) {
             openSet.add(neighborNode)
@@ -115,10 +111,6 @@ class AStarPathfinder(
   private fun reconstruct(endNode: PathNode): Path {
     val path = mutableListOf<PathNode>()
     var node: PathNode? = endNode
-
-    endNode.parent?.let {
-      endNode.type = it.type
-    }
 
     while (node != null) {
       path.addFirst(node)
