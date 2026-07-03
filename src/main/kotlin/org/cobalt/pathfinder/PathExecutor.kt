@@ -89,7 +89,7 @@ object PathExecutor {
     }
 
     val theme = ThemeManager.activeTheme
-    val nodes = path?.nodes ?: return
+    val nodes = path?.keyNodes ?: return
 
     val targetNode = nodes[pathIndex].blockPos
     val playerPos = PlayerUtils.position

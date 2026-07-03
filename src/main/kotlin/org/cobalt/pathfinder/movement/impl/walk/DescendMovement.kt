@@ -6,6 +6,7 @@ import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.pathfinder.movement.MovementResult
 
+// TODO: Handle ladder & vine climbing downwards & falling down multiple blocks
 class DescendMovement(
   val dx: Int,
   val dz: Int,

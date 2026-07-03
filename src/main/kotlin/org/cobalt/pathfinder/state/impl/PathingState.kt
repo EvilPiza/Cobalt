@@ -3,6 +3,7 @@ package org.cobalt.pathfinder.state.impl
 import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.dsl.centerVec
+import org.cobalt.module.impl.misc.Rotations
 import org.cobalt.pathfinder.PathExecutor
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementHelper
@@ -10,7 +11,12 @@ import org.cobalt.pathfinder.state.ExecutorState
 import org.cobalt.util.KeybindUtils
 import org.cobalt.util.PlayerUtils
 
-// todo: fix movement & rotations
+/**
+ * TODO: Fix Movement & Rotations
+ * - Find points alone path to rotate to and make a custom aiming system for pathfinding
+ * - Handle unstuck (where you just need to move left or right to realign to center of path line)
+ * - Handle jumps and descending blocks
+ */
 class PathingState : ExecutorState {
 
   private val path = PathExecutor.path
@@ -27,12 +33,25 @@ class PathingState : ExecutorState {
     }
 
     val index = PathExecutor.pathIndex
-    val node = path.nodes[index]
+    val node = path.keyNodes[index]
 
     val (yaw, _) = PlayerUtils.rotation
     val playerPos = PlayerUtils.position
     val nodePos = node.blockPos
     val isFlyNode = node.type == Movement.Type.FLY
+
+    val distSq = playerPos.centerVec().distanceToSqr(nodePos.centerVec())
+
+    // TODO: Update this logic to handle overshooting at high speeds or jumping over target (if user has jump boost)
+    if (distSq < 0.3 * 0.3) {
+      if (index + 1 >= path.keyNodes.size) {
+        PathExecutor.stop()
+        return
+      }
+
+      PathExecutor.pathIndex++
+      return
+    }
 
     if (
       isFlyNode &&
@@ -41,18 +60,6 @@ class PathingState : ExecutorState {
       !PlayerUtils.isFlying
     ) {
       PathExecutor.changeState(StartFlyState())
-      return
-    }
-
-    val distSq = playerPos.centerVec().distanceToSqr(nodePos.centerVec())
-
-    if (distSq < 0.3 * 0.3) {
-      if (index + 1 >= path.nodes.size) {
-        PathExecutor.stop()
-        return
-      }
-
-      PathExecutor.pathIndex++
       return
     }
 

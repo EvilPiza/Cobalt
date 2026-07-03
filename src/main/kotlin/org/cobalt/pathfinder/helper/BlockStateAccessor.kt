@@ -23,6 +23,8 @@ class BlockStateAccessor(val level: ClientLevel) {
       return air
     }
 
+    // TODO: Cache world chunks and fetch block state (prob time to convert to a better system utilizing enums)
+
     prevChunk?.takeIf { it.pos.x == x shr 4 && it.pos.z == z shr 4 }
       ?.let { return getFromChunk(it, x, y0, z) }
 

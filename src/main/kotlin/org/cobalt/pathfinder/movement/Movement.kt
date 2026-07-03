@@ -2,7 +2,7 @@ package org.cobalt.pathfinder.movement
 
 import org.cobalt.pathfinder.calculate.PathNode
 
-// todo: implement costs in each movement type
+// TODO: Implement costs in each movement type (to improve path quality)
 abstract class Movement(
   val type: Type
 ) {
