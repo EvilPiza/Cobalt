@@ -1,6 +1,7 @@
 package org.cobalt.event
 
 import java.lang.invoke.MethodHandles
+import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import org.cobalt.event.annotation.SubscribeEvent
@@ -8,8 +9,9 @@ import org.slf4j.LoggerFactory
 
 object EventBus {
 
-  val handlers = CopyOnWriteArrayList<Handler>()
-  private val cache = ConcurrentHashMap<Class<*>, Array<Handler>>()
+  private val handlers = CopyOnWriteArrayList<Handler>()
+  private val dispatchCache = ConcurrentHashMap<Class<*>, Array<Handler>>()
+  private val metadataCache = ConcurrentHashMap<Class<*>, List<MethodMetadata>>()
   private val logger = LoggerFactory.getLogger(this::class.java)
 
   @JvmStatic
@@ -18,51 +20,88 @@ object EventBus {
       return
     }
 
-    val toAdd = listener.javaClass.declaredMethods.mapNotNull { method ->
-      val annotation = method.getAnnotation(SubscribeEvent::class.java)
+    val toAdd = metadataCache.computeIfAbsent(listener.javaClass, ::scanClassForHandlers)
+      .map { metadata ->
+        createHandler(listener, metadata)
+      }
+
+    if (toAdd.isEmpty()) {
+      return
+    }
+
+    handlers.addAll(toAdd)
+    dispatchCache.clear()
+  }
+
+  private fun scanClassForHandlers(listenerClass: Class<*>): List<MethodMetadata> {
+    return listenerClass.declaredMethods.mapNotNull { method ->
+      val annotation = method.getAnnotation(SubscribeEvent::class.java) ?: return@mapNotNull null
       val params = method.parameterTypes
 
-      if (annotation == null || params.size != 1 || !Event::class.java.isAssignableFrom(params[0])) {
-        return@mapNotNull null
+      require(params.size == 1) {
+        "EventBus: ${listenerClass.name}#${method.name} must take exactly one Event argument"
       }
 
-      if (!method.trySetAccessible()) {
-        logger.error("EventBus: could not access method ${listener.javaClass.name}#${method.name}, skipping")
-        return@mapNotNull null
+      require(Event::class.java.isAssignableFrom(params[0])) {
+        "EventBus: ${listenerClass.name}#${method.name} parameter ${params[0].name} is not an Event"
       }
 
-      val eventType = params.first()
-      val handle = MethodHandles
-        .privateLookupIn(listener.javaClass, MethodHandles.lookup())
-        .unreflect(method)
-        .bindTo(listener)
+      require(method.returnType == Void.TYPE) {
+        "EventBus: ${listenerClass.name}#${method.name} must return Unit/void"
+      }
 
-      Handler(
-        listener = listener,
-        eventType = eventType,
+      require(method.trySetAccessible()) {
+        "EventBus: could not access ${listenerClass.name}#${method.name}"
+      }
+
+      @Suppress("UNCHECKED_CAST")
+      MethodMetadata(
+        method = method,
+        eventType = params[0] as Class<out Event>,
         priority = annotation.priority,
-        ignoreCancelled = annotation.ignoreCancelled,
+        receiveCancelled = annotation.ignoreCancelled,
         once = annotation.once,
-        invoker = { event -> handle.invoke(event) },
       )
     }
+  }
 
-    if (toAdd.isNotEmpty()) {
-      handlers.addAll(toAdd)
+  private fun createHandler(listener: Any, metadata: MethodMetadata): Handler {
+    val handle = MethodHandles
+      .privateLookupIn(listener.javaClass, MethodHandles.lookup())
+      .unreflect(metadata.method)
+      .bindTo(listener)
+
+    return Handler(
+      listener = listener,
+      eventType = metadata.eventType,
+      priority = metadata.priority,
+      receiveCancelled = metadata.receiveCancelled,
+      once = metadata.once,
+      methodName = metadata.method.name,
+      invoker = { event -> handle.invoke(event) },
+    )
+  }
+
+  private fun removeHandlers(toRemove: List<Handler>) {
+    if (toRemove.isEmpty()) {
+      return
     }
 
-    cache.clear()
+    handlers.removeIf { handler ->
+      toRemove.any { it === handler }
+    }
+    dispatchCache.clear()
   }
 
   @JvmStatic
   fun unregister(listener: Any) {
     handlers.removeIf { it.listener === listener }
-    cache.clear()
+    dispatchCache.clear()
   }
 
   @JvmStatic
   fun post(event: Event): Event {
-    val matched = cache.computeIfAbsent(event.javaClass) { cls ->
+    val matched = dispatchCache.computeIfAbsent(event.javaClass) { cls ->
       handlers
         .filter { it.eventType.isAssignableFrom(cls) }
         .sortedBy { it.priority.ordinal }
@@ -72,31 +111,45 @@ object EventBus {
     val toRemove = mutableListOf<Handler>()
 
     for (handler in matched) {
-      if (event is Event.Cancellable && event.isCancelled() && !handler.ignoreCancelled) {
+      if (event is Event.Cancellable && event.isCancelled() && !handler.receiveCancelled) {
         continue
       }
 
-      handler.invoker(event)
+      try {
+        handler.invoker(event)
+      } catch (throwable: Throwable) {
+        logger.error(
+          "EventBus: exception in ${handler.listener.javaClass.name}#${handler.methodName} " +
+            "while handling ${event.javaClass.name}",
+          throwable
+        )
+      }
 
       if (handler.once) {
         toRemove.add(handler)
       }
     }
 
-    if (toRemove.isNotEmpty()) {
-      handlers.removeAll(toRemove.toSet())
-      cache.clear()
-    }
+    removeHandlers(toRemove)
 
     return event
   }
 
-  data class Handler(
-    val listener: Any,
-    val eventType: Class<*>,
+  private data class MethodMetadata(
+    val method: Method,
+    val eventType: Class<out Event>,
     val priority: Event.Priority,
-    val ignoreCancelled: Boolean,
+    val receiveCancelled: Boolean,
     val once: Boolean,
+  )
+
+  private class Handler(
+    val listener: Any,
+    val eventType: Class<out Event>,
+    val priority: Event.Priority,
+    val receiveCancelled: Boolean,
+    val once: Boolean,
+    val methodName: String,
     val invoker: (Event) -> Unit,
   )
 

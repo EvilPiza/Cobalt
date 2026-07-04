@@ -31,7 +31,14 @@ skija-macos = { group = "io.github.humbleui", name = "skija-macos-x64", version.
 skija-macos-arm = { group = "io.github.humbleui", name = "skija-macos-arm64", version.ref = "skija-version" }
 
 [bundles]
-skija-natives = ["skija-windows", "skija-linux", "skija-linux-arm", "skija-macos", "skija-macos-arm"]
+skija-natives = [
+  "skija-windows",
+  "skija-linux",
+  "skija-macos-arm",
+  # incase needed uncomment
+  # "skija-linux-arm",
+  # "skija-macos",
+]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

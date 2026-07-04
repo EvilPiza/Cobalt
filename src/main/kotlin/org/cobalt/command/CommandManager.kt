@@ -2,13 +2,12 @@ package org.cobalt.command
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.ChatFormatting
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.command.impl.MainCommand
-import org.cobalt.event.EventBus
-import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.ChatSendEvent
 import org.cobalt.util.ChatUtils
 
 object CommandManager {
@@ -17,6 +16,8 @@ object CommandManager {
 
   @JvmStatic
   internal val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
+
+  private val commands = mutableListOf<Command>()
 
   @JvmStatic
   internal fun registerCommands() {
@@ -27,11 +28,35 @@ object CommandManager {
     builtIn.forEach { command ->
       registerCommand(command)
     }
+
+    registerSlashCommands()
   }
 
   @JvmStatic
   fun registerCommand(command: Command) {
-    command.build().forEach { dispatcher.register(it) }
+    val ids = (listOf(command.name) + command.aliases)
+      .map { it.trim().lowercase() }
+      .filter { it.isNotEmpty() }
+
+    require(ids.isNotEmpty()) {
+      "Command must have a non-empty name or alias"
+    }
+
+    require(ids.distinct().size == ids.size) {
+      "Command '${command.name}' contains duplicate aliases"
+    }
+
+    val registeredIds = commands
+      .flatMap { listOf(it.name) + it.aliases }
+      .mapTo(mutableSetOf()) { it.trim().lowercase() }
+
+    val duplicate = ids.firstOrNull { it in registeredIds }
+    require(duplicate == null) {
+      "Command id '$duplicate' is already registered"
+    }
+
+    command.build<ClientSuggestionProvider>().forEach { dispatcher.register(it) }
+    commands.add(command)
   }
 
   @JvmStatic
@@ -55,6 +80,18 @@ object CommandManager {
     }
 
     return true
+  }
+
+  private fun registerSlashCommands() {
+    ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
+      registerSlashCommandNodes(dispatcher)
+    }
+  }
+
+  private fun registerSlashCommandNodes(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
+    commands.forEach { command ->
+      command.build<FabricClientCommandSource>().forEach { dispatcher.register(it) }
+    }
   }
 
 }

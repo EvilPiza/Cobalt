@@ -14,14 +14,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.isAccessible
-import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import org.cobalt.command.annotation.DefaultHandler
 import org.cobalt.command.annotation.SubCommand
 
 abstract class Command(val name: String, val aliases: List<String> = emptyList()) {
 
-  internal fun build(): List<LiteralArgumentBuilder<ClientSuggestionProvider>> {
-    val mainRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(name)
+  internal fun <S> build(): List<LiteralArgumentBuilder<S>> {
+    val mainRoot = LiteralArgumentBuilder.literal<S>(name)
 
     for (function in this::class.declaredFunctions) {
       function.isAccessible = true
@@ -41,7 +40,7 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList()
     }
 
     val aliasRoots = aliases.filter { it.isNotBlank() }.map { alias ->
-      val aliasRoot = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(alias)
+      val aliasRoot = LiteralArgumentBuilder.literal<S>(alias)
 
       mainRoot.arguments.forEach { child -> aliasRoot.then(child) }
       mainRoot.command?.let { aliasRoot.executes(it) }
@@ -52,8 +51,10 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList()
     return listOf(mainRoot) + aliasRoots
   }
 
-  private fun buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<ClientSuggestionProvider> {
-    val literal = LiteralArgumentBuilder.literal<ClientSuggestionProvider>(function.name)
+  private fun <S> buildSubCommand(function: KFunction<*>): LiteralArgumentBuilder<S> {
+    val annotation = requireNotNull(function.findAnnotation<SubCommand>())
+    val subCommandName = annotation.name.ifBlank { function.name }
+    val literal = LiteralArgumentBuilder.literal<S>(subCommandName)
     val valueParams = function.parameters.filter { it.kind == KParameter.Kind.VALUE }
 
     if (valueParams.isEmpty()) {
@@ -65,9 +66,9 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList()
       return literal
     }
 
-    val arguments = valueParams.mapIndexed { index, param ->
+    val arguments: List<RequiredArgumentBuilder<S, Any>> = valueParams.mapIndexed { index, param ->
       val name = param.name ?: "argument$index"
-      createArgument(name, param.type.classifier)
+      createArgument<S>(name, param.type.classifier)
     }
 
     arguments.last().executes { ctx ->
@@ -98,14 +99,15 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList()
     })
   }
 
-  private fun createArgument(
+  private fun <S> createArgument(
     name: String,
     type: Any?,
-  ): RequiredArgumentBuilder<ClientSuggestionProvider, *> {
+  ): RequiredArgumentBuilder<S, Any> {
     val argType = argumentTypeSuppliers[type]?.invoke()
       ?: throw IllegalArgumentException("Unsupported parameter type: $type")
 
-    return RequiredArgumentBuilder.argument(name, argType)
+    @Suppress("UNCHECKED_CAST")
+    return RequiredArgumentBuilder.argument(name, argType as ArgumentType<Any>)
   }
 
   private val argumentTypeSuppliers: Map<Any?, () -> ArgumentType<*>> = mapOf(
@@ -116,7 +118,7 @@ abstract class Command(val name: String, val aliases: List<String> = emptyList()
     Float::class to { FloatArgumentType.floatArg() },
   )
 
-  private val valueExtractors: Map<Any?, (CommandContext<ClientSuggestionProvider>, String) -> Any?> = mapOf(
+  private val valueExtractors: Map<Any?, (CommandContext<*>, String) -> Any?> = mapOf(
     Double::class to { c, n -> DoubleArgumentType.getDouble(c, n) },
     Int::class to { c, n -> IntegerArgumentType.getInteger(c, n) },
     String::class to { c, n -> StringArgumentType.getString(c, n) },
