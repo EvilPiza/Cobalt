@@ -7,10 +7,11 @@ import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
 import org.cobalt.util.ColorUtils
 
-// TODO: Fix all detekt errors
 object ChatFormatter {
 
   private const val FORMAT_CODE = '\u00A7'
+  private const val LEGACY_HEX_LENGTH = 14
+  private const val GRADIENT_CLOSE_TAG = "</gradient>"
 
   private val colorTags = mapOf(
     "black" to ChatFormatting.BLACK,
@@ -48,91 +49,7 @@ object ChatFormatter {
   )
 
   fun parse(text: String, baseStyle: Style = Style.EMPTY): MutableComponent {
-    val result = Component.empty()
-    val styleStack = ArrayDeque<Style>()
-    val chunk = StringBuilder()
-    var style = baseStyle
-    var index = 0
-
-    fun flush() {
-      if (chunk.isEmpty()) {
-        return
-      }
-
-      result.append(Component.literal(chunk.toString()).setStyle(style))
-      chunk.clear()
-    }
-
-    while (index < text.length) {
-      if (text[index] == '<') {
-        val tagEnd = text.indexOf('>', index + 1)
-
-        if (tagEnd != -1) {
-          val tag = text.substring(index + 1, tagEnd)
-          val gradient = parseGradientTag(tag)
-
-          if (gradient != null) {
-            val closeStart = text.indexOf("</gradient>", tagEnd + 1, ignoreCase = true)
-
-            if (closeStart != -1) {
-              flush()
-
-              result.append(
-                ColorUtils.buildTextGradient(
-                  text.substring(tagEnd + 1, closeStart),
-                  gradient.first,
-                  gradient.second,
-                  style
-                )
-              )
-
-              index = closeStart + "</gradient>".length
-              continue
-            }
-          }
-
-          val nextStyle = applyTag(tag, style, styleStack, baseStyle)
-
-          if (nextStyle != null) {
-            flush()
-            style = nextStyle
-            index = tagEnd + 1
-            continue
-          }
-        }
-      }
-
-      if (text[index] == FORMAT_CODE && index + 1 < text.length) {
-        val hexColor = parseLegacyHex(text, index)
-
-        if (hexColor != null) {
-          flush()
-          style = baseStyle.withColor(TextColor.fromRgb(hexColor))
-          index += 14
-          continue
-        }
-
-        val formatting = ChatFormatting.getByCode(text[index + 1].lowercaseChar())
-
-        if (formatting != null) {
-          flush()
-          style = if (formatting == ChatFormatting.RESET) {
-            styleStack.clear()
-            baseStyle
-          } else {
-            style.applyLegacyFormat(formatting)
-          }
-          index += 2
-          continue
-        }
-      }
-
-      chunk.append(text[index])
-      index++
-    }
-
-    flush()
-    return result
+    return ChatParser(text, baseStyle).parse()
   }
 
   private fun applyTag(
@@ -143,42 +60,35 @@ object ChatFormatter {
   ): Style? {
     val tag = rawTag.trim().lowercase()
 
-    if (tag.startsWith("/")) {
-      val tagName = tag.drop(1)
-
-      return if ((tagName in colorTags || tagName in styleTags) && styleStack.isNotEmpty()) {
-        styleStack.removeLast()
-      } else {
-        null
+    return when {
+      tag.startsWith("/") -> applyClosingTag(tag.drop(1), styleStack)
+      tag == "reset" -> {
+        styleStack.clear()
+        baseStyle
       }
+      else -> applyOpeningTag(tag, currentStyle)?.also { styleStack.addLast(currentStyle) }
+    }
+  }
+
+  private fun applyClosingTag(tagName: String, styleStack: ArrayDeque<Style>): Style? =
+    if ((tagName in colorTags || tagName in styleTags) && styleStack.isNotEmpty()) {
+      styleStack.removeLast()
+    } else {
+      null
     }
 
-    if (tag == "reset") {
-      styleStack.clear()
-      return baseStyle
-    }
+  private fun applyOpeningTag(tag: String, currentStyle: Style): Style? {
+    colorTags[tag]?.let { return currentStyle.withColor(it) }
+    parseHexColorTag(tag)?.let { return currentStyle.withColor(TextColor.fromRgb(it)) }
 
-    colorTags[tag]?.let { color ->
-      styleStack.addLast(currentStyle)
-      return currentStyle.withColor(color)
-    }
-
-    parseHexColorTag(tag)?.let { color ->
-      styleStack.addLast(currentStyle)
-      return currentStyle.withColor(TextColor.fromRgb(color))
-    }
-
-    val nextStyle = when (tag) {
+    return when (tag) {
       "bold", "b" -> currentStyle.withBold(true)
       "italic", "i" -> currentStyle.withItalic(true)
       "underlined", "underline", "u" -> currentStyle.withUnderlined(true)
       "strikethrough", "st" -> currentStyle.withStrikethrough(true)
       "obfuscated", "obf" -> currentStyle.withObfuscated(true)
       else -> null
-    } ?: return null
-
-    styleStack.addLast(currentStyle)
-    return nextStyle
+    }
   }
 
   private fun parseGradientTag(tag: String): Pair<Int, Int>? {
@@ -235,6 +145,110 @@ object ChatFormatter {
 
   private fun Char.isHexDigit(): Boolean {
     return this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
+  }
+
+  private class ChatParser(private val text: String, private val baseStyle: Style) {
+
+    private val result = Component.empty()
+    private val styleStack = ArrayDeque<Style>()
+    private val chunk = StringBuilder()
+    private var style = baseStyle
+    private var index = 0
+
+    fun parse(): MutableComponent {
+      while (index < text.length) {
+        val consumed = when {
+          text[index] == '<' -> tryConsumeTag()
+          text[index] == FORMAT_CODE && index + 1 < text.length -> tryConsumeLegacyCode()
+          else -> false
+        }
+
+        if (!consumed) {
+          chunk.append(text[index])
+          index++
+        }
+      }
+
+      flush()
+      return result
+    }
+
+    private fun flush() {
+      if (chunk.isEmpty()) {
+        return
+      }
+
+      result.append(Component.literal(chunk.toString()).setStyle(style))
+      chunk.clear()
+    }
+
+    private fun tryConsumeTag(): Boolean {
+      val tagEnd = text.indexOf('>', index + 1)
+
+      if (tagEnd == -1) {
+        return false
+      }
+
+      val tag = text.substring(index + 1, tagEnd)
+      val gradient = parseGradientTag(tag)
+
+      if (gradient != null && tryConsumeGradient(tagEnd, gradient)) {
+        return true
+      }
+
+      val nextStyle = applyTag(tag, style, styleStack, baseStyle) ?: return false
+
+      flush()
+      style = nextStyle
+      index = tagEnd + 1
+      return true
+    }
+
+    private fun tryConsumeGradient(tagEnd: Int, gradient: Pair<Int, Int>): Boolean {
+      val closeStart = text.indexOf(GRADIENT_CLOSE_TAG, tagEnd + 1, ignoreCase = true)
+
+      if (closeStart == -1) {
+        return false
+      }
+
+      flush()
+
+      result.append(
+        ColorUtils.buildTextGradient(
+          text.substring(tagEnd + 1, closeStart),
+          gradient.first,
+          gradient.second,
+          style
+        )
+      )
+
+      index = closeStart + GRADIENT_CLOSE_TAG.length
+      return true
+    }
+
+    private fun tryConsumeLegacyCode(): Boolean {
+      val hexColor = parseLegacyHex(text, index)
+
+      if (hexColor != null) {
+        flush()
+        style = baseStyle.withColor(TextColor.fromRgb(hexColor))
+        index += LEGACY_HEX_LENGTH
+        return true
+      }
+
+      val formatting = ChatFormatting.getByCode(text[index + 1].lowercaseChar()) ?: return false
+      flush()
+
+      style = if (formatting == ChatFormatting.RESET) {
+        styleStack.clear()
+        baseStyle
+      } else {
+        style.applyLegacyFormat(formatting)
+      }
+
+      index += 2
+      return true
+    }
   }
 
 }

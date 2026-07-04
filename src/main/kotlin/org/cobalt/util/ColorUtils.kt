@@ -13,7 +13,12 @@ import org.cobalt.dsl.red
 object ColorUtils {
 
   @JvmStatic
-  fun buildTextGradient(text: String, startColor: Int, endColor: Int, baseStyle: Style = Style.EMPTY): MutableComponent {
+  fun buildTextGradient(
+    text: String,
+    startColor: Int,
+    endColor: Int,
+    baseStyle: Style = Style.EMPTY
+  ): MutableComponent {
     val result = Component.empty()
     val textLength = text.length
 

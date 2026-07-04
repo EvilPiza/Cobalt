@@ -1,4 +1,4 @@
-package org.cobalt.mixin.gui;
+package org.cobalt.mixin.command;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.brigadier.CommandDispatcher;
