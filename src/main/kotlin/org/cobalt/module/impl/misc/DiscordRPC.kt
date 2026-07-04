@@ -5,7 +5,6 @@ import com.jagrosh.discordipc.entities.ActivityType
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import org.cobalt.Cobalt
-import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
 import org.cobalt.module.Module

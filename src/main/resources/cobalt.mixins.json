@@ -6,15 +6,15 @@
   "client": [
     "client.MinecraftMixin",
     "client.MouseHandlerMixin",
-    "multiplayer.ClientPacketListenerMixin",
-    "gui.CommandSuggestionsMixin",
+    "command.CommandSuggestionsMixin",
     "gui.FontMixin",
     "gui.GuiMixin",
-    "gui.GuiRendererMixin",
     "gui.HudAccessor",
     "gui.HudMixin",
-    "gui.SplashManagerMixin",
-    "mojang.GpuDeviceAccessor"
+    "mojang.GpuDeviceAccessor",
+    "multiplayer.ClientPacketListenerMixin",
+    "screen.GuiRendererMixin",
+    "screen.SplashManagerMixin"
   ],
   "mixins": [
     "mojang.YggdrasilServicesKeyInfoMixin",

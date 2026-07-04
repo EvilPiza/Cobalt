@@ -1,6 +1,5 @@
 package org.cobalt.module.impl.misc
 
-import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
 import org.cobalt.event.impl.TickEvent
 import org.cobalt.module.Module

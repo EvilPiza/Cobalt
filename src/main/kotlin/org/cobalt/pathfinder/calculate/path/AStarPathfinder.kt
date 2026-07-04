@@ -1,6 +1,7 @@
 package org.cobalt.pathfinder.calculate.path
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import kotlin.time.Duration.Companion.milliseconds
 import org.cobalt.pathfinder.calculate.Path
 import org.cobalt.pathfinder.calculate.PathNode
 import org.cobalt.pathfinder.calculate.openset.BinaryHeapOpenSet
@@ -8,17 +9,14 @@ import org.cobalt.pathfinder.goal.IGoal
 import org.cobalt.pathfinder.movement.CalculationContext
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementResult
-import kotlin.time.Duration.Companion.milliseconds
-import org.cobalt.pathfinder.movement.MovementHelper
-import org.cobalt.util.PlayerUtils
 
 class AStarPathfinder(
-    val startX: Int,
-    val startY: Int,
-    val startZ: Int,
-    val goal: IGoal,
-    val movements: Array<out Movement>,
-    val returnBestNode: Boolean,
+  val startX: Int,
+  val startY: Int,
+  val startZ: Int,
+  val goal: IGoal,
+  val movements: Array<out Movement>,
+  val returnBestNode: Boolean,
 ) {
 
   private val closedSet = Long2ObjectOpenHashMap<PathNode>()
@@ -31,7 +29,7 @@ class AStarPathfinder(
     val res = MovementResult()
 
     val startNode = PathNode(
-        startX, startY, startZ, goal
+      startX, startY, startZ, goal
     ).also {
       it.costSoFar = 0.0
       it.totalCost = it.costToEnd
@@ -118,9 +116,9 @@ class AStarPathfinder(
     }
 
     return Path(
-        nodes = path,
-        timeElapsed = (System.currentTimeMillis() - startTime).milliseconds,
-        goal = goal
+      nodes = path,
+      timeElapsed = (System.currentTimeMillis() - startTime).milliseconds,
+      goal = goal
     )
   }
 

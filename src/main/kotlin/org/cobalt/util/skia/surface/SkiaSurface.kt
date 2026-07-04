@@ -5,7 +5,6 @@ import com.mojang.blaze3d.textures.GpuTexture
 import com.mojang.blaze3d.vulkan.VulkanDevice
 import io.github.humbleui.skija.Canvas
 import org.cobalt.mixin.mojang.GpuDeviceAccessor
-import org.slf4j.LoggerFactory
 
 interface SkiaSurface {
 

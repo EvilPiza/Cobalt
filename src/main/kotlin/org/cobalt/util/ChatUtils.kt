@@ -3,7 +3,9 @@ package org.cobalt.util
 import net.minecraft.network.chat.MutableComponent
 import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
+import org.cobalt.Cobalt.runOnClientThread
 import org.cobalt.module.impl.misc.Debug
+import org.cobalt.util.helper.ChatFormatter
 import org.slf4j.LoggerFactory
 
 object ChatUtils {
@@ -65,14 +67,6 @@ object ChatUtils {
       }
 
       player.connection.sendCommand(command)
-    }
-  }
-
-  private fun runOnClientThread(action: () -> Unit) {
-    if (minecraft.isSameThread) {
-      action()
-    } else {
-      minecraft.execute(action)
     }
   }
 

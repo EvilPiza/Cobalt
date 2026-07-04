@@ -10,10 +10,10 @@ import org.cobalt.util.skia.Skia
 class RangeSetting(
   name: String,
   description: String,
-  default: Pair<Int, Int>,
+  defaultValue: Pair<Int, Int>,
   val min: Int,
   val max: Int,
-) : Setting<Pair<Int, Int>>(name, description, default) {
+) : Setting<Pair<Int, Int>>(name, description, defaultValue) {
 
   override fun read(element: JsonElement) {
     if (!element.isJsonObject) return

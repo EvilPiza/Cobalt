@@ -11,7 +11,6 @@ import kotlin.io.path.readText
 import org.cobalt.Cobalt.configDir
 import org.cobalt.module.Module
 import org.cobalt.module.type.RenderableModule
-import org.cobalt.module.type.Script
 import org.cobalt.ui.component.setting.impl.ButtonSetting
 import org.cobalt.ui.component.setting.impl.InfoSetting
 import org.slf4j.LoggerFactory

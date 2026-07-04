@@ -1,13 +1,14 @@
-package org.cobalt.util
+package org.cobalt.util.helper
 
-import kotlin.math.roundToInt
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
+import org.cobalt.util.ColorUtils
 
-internal object ChatFormatter {
+// TODO: Fix all detekt errors
+object ChatFormatter {
 
   private const val FORMAT_CODE = '\u00A7'
 
@@ -75,14 +76,16 @@ internal object ChatFormatter {
 
             if (closeStart != -1) {
               flush()
+
               result.append(
-                gradientComponent(
+                ColorUtils.buildTextGradient(
                   text.substring(tagEnd + 1, closeStart),
-                  style,
                   gradient.first,
-                  gradient.second
+                  gradient.second,
+                  style
                 )
               )
+
               index = closeStart + "</gradient>".length
               continue
             }
@@ -191,30 +194,6 @@ internal object ChatFormatter {
     return startColor to endColor
   }
 
-  private fun gradientComponent(text: String, style: Style, startColor: Int, endColor: Int): MutableComponent {
-    val result = Component.empty()
-
-    if (text.isEmpty()) {
-      return result
-    }
-
-    if (text.length == 1) {
-      return Component.literal(text).setStyle(style.withColor(TextColor.fromRgb(startColor)))
-    }
-
-    text.forEachIndexed { index, char ->
-      val ratio = index.toDouble() / (text.length - 1).toDouble()
-      val red = (startColor.red + ratio * (endColor.red - startColor.red)).roundToInt()
-      val green = (startColor.green + ratio * (endColor.green - startColor.green)).roundToInt()
-      val blue = (startColor.blue + ratio * (endColor.blue - startColor.blue)).roundToInt()
-      val color = (red shl 16) or (green shl 8) or blue
-
-      result.append(Component.literal(char.toString()).setStyle(style.withColor(TextColor.fromRgb(color))))
-    }
-
-    return result
-  }
-
   private fun parseHexColorTag(tag: String): Int? {
     return when {
       tag.startsWith("#") -> parseHexColor(tag)
@@ -253,15 +232,6 @@ internal object ChatFormatter {
 
     return hex.toString().toInt(16)
   }
-
-  private val Int.red: Int
-    get() = (this shr 16) and 0xFF
-
-  private val Int.green: Int
-    get() = (this shr 8) and 0xFF
-
-  private val Int.blue: Int
-    get() = this and 0xFF
 
   private fun Char.isHexDigit(): Boolean {
     return this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'

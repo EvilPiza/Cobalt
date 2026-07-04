@@ -13,14 +13,14 @@ import org.cobalt.dsl.red
 object ColorUtils {
 
   @JvmStatic
-  fun buildTextGradient(text: String, startColor: Int, endColor: Int): MutableComponent {
+  fun buildTextGradient(text: String, startColor: Int, endColor: Int, baseStyle: Style = Style.EMPTY): MutableComponent {
     val result = Component.empty()
     val textLength = text.length
 
     if (textLength <= 1) {
       return Component
         .literal(text)
-        .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(startColor)))
+        .setStyle(baseStyle.withColor(TextColor.fromRgb(startColor)))
     }
 
     for (index in text.indices) {
@@ -32,7 +32,7 @@ object ColorUtils {
       val interpolatedColor = (red shl 16) or (green shl 8) or blue
 
       val coloredChar = Component.literal(text[index].toString())
-        .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(interpolatedColor)))
+        .setStyle(baseStyle.withColor(TextColor.fromRgb(interpolatedColor)))
 
       result.append(coloredChar)
     }
@@ -41,15 +41,15 @@ object ColorUtils {
   }
 
   @JvmStatic
-  fun getRed(color: Int) = color.red
+  fun getRed(colorRgb: Int) = colorRgb.red
 
   @JvmStatic
-  fun getGreen(color: Int) = color.green
+  fun getGreen(colorRgb: Int) = colorRgb.green
 
   @JvmStatic
-  fun getBlue(color: Int) = color.blue
+  fun getBlue(colorRgb: Int) = colorRgb.blue
 
   @JvmStatic
-  fun getAlpha(color: Int) = color.alpha
+  fun getAlpha(colorRgb: Int) = colorRgb.alpha
 
 }

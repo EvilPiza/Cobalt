@@ -1,6 +1,5 @@
 package org.cobalt.util
 
-import kotlin.math.ceil
 import kotlin.math.floor
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
@@ -84,14 +83,12 @@ object PlayerUtils {
 
   @JvmStatic
   fun closeScreen() {
-    val gui = minecraft.gui
-
-    if (gui.screen() == null) {
+    if (minecraft.gui.screen() == null) {
       return
     }
 
     minecraft.execute {
-      gui.setScreen(null)
+      player?.closeContainer()
     }
   }
 

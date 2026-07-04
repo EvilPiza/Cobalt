@@ -6,7 +6,7 @@ import org.cobalt.pathfinder.goal.IGoal
 data class Path(
   val nodes: List<PathNode>,
   val timeElapsed: Duration,
-  val goal: IGoal
+  val goal: IGoal,
 ) {
 
   val keyNodes: List<PathNode> = buildKeyNodes()

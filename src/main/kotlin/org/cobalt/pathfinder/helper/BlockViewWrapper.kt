@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.FluidState
 
 class BlockViewWrapper(
-  val bsa: BlockStateAccessor
+  val bsa: BlockStateAccessor,
 ) : BlockGetter {
 
   override fun getBlockEntity(pos: BlockPos): BlockEntity? {

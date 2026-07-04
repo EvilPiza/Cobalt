@@ -3,7 +3,6 @@ package org.cobalt.pathfinder.state.impl
 import net.minecraft.client.KeyMapping
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.dsl.centerVec
-import org.cobalt.module.impl.misc.Rotations
 import org.cobalt.pathfinder.PathExecutor
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementHelper

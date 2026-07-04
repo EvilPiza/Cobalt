@@ -1,6 +1,7 @@
 package org.cobalt.util
 
 import net.minecraft.world.inventory.ContainerInput
+import net.minecraft.world.item.Item
 import org.cobalt.Cobalt.minecraft
 
 object InventoryUtils {
@@ -97,6 +98,68 @@ object InventoryUtils {
       }
 
       if (stack.hoverName.string.contains(name, ignoreCase = true)) {
+        return slot
+      }
+    }
+
+    return -1
+  }
+
+  @JvmStatic
+  fun findItemInInventory(item: Item): Int {
+    val player = minecraft.player ?: return -1
+    val inventory = player.inventory
+
+    for (slot in 0 until inventory.containerSize) {
+      val stack = inventory.getItem(slot)
+
+      if (stack.isEmpty) {
+        continue
+      }
+
+      if (stack.item == item) {
+        return slot
+      }
+    }
+
+    return -1
+  }
+
+  @JvmStatic
+  fun findItemInContainer(name: String): Int {
+    val player = minecraft.player ?: return -1
+    val menu = player.containerMenu
+    val containerSlots = menu.slots.size - player.inventory.nonEquipmentItems.size
+
+    for (slot in 0 until containerSlots) {
+      val stack = menu.getSlot(slot).item
+
+      if (stack.isEmpty) {
+        continue
+      }
+
+      if (stack.hoverName.string.contains(name, ignoreCase = true)) {
+        return slot
+      }
+    }
+
+    return -1
+  }
+
+  @JvmStatic
+  fun findItemInContainer(item: Item): Int {
+    val player = minecraft.player ?: return -1
+    val menu = player.containerMenu
+    val containerSlots = menu.slots.size - player.inventory.nonEquipmentItems.size
+
+    for (slot in 0 until containerSlots) {
+      val stack = menu.getSlot(slot).item
+
+      if (stack.isEmpty) {
+        continue
+      }
+
+      if (stack.item == item) {
         return slot
       }
     }

@@ -58,4 +58,13 @@ object Cobalt : ClientModInitializer {
     SidebarComponent.preload()
   }
 
+  @JvmStatic
+  fun runOnClientThread(action: () -> Unit) {
+    if (minecraft.isSameThread) {
+      action()
+    } else {
+      minecraft.execute(action)
+    }
+  }
+
 }

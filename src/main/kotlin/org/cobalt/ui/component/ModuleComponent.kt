@@ -1,7 +1,6 @@
 package org.cobalt.ui.component
 
 import org.cobalt.module.Module
-import org.cobalt.module.type.Script
 import org.cobalt.ui.UIComponent
 import org.cobalt.ui.animation.EaseOutAnimation
 import org.cobalt.util.skia.Skia

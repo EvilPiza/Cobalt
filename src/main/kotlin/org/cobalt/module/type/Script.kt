@@ -24,7 +24,7 @@ abstract class Script(
     }
 
     onEnable()
-    ChatUtils.sendSystemMessage("$name Script is now ${ChatFormatting.GREEN}Enabled")
+    ChatUtils.sendSystemMessage("$name Script has been <green>Enabled</green>")
     enabled = true
   }
 
@@ -34,7 +34,7 @@ abstract class Script(
     }
 
     onDisable()
-    ChatUtils.sendSystemMessage("$name Script is now ${ChatFormatting.RED}Disabled")
+    ChatUtils.sendSystemMessage("$name Script has been <red>Disabled</red>")
     enabled = false
   }
 

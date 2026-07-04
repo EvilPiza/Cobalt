@@ -3,8 +3,6 @@ package org.cobalt.module
 import net.minecraft.client.Minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.ui.component.setting.Setting
-import org.cobalt.ui.notification.Notification
-import org.cobalt.ui.notification.NotificationManager
 import org.cobalt.util.ChatUtils
 import org.cobalt.util.config.SettingContainer
 
@@ -41,12 +39,10 @@ abstract class Module(
 
   open fun onEnable() {
     EventBus.register(this)
-    ChatUtils.sendSystemMessage("${this.name} has been <green>enabled!</green>")
   }
 
   open fun onDisable() {
     EventBus.unregister(this)
-    ChatUtils.sendSystemMessage("${this.name} has been <red>disabled!</red>")
   }
 
   override fun addSettings(vararg settings: Setting<*>) {

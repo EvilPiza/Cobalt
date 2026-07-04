@@ -7,13 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.GpuTexture
 import com.mojang.blaze3d.vulkan.VulkanDevice
 import com.mojang.blaze3d.vulkan.VulkanGpuTexture
-import io.github.humbleui.skija.BackendRenderTarget
-import io.github.humbleui.skija.Canvas
-import io.github.humbleui.skija.ColorSpace
-import io.github.humbleui.skija.ColorType
-import io.github.humbleui.skija.DirectContext
-import io.github.humbleui.skija.Surface
-import io.github.humbleui.skija.SurfaceOrigin
+import io.github.humbleui.skija.*
 import org.cobalt.mixin.mojang.GpuDeviceAccessor
 import org.cobalt.util.skia.Skia
 import org.lwjgl.vulkan.VK

@@ -1,4 +1,4 @@
-package org.cobalt.mixin.gui;
+package org.cobalt.mixin.screen;
 
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.resources.SplashManager;

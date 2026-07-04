@@ -54,10 +54,13 @@ object EventBus {
         "EventBus: could not access ${listenerClass.name}#${method.name}"
       }
 
-      @Suppress("UNCHECKED_CAST")
+      require(Event::class.java.isAssignableFrom(params[0])) {
+        "EventBus: ${listenerClass.name}#${method.name} parameter ${params[0].name} is not an Event"
+      }
+
       MethodMetadata(
         method = method,
-        eventType = params[0] as Class<out Event>,
+        eventType = params[0].asSubclass(Event::class.java),
         priority = annotation.priority,
         receiveCancelled = annotation.ignoreCancelled,
         once = annotation.once,

@@ -5,7 +5,7 @@ import kotlin.math.abs
 class GoalBlock(
   val goalX: Int,
   val goalY: Int,
-  val goalZ: Int
+  val goalZ: Int,
 ) : IGoal {
 
   override fun heuristic(x: Int, y: Int, z: Int): Double {

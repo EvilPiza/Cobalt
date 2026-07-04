@@ -1,4 +1,4 @@
-package org.cobalt.mixin.gui;
+package org.cobalt.mixin.screen;
 
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.renderer.CubeMap;

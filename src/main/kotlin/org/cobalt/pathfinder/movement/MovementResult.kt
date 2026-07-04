@@ -1,7 +1,5 @@
 package org.cobalt.pathfinder.movement
 
-import org.cobalt.pathfinder.calculate.PathMode
-
 class MovementResult {
 
   var x: Int = 0

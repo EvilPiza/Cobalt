@@ -1,9 +1,6 @@
 package org.cobalt.ui.screen
 
 import net.minecraft.client.input.MouseButtonEvent
-import org.cobalt.event.EventBus
-import org.cobalt.event.annotation.SubscribeEvent
-import org.cobalt.event.impl.MouseScrollEvent
 import org.cobalt.module.Module
 import org.cobalt.module.ModuleManager
 import org.cobalt.module.type.RenderableModule
@@ -146,7 +143,7 @@ object HudEditorScreen : UIScreen() {
     x: Double,
     y: Double,
     scrollX: Double,
-    scrollY: Double
+    scrollY: Double,
   ): Boolean {
     val module = modules.firstOrNull { candidate ->
       val renderX = candidate.xPos * scaleX

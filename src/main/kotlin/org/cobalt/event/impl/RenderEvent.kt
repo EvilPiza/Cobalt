@@ -6,17 +6,17 @@ import org.cobalt.event.Event
 
 abstract class RenderEvent(
   val graphics: GuiGraphicsExtractor,
-  val deltaTracker: DeltaTracker
+  val deltaTracker: DeltaTracker,
 ) : Event() {
 
   class Hud(
     graphics: GuiGraphicsExtractor,
-    deltaTracker: DeltaTracker
+    deltaTracker: DeltaTracker,
   ) : RenderEvent(graphics, deltaTracker)
 
   class Notification(
     graphics: GuiGraphicsExtractor,
-    deltaTracker: DeltaTracker
+    deltaTracker: DeltaTracker,
   ) : RenderEvent(graphics, deltaTracker)
 
 }
