@@ -19,14 +19,6 @@ object AutoHarp : Module(
 
   private var lastInv = 0
 
-  override fun onEnable() {
-    EventBus.register(this)
-  }
-
-  override fun onDisable() {
-    EventBus.unregister(this)
-  }
-
   @SubscribeEvent
   fun onTick(ignored: TickEvent.Start) {
     if (!enabled || minecraft.player == null) {

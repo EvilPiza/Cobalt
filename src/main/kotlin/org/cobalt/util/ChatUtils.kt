@@ -1,7 +1,5 @@
 package org.cobalt.util
 
-import net.minecraft.ChatFormatting
-import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import org.cobalt.Cobalt
 import org.cobalt.Cobalt.minecraft
@@ -12,79 +10,82 @@ object ChatUtils {
 
   private val logger = LoggerFactory.getLogger(this::class.java)
 
-  private val defaultPrefix = Component.literal("")
-    .append(Component.literal("[").withStyle(ChatFormatting.DARK_GRAY))
-    .append(ColorUtils.buildTextGradient(Cobalt.MOD_NAME, 0x4CADD0, 0xB2F9FF))
-    .append(Component.literal("] ").withStyle(ChatFormatting.DARK_GRAY))
-
-  private val debugPrefix = Component.literal("")
-    .append(Component.literal("[").withStyle(ChatFormatting.DARK_GRAY))
-    .append(ColorUtils.buildTextGradient("${Cobalt.MOD_NAME} Debug", 0x369876, 0x71FF9E))
-    .append(Component.literal("] ").withStyle(ChatFormatting.DARK_GRAY))
+  private val defaultPrefix =
+    "<dark_gray>[</dark_gray><gradient:#4CADD0:#B2F9FF>${Cobalt.MOD_NAME}</gradient><dark_gray>] </dark_gray><reset>"
+  private val debugPrefix =
+    "<dark_gray>[</dark_gray><gradient:#369876:#71FF9E>${Cobalt.MOD_NAME} Debug</gradient><dark_gray>] </dark_gray><reset>"
 
   private var lastDebugMessage: String? = null
 
   @JvmStatic
   fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
-    val player = minecraft.player
-
-    if (player == null) {
-      logger.error("Attempted to send system message ($message) but mc.player is null")
-      return
-    }
-
     val component = when (type) {
-      MessageType.DEFAULT -> defaultPrefix.copy().append(stringToComponent(message))
+      MessageType.DEFAULT -> stringToComponent(defaultPrefix + message)
       MessageType.RAW -> stringToComponent(message)
       MessageType.DEBUG -> {
-        if (!Debug.enabled) {
-          return
-        }
-
-        if (lastDebugMessage == message) {
+        if (!Debug.enabled || lastDebugMessage == message) {
           return
         }
 
         lastDebugMessage = message
-        debugPrefix.copy().append(stringToComponent(message))
+        stringToComponent(debugPrefix + message)
       }
     }
 
-    minecraft.execute {
-      player.sendSystemMessage(component)
-    }
+    addToChat(component)
   }
 
   @JvmStatic
   fun stringToComponent(string: String): MutableComponent {
-    return Component.literal(string)
+    return ChatFormatter.parse(string)
   }
 
   @JvmStatic
   fun sendPlayerMessage(message: String) {
-    val player = minecraft.player
+    runOnClientThread {
+      val player = minecraft.player
 
-    if (player == null) {
-      logger.error("Attempted to send message as player ($message) but mc.player is null")
-      return
-    }
+      if (player == null) {
+        logger.error("Attempted to send message as player ($message) but mc.player is null")
+        return@runOnClientThread
+      }
 
-    minecraft.execute {
       player.connection.sendChat(message)
     }
   }
 
   @JvmStatic
   fun sendCommand(command: String) {
-    val player = minecraft.player
+    runOnClientThread {
+      val player = minecraft.player
 
-    if (player == null) {
-      logger.error("Attempted to send command ($command) but mc.player is null")
-      return
-    }
+      if (player == null) {
+        logger.error("Attempted to send command ($command) but mc.player is null")
+        return@runOnClientThread
+      }
 
-    minecraft.execute {
       player.connection.sendCommand(command)
+    }
+  }
+
+  private fun runOnClientThread(action: () -> Unit) {
+    if (minecraft.isSameThread) {
+      action()
+    } else {
+      minecraft.execute(action)
+    }
+  }
+
+  private fun addToChat(component: MutableComponent) {
+    runOnClientThread {
+      val player = minecraft.player
+
+      if (player == null) {
+        logger.error("Attempted to send system message but mc.player is null")
+        return@runOnClientThread
+      }
+
+      player.sendSystemMessage(component)
     }
   }
 
