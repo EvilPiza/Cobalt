@@ -44,10 +44,9 @@ dependencies {
   api(libs.fabric.kotlin)
 
   jij(libs.skija.shared)
-  jij(libs.bundles.skija.natives)
-
   jij(libs.discordIpc)
 
+  compileOnly(libs.bundles.skija.natives)
   runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.2")
 }
 

@@ -17,6 +17,12 @@
   "icon": "assets/cobalt/icon.png",
   "environment": "*",
   "entrypoints": {
+    "preLaunch": [
+      {
+        "adapter": "kotlin",
+        "value": "org.cobalt.util.skia.SkiaBootstrap"
+      }
+    ],
     "client": [
       {
         "adapter": "kotlin",
