@@ -26,6 +26,9 @@ object PathExecutor {
 
   var running = false
 
+  val controlsSprint: Boolean
+    get() = running && config?.shouldSprint == true
+
   init {
     EventBus.register(this)
   }
@@ -34,7 +37,7 @@ object PathExecutor {
     stop()
 
     if (config.useFlyMovement && !PlayerUtils.canFly) {
-      ChatUtils.sendSystemMessage("${ChatFormatting.RED} Invalid path config, since player cannot fly!")
+      ChatUtils.sendSystemMessage("<red> Invalid path config, since player cannot fly!</red>")
       return
     }
 

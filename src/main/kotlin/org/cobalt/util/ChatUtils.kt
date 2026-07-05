@@ -22,24 +22,19 @@ object ChatUtils {
   @JvmStatic
   fun sendSystemMessage(message: String, type: MessageType = MessageType.DEFAULT) {
     val component = when (type) {
-      MessageType.DEFAULT -> stringToComponent(defaultPrefix + message)
-      MessageType.RAW -> stringToComponent(message)
+      MessageType.DEFAULT -> ChatFormatter.parse(defaultPrefix + message)
+      MessageType.RAW -> ChatFormatter.parse(message)
       MessageType.DEBUG -> {
         if (!Debug.enabled || lastDebugMessage == message) {
           return
         }
 
         lastDebugMessage = message
-        stringToComponent(debugPrefix + message)
+        ChatFormatter.parse(debugPrefix + message)
       }
     }
 
     addToChat(component)
-  }
-
-  @JvmStatic
-  fun stringToComponent(string: String): MutableComponent {
-    return ChatFormatter.parse(string)
   }
 
   @JvmStatic
