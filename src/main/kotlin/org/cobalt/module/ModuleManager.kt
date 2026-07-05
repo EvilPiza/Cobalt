@@ -67,7 +67,7 @@ object ModuleManager {
     if (currentScript != null && currentScript != script) {
       stopAllScripts()
       ChatUtils.sendSystemMessage(
-        "${ChatFormatting.RED}Cannot start a different script when one is currently active, disabling all scripts..."
+        "<red>Cannot start a different script when one is currently active, disabling all scripts...</red>"
       )
 
       return
@@ -79,7 +79,7 @@ object ModuleManager {
 
   fun stopScript() {
     if (currentScript == null) {
-      ChatUtils.sendSystemMessage("${ChatFormatting.RED}There is no script currently running")
+      ChatUtils.sendSystemMessage("<red>There is no script currently running</red>")
       return
     }
 

@@ -17,9 +17,7 @@ object AutoSprint : Module(
       return
     }
 
-    if (PathExecutor.running && PathExecutor.config?.shouldSprint != true) {
-      return
-    }
+    if (PathExecutor.controlsSprint) return
 
     minecraft.options.keySprint.isDown = true
   }
