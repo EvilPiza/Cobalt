@@ -17,6 +17,7 @@ import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.Vec3
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.pathfinder.helper.BlockStateAccessor
+import org.cobalt.pathfinder.helper.PlayerInput
 import org.cobalt.pathfinder.precompute.Ternary
 import org.cobalt.pathfinder.precompute.Ternary.*
 import org.cobalt.util.RotationUtils.RAD_TO_DEG
@@ -314,33 +315,18 @@ object MovementHelper {
   }
 
   @JvmStatic
-  fun getNeededKeys(playerYaw: Float, idealYaw: Float): Array<KeyMapping> {
+  fun getNeededKeys(playerYaw: Float, idealYaw: Float): PlayerInput {
     val diff = Mth.wrapDegrees(idealYaw - playerYaw)
 
     return when {
-      diff >= -22.5f && diff < 22.5f ->
-        arrayOf(minecraft.options.keyUp)
-
-      diff in 22.5f..<67.5f ->
-        arrayOf(minecraft.options.keyUp, minecraft.options.keyRight)
-
-      diff in 67.5f..<112.5f ->
-        arrayOf(minecraft.options.keyRight)
-
-      diff in 112.5f..<157.5f ->
-        arrayOf(minecraft.options.keyDown, minecraft.options.keyRight)
-
-      diff >= 157.5f || diff < -157.5f ->
-        arrayOf(minecraft.options.keyDown)
-
-      diff >= -157.5f && diff < -112.5f ->
-        arrayOf(minecraft.options.keyDown, minecraft.options.keyLeft)
-
-      diff >= -112.5f && diff < -67.5f ->
-        arrayOf(minecraft.options.keyLeft)
-
-      else ->
-        arrayOf(minecraft.options.keyUp, minecraft.options.keyLeft)
+      diff >= -22.5f && diff < 22.5f -> PlayerInput(forward = true)
+      diff in 22.5f..<67.5f -> PlayerInput(forward = true, right = true)
+      diff in 67.5f..<112.5f -> PlayerInput(right = true)
+      diff in 112.5f..<157.5f -> PlayerInput(backward = true, right = true)
+      diff >= 157.5f || diff < -157.5f -> PlayerInput(backward = true)
+      diff >= -157.5f && diff < -112.5f -> PlayerInput(backward = true, left = true)
+      diff >= -112.5f && diff < -67.5f -> PlayerInput(left = true)
+      else -> PlayerInput(forward = true, left = true)
     }
   }
 

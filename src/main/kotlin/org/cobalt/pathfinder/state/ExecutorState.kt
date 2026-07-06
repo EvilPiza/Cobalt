@@ -1,10 +1,16 @@
 package org.cobalt.pathfinder.state
 
-interface ExecutorState {
+import org.cobalt.pathfinder.PathExecutor
+import org.cobalt.pathfinder.PathInput
 
-  fun enter() {}
-  fun onTick() {}
-  fun onRender() {}
-  fun exit() {}
+abstract class ExecutorState {
+
+  protected val input: PathInput =
+    PathExecutor.pathInput
+
+  open fun enter() {}
+  open fun onTick() {}
+  open fun onRender() {}
+  open fun exit() {}
 
 }

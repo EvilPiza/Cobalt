@@ -12,9 +12,8 @@ class PathConfig(
   val returnBestNode: Boolean = false,
 ) {
 
-  val useFlyMovement: Boolean
-    get() = movements.any {
-      it.type == Movement.Type.FLY
-    }
+  val useFlyMovement = movements.any {
+    it.type == Movement.Type.FLY
+  }
 
 }

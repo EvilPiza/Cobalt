@@ -1,6 +1,6 @@
 package org.cobalt.pathfinder
 
-import net.minecraft.ChatFormatting
+import net.minecraft.client.player.KeyboardInput
 import org.cobalt.Cobalt.minecraft
 import org.cobalt.event.EventBus
 import org.cobalt.event.annotation.SubscribeEvent
@@ -11,7 +11,6 @@ import org.cobalt.pathfinder.state.ExecutorState
 import org.cobalt.pathfinder.state.impl.CalculatingState
 import org.cobalt.ui.theme.ThemeManager
 import org.cobalt.util.ChatUtils
-import org.cobalt.util.KeybindUtils
 import org.cobalt.util.MessageType
 import org.cobalt.util.PlayerUtils
 import org.cobalt.util.WorldRenderUtils
@@ -25,9 +24,7 @@ object PathExecutor {
   var pathIndex: Int = 0
 
   var running = false
-
-  val controlsSprint: Boolean
-    get() = running && config?.shouldSprint == true
+  var pathInput = PathInput()
 
   init {
     EventBus.register(this)
@@ -37,7 +34,16 @@ object PathExecutor {
     stop()
 
     if (config.useFlyMovement && !PlayerUtils.canFly) {
-      ChatUtils.sendSystemMessage("<red> Invalid path config, since player cannot fly!</red>")
+      ChatUtils.sendSystemMessage("<red>Invalid path config, since player cannot fly!</red>")
+      return
+    }
+
+
+    val player = minecraft.player
+
+    if (player != null) {
+      player.input = pathInput
+    } else {
       return
     }
 
@@ -51,7 +57,11 @@ object PathExecutor {
     state?.exit()
     state = null
 
-    KeybindUtils.stopMovement()
+    minecraft.player?.let {
+      it.input = KeyboardInput(minecraft.options)
+    }.also {
+      pathInput.stopMovement()
+    }
 
     running = false
     config = null
@@ -82,11 +92,21 @@ object PathExecutor {
       return
     }
 
+    if (!running) {
+      return
+    }
+
     state?.onTick()
   }
 
   @SubscribeEvent
   fun onRender(ignored: WorldRenderEvent) {
+    if (!running) {
+      return
+    }
+
+    state?.onRender()
+
     if (state is CalculatingState) {
       return
     }

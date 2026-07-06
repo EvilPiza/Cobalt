@@ -1,6 +1,5 @@
 package org.cobalt.pathfinder.state.impl
 
-import net.minecraft.ChatFormatting
 import org.cobalt.pathfinder.PathExecutor
 import org.cobalt.pathfinder.calculate.path.AStarPathfinder
 import org.cobalt.pathfinder.state.ExecutorState
@@ -9,7 +8,7 @@ import org.cobalt.util.MessageType
 import org.cobalt.util.PlayerUtils
 import org.cobalt.util.helper.Multithreading
 
-class CalculatingState : ExecutorState {
+class CalculatingState : ExecutorState() {
 
   override fun enter() {
     val config = PathExecutor.config ?: return

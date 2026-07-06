@@ -1,13 +1,11 @@
 package org.cobalt.pathfinder.state.impl
 
-import net.minecraft.client.KeyMapping
-import org.cobalt.Cobalt.minecraft
 import org.cobalt.dsl.centerVec
 import org.cobalt.pathfinder.PathExecutor
+import org.cobalt.pathfinder.helper.PlayerInput
 import org.cobalt.pathfinder.movement.Movement
 import org.cobalt.pathfinder.movement.MovementHelper
 import org.cobalt.pathfinder.state.ExecutorState
-import org.cobalt.util.KeybindUtils
 import org.cobalt.util.PlayerUtils
 
 /**
@@ -16,13 +14,13 @@ import org.cobalt.util.PlayerUtils
  * - Handle unstuck (where you just need to move left or right to realign to center of path line)
  * - Handle jumps and descending blocks
  */
-class PathingState : ExecutorState {
+class PathingState : ExecutorState() {
 
   private val path = PathExecutor.path
   private val config = PathExecutor.config
 
   override fun exit() {
-    KeybindUtils.stopMovement()
+    input.stopMovement()
   }
 
   override fun onTick() {
@@ -65,32 +63,34 @@ class PathingState : ExecutorState {
     val rotation = MovementHelper.getRotation(playerPos.centerVec(), nodePos.centerVec())
     val sameXZ = nodePos.x == playerPos.x && nodePos.z == playerPos.z
 
-    val keys = mutableListOf<KeyMapping>()
+    val playerInput = PlayerInput()
     val neededKeys = MovementHelper.getNeededKeys(yaw, rotation.yaw)
 
-    if (config.shouldSprint && !isFlyNode) {
-      keys.add(minecraft.options.keySprint)
+    if (!sameXZ) {
+      playerInput.apply(neededKeys)
     }
 
-    if (!sameXZ) {
-      keys.addAll(neededKeys)
+    if (config.shouldSprint && !isFlyNode) {
+      playerInput.sprint = true
     }
+
+    // TODO: add jump logic for walking
+    // playerInput.jump = !PlayerUtils.isFlying && false
 
     if (isFlyNode && sameXZ) {
       val diffY = nodePos.y - playerPos.y
 
       when {
-        diffY > 0 -> {
-          keys.add(minecraft.options.keyJump)
-        }
-
-        diffY < 0 -> {
-          keys.add(minecraft.options.keyShift)
-        }
+        diffY > 0 -> playerInput.jump = true
+        diffY < 0 -> playerInput.sneak = true
       }
     }
 
-    KeybindUtils.holdThese(*keys.toTypedArray())
+    input.applyInput(playerInput)
+  }
+
+  override fun onRender() {
+    // TODO: call rotation update here
   }
 
 }

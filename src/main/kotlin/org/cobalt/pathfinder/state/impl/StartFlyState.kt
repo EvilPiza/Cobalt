@@ -1,12 +1,10 @@
 package org.cobalt.pathfinder.state.impl
 
-import org.cobalt.Cobalt.minecraft
 import org.cobalt.pathfinder.PathExecutor
 import org.cobalt.pathfinder.state.ExecutorState
-import org.cobalt.util.KeybindUtils
 import org.cobalt.util.PlayerUtils
 
-class StartFlyState : ExecutorState {
+class StartFlyState : ExecutorState() {
 
   private var flyStage = 0
 
@@ -23,8 +21,6 @@ class StartFlyState : ExecutorState {
   }
 
   private fun handleFlyStart(): Boolean {
-    val keyJump = minecraft.options.keyJump
-
     if (PlayerUtils.isFlying) {
       flyStage = 0
       return false
@@ -34,26 +30,26 @@ class StartFlyState : ExecutorState {
       flyStage = 0
     }
 
-    KeybindUtils.stopMovement(keyJump)
+    input.stopMovement()
 
     when (flyStage) {
       0 -> {
-        KeybindUtils.setKeyState(keyJump, true)
+        input.jump = true
         flyStage = 1
       }
 
       1 -> {
-        KeybindUtils.setKeyState(keyJump, false)
+        input.jump = false
         flyStage = 2
       }
 
       2 -> {
-        KeybindUtils.setKeyState(keyJump, true)
+        input.jump = true
         flyStage = 3
       }
 
       3 -> {
-        KeybindUtils.setKeyState(keyJump, false)
+        input.jump = false
       }
     }
 
