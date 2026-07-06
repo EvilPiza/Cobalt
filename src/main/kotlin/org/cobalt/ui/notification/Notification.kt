@@ -71,22 +71,27 @@ class Notification(
 
   private fun drawText() {
     val contentWidth = width - CONTENT_PADDING * 2
+    val hasDescription = description.isNotBlank()
+
+    val titleHeight = if (hasDescription) {
+      Skia.wrappedTextHeight(Skia.boldFont, title, contentWidth, TITLE_FONT_SIZE)
+    } else {
+      height - CONTENT_PADDING * 2 - PROGRESS_BAR_HEIGHT
+    }
 
     Skia.wrappedText(
       Skia.boldFont, title,
       xPos + CONTENT_PADDING, yPos + CONTENT_PADDING,
-      contentWidth, TITLE_FONT_SIZE, theme.textPrimary
+      contentWidth, titleHeight, theme.textPrimary
     )
 
-    val titleHeight = Skia.wrappedTextHeight(
-      Skia.boldFont, title, contentWidth, TITLE_FONT_SIZE
-    )
-
-    Skia.wrappedText(
-      Skia.boldFont, description,
-      xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP,
-      contentWidth, DESCRIPTION_FONT_SIZE, theme.textSecondary
-    )
+    if (hasDescription) {
+      Skia.wrappedText(
+        Skia.boldFont, description,
+        xPos + CONTENT_PADDING, yPos + CONTENT_PADDING + titleHeight + TITLE_DESCRIPTION_GAP,
+        contentWidth, DESCRIPTION_FONT_SIZE, theme.textSecondary
+      )
+    }
   }
 
   private fun drawProgressBar() {
@@ -142,16 +147,19 @@ class Notification(
     private const val PROGRESS_BAR_HEIGHT: Float = 5f
 
     private fun calculateHeight(title: String, description: String): Float {
+      val contentWidth = DEFAULT_WIDTH - CONTENT_PADDING * 2
+
       val titleHeight = Skia.wrappedTextHeight(
-        Skia.boldFont, title,
-        DEFAULT_WIDTH - CONTENT_PADDING * 2,
-        TITLE_FONT_SIZE
+        Skia.boldFont, title, contentWidth, TITLE_FONT_SIZE
       )
 
+      if (description.isBlank()) {
+        val verticalOverhead = CONTENT_PADDING * 2 + PROGRESS_BAR_HEIGHT
+        return maxOf(MIN_HEIGHT, titleHeight + verticalOverhead)
+      }
+
       val descHeight = Skia.wrappedTextHeight(
-        Skia.boldFont, description,
-        DEFAULT_WIDTH - CONTENT_PADDING * 2,
-        DESCRIPTION_FONT_SIZE
+        Skia.boldFont, description, contentWidth, DESCRIPTION_FONT_SIZE
       )
 
       val verticalOverhead =
